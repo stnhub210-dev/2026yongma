@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>참여 신청 관리 — 용마미식거리 관리자</title><meta name="robots" content="noindex">
+<link rel="icon" href="../assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div><h1>참여 신청 관리</h1><p class="muted tiny" id="admin-who"></p></div>
+      <button class="btn btn--ghost btn--sm" id="btn-csv">CSV 내려받기</button>
+    </div>
+    <div id="admin-msg" class="alert"></div>
+
+    <div class="grid grid-4">
+      <div class="tile"><dt>전체</dt><dd class="num" id="n-all">-</dd></div>
+      <div class="tile"><dt>접수</dt><dd class="num" id="n-received">-</dd></div>
+      <div class="tile"><dt>검토중</dt><dd class="num" id="n-reviewing">-</dd></div>
+      <div class="tile"><dt>선정</dt><dd class="num" id="n-accepted">-</dd></div>
+    </div>
+
+    <div class="panel mt-4">
+      <div class="chip-row" id="filter" style="margin-bottom:18px">
+        <button class="chip chip--amber" data-f="">전체</button>
+        <button class="chip" data-f="seller">셀러</button>
+        <button class="chip" data-f="busker">버스커</button>
+        <button class="chip" data-f="experience">체험</button>
+        <button class="chip" data-f="startup">창업</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>접수일</th><th>유형</th><th style="min-width:130px">신청자</th><th style="min-width:200px">내용</th><th>연락처</th><th>희망일</th><th style="min-width:130px">상태</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("applications.html"))) return;
+  const T = "applications";
+  const TYPE = { seller: "프리마켓 셀러", busker: "버스커", experience: "체험 프로그램", startup: "로컬창업 상담" };
+  const ST = { received: "접수", reviewing: "검토중", accepted: "선정", rejected: "미선정", done: "완료" };
+  let rows = [], f = "";
+
+  function render() {
+    const list = f ? rows.filter((r) => r.type === f) : rows;
+    document.getElementById("rows").innerHTML = list.map((r) => `
+      <tr>
+        <td class="tiny num">${UI.date(r.created_at)}</td>
+        <td><span class="chip">${TYPE[r.type] || r.type}</span></td>
+        <td><b>${Admin.esc(r.applicant_name)}</b><br><span class="tiny muted">${Admin.esc(r.email || "")}</span></td>
+        <td>${Admin.esc(r.title || "-")}${r.body ? `<br><span class="tiny muted">${Admin.esc(r.body.slice(0, 60))}${r.body.length > 60 ? "…" : ""}</span>` : ""}
+            ${r.link ? `<br><a class="tiny" href="${Admin.esc(r.link)}" target="_blank" rel="noopener" style="color:var(--amber-700)">참고 링크</a>` : ""}</td>
+        <td class="tiny num">${Admin.esc(r.phone || "-")}</td>
+        <td class="tiny num">${r.preferred_date ? UI.date(r.preferred_date) : "-"}</td>
+        <td>
+          <select class="select" data-st="${r.id}" style="padding:6px 10px;font-size:.8125rem">
+            ${Object.entries(ST).map(([k, v]) => `<option value="${k}"${r.status === k ? " selected" : ""}>${v}</option>`).join("")}
+          </select>
+        </td>
+        <td><button class="btn btn--ghost btn--sm" data-del="${r.id}">삭제</button></td>
+      </tr>`).join("") || '<tr><td colspan="8" class="center muted">접수된 신청이 없습니다.</td></tr>';
+
+    document.getElementById("n-all").textContent = rows.length;
+    ["received", "reviewing", "accepted"].forEach((s) =>
+      document.getElementById("n-" + s).textContent = rows.filter((r) => r.status === s).length);
+  }
+
+  const reload = async () => { rows = await Admin.load(T, { order: ["created_at", false] }); render(); };
+
+  document.getElementById("filter").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-f]"); if (!b) return;
+    document.querySelectorAll("#filter button").forEach((x) => x.classList.remove("chip--amber"));
+    b.classList.add("chip--amber"); f = b.dataset.f; render();
+  });
+
+  document.getElementById("rows").addEventListener("change", async (e) => {
+    const sel = e.target.closest("[data-st]"); if (!sel) return;
+    try {
+      await Admin.save(T, { id: sel.dataset.st, status: sel.value, reviewed_by: Admin.user.id, reviewed_at: new Date().toISOString() });
+      const r = rows.find((x) => String(x.id) === sel.dataset.st); if (r) r.status = sel.value;
+      render(); Admin.toast("ok", "상태를 변경했습니다.");
+    } catch (err) { Admin.toast("err", err.message); }
+  });
+
+  document.getElementById("rows").addEventListener("click", async (e) => {
+    const de = e.target.closest("[data-del]"); if (!de) return;
+    if (!confirm("이 신청을 삭제하시겠습니까?")) return;
+    try { await Admin.remove(T, de.dataset.del); await reload(); Admin.toast("ok", "삭제했습니다."); }
+    catch (err) { Admin.toast("err", err.message); }
+  });
+
+  document.getElementById("btn-csv").onclick = () => {
+    const head = ["접수일", "유형", "신청자", "연락처", "이메일", "내용", "상세", "희망일", "링크", "상태"];
+    const body = rows.map((r) => [UI.date(r.created_at), TYPE[r.type] || r.type, r.applicant_name,
+      r.phone, r.email, r.title, r.body, r.preferred_date, r.link, ST[r.status] || r.status]);
+    const csv = [head, ...body].map((row) => row.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = `참여신청_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  try { await reload(); } catch (e) { Admin.toast("err", e.message); }
+})();
+</script>
+</body>
+</html>

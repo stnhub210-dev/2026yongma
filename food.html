@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미식 지도 — 용마미식거리</title>
+<meta name="description" content="초당두부, 감자옹심이, 강릉짬뽕, 한과, 강릉커피. 용마미식거리 K-미식벨트의 노포와 맛집을 소개합니다.">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="section section--soft" style="padding-block:clamp(44px,5vw,72px)">
+  <div class="wrap">
+    <span class="eyebrow">Food Map</span>
+    <h1>강릉의 맛이 골목에 모입니다</h1>
+    <p class="lead mt-2" style="max-width:60ch">
+      관광지의 맛이 아니라 강릉 사람들이 다니던 노포의 맛입니다.
+      농식품부 K-미식벨트와 연계해 향토음식을 한 줄에 모았습니다.
+    </p>
+  </div>
+</section>
+
+<!-- 대표 음식 -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Signature</span>
+      <h2>용마거리에서 만나는 강릉 향토음식</h2>
+    </div>
+    <div class="grid grid-4">
+      <article class="tile reveal"><div class="icon-badge">🥟</div><h3>초당두부</h3><p class="muted mt-1">바닷물로 간을 맞추는 강릉 대표 향토음식. 3km 거리 초당순두부마을과 연계합니다.</p></article>
+      <article class="tile reveal"><div class="icon-badge">🥔</div><h3>감자옹심이</h3><p class="muted mt-1">강원도 감자를 갈아 빚은 옹심이. 놀아존에서 직접 만들어 보는 체험도 운영합니다.</p></article>
+      <article class="tile reveal"><div class="icon-badge">🍜</div><h3>강릉짬뽕</h3><p class="muted mt-1">동해 해산물을 아낌없이 넣는 강릉식 짬뽕. 골목 노포의 대표 메뉴입니다.</p></article>
+      <article class="tile reveal"><div class="icon-badge">☕</div><h3>강릉커피</h3><p class="muted mt-1">커피의 도시 강릉. 로스팅 체험과 함께 골목의 밤을 여는 한 잔을 만납니다.</p></article>
+    </div>
+    <figure class="figure reveal mt-4">
+      <img src="assets/img/prog-food.webp" alt="어서와존 K-미식벨트 운영 모습" loading="lazy">
+      <figcaption>어서와존 — 매주 금·토 15:00~22:00 상시 운영</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 점포 목록 (Supabase) -->
+<section class="section section--soft">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Shops</span>
+      <h2>참여 점포</h2>
+      <p>K-미식벨트 어서와존과 상권 내 노포·맛집을 소개합니다.</p>
+    </div>
+
+    <div class="chip-row reveal" id="shop-filter" style="margin-bottom:24px">
+      <button class="chip chip--amber" data-cat="">전체</button>
+      <button class="chip" data-cat="korean">한식·노포</button>
+      <button class="chip" data-cat="cafe">카페·디저트</button>
+      <button class="chip" data-cat="snack">분식·야식</button>
+      <button class="chip" data-cat="etc">그 외</button>
+    </div>
+
+    <div id="shops-state" class="alert alert--info show">점포 정보를 불러오는 중입니다…</div>
+    <div id="shops-list" class="grid grid-3"></div>
+  </div>
+</section>
+
+<!-- 외국인 안내 -->
+<section class="section">
+  <div class="wrap split">
+    <div class="reveal">
+      <span class="eyebrow">For Visitors</span>
+      <h2>처음 오셔도 어렵지 않게</h2>
+      <ul class="stack mt-3">
+        <li>· <b>다국어 홈페이지</b> — 한국어·영어·중국어로 메뉴와 점포 정보를 제공합니다</li>
+        <li>· <b>향토음식 체험 영문 인증서</b> — 외국인 방문객이 체험 후 받아 갈 수 있습니다</li>
+        <li>· <b>복합 게이트웨이 안내소</b> — 다국어 안내와 물품보관을 한 곳에서</li>
+        <li>· <b>로컬 노포 미식맵</b> — 골목 노포를 큐레이션한 지도를 현장에서 배포합니다</li>
+      </ul>
+      <p class="tiny muted mt-3">※ 영어·중국어·일본어 페이지는 사이트 정식 오픈 후 순차 제공됩니다.</p>
+    </div>
+    <figure class="figure reveal"><img src="assets/img/prog-foreign.webp" alt="외국인 체험 프로그램" loading="lazy"></figure>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(async () => {
+  const list = document.getElementById("shops-list");
+  const state = document.getElementById("shops-state");
+  const filter = document.getElementById("shop-filter");
+  const c = Auth.client();
+  let rows = [];
+
+  const CAT = { korean: "한식·노포", cafe: "카페·디저트", snack: "분식·야식", etc: "그 외" };
+
+  function render(cat) {
+    const items = cat ? rows.filter((r) => r.category === cat) : rows;
+    if (!items.length) { UI.alert(state, "info", "해당 분류의 점포가 아직 등록되지 않았습니다."); list.innerHTML = ""; return; }
+    state.className = "alert";
+    list.innerHTML = items.map((s) => `
+      <article class="card">
+        ${s.photo_url ? `<div class="card__img"><img src="${s.photo_url}" alt="${s.name}" loading="lazy"></div>` : ""}
+        <div class="card__body">
+          <span class="chip chip--amber" style="align-self:flex-start;margin-bottom:10px">${CAT[s.category] || "점포"}</span>
+          <h3>${s.name}</h3>
+          ${s.signature ? `<p class="muted mt-1"><b>대표메뉴</b> ${s.signature}</p>` : ""}
+          ${s.description ? `<p class="mt-2">${s.description}</p>` : ""}
+          <div class="card__foot tiny muted">${s.address || ""}${s.phone ? " · " + s.phone : ""}</div>
+        </div>
+      </article>`).join("");
+  }
+
+  if (!c) {
+    UI.alert(state, "warn", "점포 데이터베이스가 아직 연결되지 않았습니다. Supabase 설정 후 관리자 페이지에서 점포를 등록하면 이곳에 표시됩니다.");
+    return;
+  }
+  const { data, error } = await c.from("shops").select("*").eq("published", true).order("sort_order", { ascending: true });
+  if (error) { UI.alert(state, "err", "점포 정보를 불러오지 못했습니다: " + error.message); return; }
+  rows = data || [];
+  render("");
+
+  filter.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-cat]");
+    if (!btn) return;
+    filter.querySelectorAll("button").forEach((b) => b.classList.remove("chip--amber"));
+    btn.classList.add("chip--amber");
+    render(btn.dataset.cat);
+  });
+})();
+</script>
+</body>
+</html>

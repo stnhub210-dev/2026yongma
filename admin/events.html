@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>일정 관리 — 용마미식거리 관리자</title><meta name="robots" content="noindex">
+<link rel="icon" href="../assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div><h1>일정 관리</h1><p class="muted tiny" id="admin-who"></p></div>
+      <div class="btn-row">
+        <a class="btn btn--ghost btn--sm" href="../programs.html" target="_blank">공개 페이지 보기</a>
+        <button class="btn btn--primary btn--sm" id="btn-add">일정 추가</button>
+      </div>
+    </div>
+    <div id="admin-msg" class="alert"></div>
+
+    <div class="grid grid-4">
+      <div class="tile"><dt>버스킹</dt><dd class="num" id="c-busking">-</dd><span class="delta">목표 30회</span></div>
+      <div class="tile"><dt>K-컬처 공연</dt><dd class="num" id="c-culture">-</dd><span class="delta">목표 1회</span></div>
+      <div class="tile"><dt>프리마켓</dt><dd class="num" id="c-market">-</dd><span class="delta">목표 6회</span></div>
+      <div class="tile"><dt>체험</dt><dd class="num" id="c-exp">-</dd><span class="delta">목표 4회</span></div>
+    </div>
+
+    <div class="panel mt-4">
+      <p class="panel-sub">‘공개’로 표시한 일정만 홈페이지 프로그램 페이지에 노출됩니다.</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th style="min-width:110px">일자</th><th>시간</th><th style="min-width:90px">구분</th><th style="min-width:220px">내용</th><th>장소</th><th>상태</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("events.html"))) return;
+  const T = "events";
+  const CAT = { busking: "버스킹", culture: "K-컬처", market: "프리마켓", experience: "체험", etc: "기타" };
+  const F = [
+    { k: "event_date", label: "일자", type: "date", req: true },
+    { k: "start_time", label: "시작 시간 (예: 18:00)", type: "time" },
+    { k: "category", label: "구분", type: "select", options: Object.entries(CAT) },
+    { k: "title", label: "내용 / 출연", req: true },
+    { k: "place", label: "장소", def: "버스킹존" },
+    { k: "description", label: "설명", type: "textarea" },
+    { k: "published", label: "공개", type: "checkbox", def: true },
+  ];
+  let rows = [];
+
+  function render() {
+    document.getElementById("rows").innerHTML = rows.map((r) => `
+      <tr>
+        <td class="num">${UI.date(r.event_date)}</td>
+        <td class="tiny">${r.start_time ? r.start_time.slice(0, 5) : "-"}</td>
+        <td><span class="chip">${CAT[r.category] || "기타"}</span></td>
+        <td><b>${Admin.esc(r.title)}</b>${r.description ? `<br><span class="tiny muted">${Admin.esc(r.description)}</span>` : ""}</td>
+        <td class="tiny">${Admin.esc(r.place || "-")}</td>
+        <td><span class="chip ${r.published ? "chip--green" : ""}">${r.published ? "공개" : "비공개"}</span></td>
+        <td style="white-space:nowrap">
+          <button class="btn btn--ghost btn--sm" data-edit="${r.id}">수정</button>
+          <button class="btn btn--ghost btn--sm" data-del="${r.id}">삭제</button></td>
+      </tr>`).join("") || '<tr><td colspan="7" class="center muted">등록된 일정이 없습니다.</td></tr>';
+
+    const n = (k) => rows.filter((r) => r.category === k).length;
+    document.getElementById("c-busking").textContent = n("busking");
+    document.getElementById("c-culture").textContent = n("culture");
+    document.getElementById("c-market").textContent = n("market");
+    document.getElementById("c-exp").textContent = n("experience");
+  }
+
+  const reload = async () => { rows = await Admin.load(T, { order: ["event_date", true] }); render(); };
+
+  document.getElementById("btn-add").onclick = () => Admin.modal({
+    title: "일정 추가", fields: F, values: { published: true, category: "busking", place: "버스킹존" },
+    onSave: async (v) => { await Admin.save(T, v); await reload(); Admin.toast("ok", "추가했습니다."); },
+  });
+
+  document.getElementById("rows").addEventListener("click", async (e) => {
+    const ed = e.target.closest("[data-edit]"), de = e.target.closest("[data-del]");
+    if (ed) {
+      const row = rows.find((r) => String(r.id) === ed.dataset.edit);
+      Admin.modal({ title: "일정 수정", fields: F, values: row,
+        onSave: async (v) => { await Admin.save(T, v); await reload(); Admin.toast("ok", "저장했습니다."); } });
+    }
+    if (de && confirm("삭제하시겠습니까?")) {
+      try { await Admin.remove(T, de.dataset.del); await reload(); Admin.toast("ok", "삭제했습니다."); }
+      catch (err) { Admin.toast("err", err.message); }
+    }
+  });
+
+  try { await reload(); } catch (e) { Admin.toast("err", e.message); }
+})();
+</script>
+</body>
+</html>

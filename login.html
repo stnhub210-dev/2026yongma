@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 · 회원가입 — 용마미식거리</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="section">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:32px">
+      <img src="assets/img/mascot-hello.webp" alt="" style="width:150px;margin:0 auto 12px">
+      <h1 style="font-size:clamp(1.5rem,1.2rem+1vw,2rem)">용마미식거리 회원</h1>
+      <p class="muted mt-1">프리마켓·버스킹 신청과 소식 알림을 받아보실 수 있습니다.</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="tabs" role="tablist">
+        <button id="tab-in" class="active" role="tab" aria-selected="true">로그인</button>
+        <button id="tab-up" role="tab" aria-selected="false">회원가입</button>
+      </div>
+
+      <div id="msg" class="alert"></div>
+
+      <!-- 로그인 -->
+      <form id="form-in" novalidate>
+        <div class="field">
+          <label for="in-email">이메일</label>
+          <input class="input" id="in-email" type="email" autocomplete="email" required placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="in-pw">비밀번호</label>
+          <input class="input" id="in-pw" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn--primary btn--block" type="submit">로그인</button>
+        <p class="center mt-3 tiny">
+          <a href="#" id="link-reset" style="color:var(--amber-700);font-weight:600">비밀번호를 잊으셨나요?</a>
+        </p>
+      </form>
+
+      <!-- 회원가입 -->
+      <form id="form-up" class="hidden" novalidate>
+        <div class="field">
+          <label for="up-name">이름</label>
+          <input class="input" id="up-name" type="text" autocomplete="name" required placeholder="홍길동">
+        </div>
+        <div class="field">
+          <label for="up-email">이메일</label>
+          <input class="input" id="up-email" type="email" autocomplete="email" required placeholder="you@example.com">
+          <p class="hint">가입 확인 메일이 발송됩니다.</p>
+        </div>
+        <div class="field">
+          <label for="up-phone">연락처 <span class="muted" style="font-weight:500">(선택)</span></label>
+          <input class="input" id="up-phone" type="tel" autocomplete="tel" placeholder="010-0000-0000">
+        </div>
+        <div class="field">
+          <label for="up-pw">비밀번호</label>
+          <input class="input" id="up-pw" type="password" autocomplete="new-password" required minlength="8">
+          <p class="hint">8자 이상 입력해 주십시오.</p>
+        </div>
+        <div class="field">
+          <label class="checkbox"><input type="checkbox" id="up-agree" required>
+            <span>[필수] 개인정보 수집·이용에 동의합니다. 수집 항목은 이름·이메일·연락처이며, 신청 접수와 안내 목적에 한해 사업 종료 후 1년까지 보관합니다.</span></label>
+        </div>
+        <div class="field">
+          <label class="checkbox"><input type="checkbox" id="up-mkt">
+            <span>[선택] 공연·프리마켓 등 행사 소식을 이메일로 받겠습니다.</span></label>
+        </div>
+        <button class="btn btn--primary btn--block" type="submit">회원가입</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(() => {
+  const msg = document.getElementById("msg");
+  const tabIn = document.getElementById("tab-in"), tabUp = document.getElementById("tab-up");
+  const formIn = document.getElementById("form-in"), formUp = document.getElementById("form-up");
+
+  function show(which) {
+    const up = which === "up";
+    tabUp.classList.toggle("active", up); tabIn.classList.toggle("active", !up);
+    tabUp.setAttribute("aria-selected", String(up)); tabIn.setAttribute("aria-selected", String(!up));
+    formUp.classList.toggle("hidden", !up); formIn.classList.toggle("hidden", up);
+    UI.clearAlert(msg);
+  }
+  tabIn.onclick = () => show("in");
+  tabUp.onclick = () => show("up");
+  if (location.hash === "#signup") show("up");
+
+  if (!Auth.ready()) {
+    UI.alert(msg, "warn", "회원 시스템이 아직 연결되지 않았습니다. Supabase 설정(assets/js/config.js)을 완료하면 바로 사용할 수 있습니다.");
+  }
+
+  /* 로그인 */
+  formIn.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    UI.clearAlert(msg);
+    const btn = formIn.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await Auth.signIn({
+        email: document.getElementById("in-email").value.trim(),
+        password: document.getElementById("in-pw").value,
+      });
+      location.href = "mypage.html";
+    } catch (err) {
+      UI.alert(msg, "err",
+        err.message === "NOT_CONFIGURED" ? "회원 시스템이 아직 연결되지 않았습니다."
+        : /Invalid login/i.test(err.message) ? "이메일 또는 비밀번호가 올바르지 않습니다."
+        : /Email not confirmed/i.test(err.message) ? "가입 확인 메일의 링크를 먼저 클릭해 주십시오."
+        : err.message);
+      btn.disabled = false;
+    }
+  });
+
+  /* 회원가입 */
+  formUp.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    UI.clearAlert(msg);
+    if (!document.getElementById("up-agree").checked) {
+      return UI.alert(msg, "err", "개인정보 수집·이용 동의가 필요합니다.");
+    }
+    const pw = document.getElementById("up-pw").value;
+    if (pw.length < 8) return UI.alert(msg, "err", "비밀번호는 8자 이상이어야 합니다.");
+
+    const btn = formUp.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await Auth.signUp({
+        email: document.getElementById("up-email").value.trim(),
+        password: pw,
+        name: document.getElementById("up-name").value.trim(),
+        phone: document.getElementById("up-phone").value.trim(),
+        marketing: document.getElementById("up-mkt").checked,
+      });
+      formUp.reset();
+      UI.alert(msg, "ok", "가입 확인 메일을 보냈습니다. 메일의 링크를 클릭하면 가입이 완료됩니다.");
+    } catch (err) {
+      UI.alert(msg, "err",
+        err.message === "NOT_CONFIGURED" ? "회원 시스템이 아직 연결되지 않았습니다."
+        : /already registered/i.test(err.message) ? "이미 가입된 이메일입니다."
+        : err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* 비밀번호 재설정 */
+  document.getElementById("link-reset").addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("in-email").value.trim();
+    if (!email) return UI.alert(msg, "info", "이메일을 먼저 입력한 뒤 다시 눌러 주십시오.");
+    try {
+      await Auth.resetPassword(email);
+      UI.alert(msg, "ok", "비밀번호 재설정 메일을 보냈습니다.");
+    } catch (err) {
+      UI.alert(msg, "err", err.message === "NOT_CONFIGURED" ? "회원 시스템이 아직 연결되지 않았습니다." : err.message);
+    }
+  });
+})();
+</script>
+</body>
+</html>

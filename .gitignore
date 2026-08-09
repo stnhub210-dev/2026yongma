@@ -1,0 +1,14 @@
+# OS / 편집기
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 임시
+*.tmp
+*.bak
+*~
+
+# 원본(대용량) 이미지 — 웹용은 assets/img 에만 둡니다
+/_raw/

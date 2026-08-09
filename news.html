@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소식 — 용마미식거리</title>
+<meta name="description" content="용마미식거리 공지사항과 소식을 전합니다.">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="section section--soft" style="padding-block:clamp(44px,5vw,72px)">
+  <div class="wrap">
+    <span class="eyebrow">News</span>
+    <h1>소식</h1>
+    <p class="lead mt-2">공지사항과 행사 소식을 전합니다.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap" style="max-width:900px">
+    <div class="chip-row" id="news-filter" style="margin-bottom:26px">
+      <button class="chip chip--amber" data-cat="">전체</button>
+      <button class="chip" data-cat="notice">공지</button>
+      <button class="chip" data-cat="event">행사</button>
+      <button class="chip" data-cat="recruit">모집</button>
+      <button class="chip" data-cat="press">보도</button>
+    </div>
+
+    <div id="news-state" class="alert alert--info show">소식을 불러오는 중입니다…</div>
+    <div id="news-list" class="stack" style="gap:0"></div>
+
+    <!-- 상세 -->
+    <article id="news-detail" class="panel hidden" style="border-radius:var(--radius-lg)">
+      <button class="btn btn--ghost btn--sm" id="back-list" style="margin-bottom:18px">← 목록으로</button>
+      <div id="detail-body"></div>
+    </article>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(async () => {
+  const list = document.getElementById("news-list");
+  const state = document.getElementById("news-state");
+  const filter = document.getElementById("news-filter");
+  const detail = document.getElementById("news-detail");
+  const detailBody = document.getElementById("detail-body");
+  const CAT = { notice: ["공지", "chip--blue"], event: ["행사", "chip--amber"], recruit: ["모집", "chip--green"], press: ["보도", "chip"] };
+  let rows = [];
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+
+  function render(cat) {
+    const items = cat ? rows.filter((r) => r.category === cat) : rows;
+    if (!items.length) { UI.alert(state, "info", "등록된 소식이 없습니다."); list.innerHTML = ""; return; }
+    state.className = "alert";
+    list.innerHTML = items.map((p) => {
+      const [label, cls] = CAT[p.category] || CAT.notice;
+      return `<a href="#post-${p.id}" data-id="${p.id}" style="display:block;padding:22px 4px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:6px">
+          <span class="chip ${cls}">${label}</span>
+          ${p.pinned ? '<span class="chip chip--red">중요</span>' : ""}
+          <span class="tiny muted">${UI.date(p.published_at || p.created_at)}</span>
+        </div>
+        <h3 style="font-size:1.125rem">${esc(p.title)}</h3>
+        ${p.summary ? `<p class="muted mt-1">${esc(p.summary)}</p>` : ""}
+      </a>`;
+    }).join("");
+  }
+
+  function openDetail(id) {
+    const p = rows.find((r) => String(r.id) === String(id));
+    if (!p) return;
+    const [label, cls] = CAT[p.category] || CAT.notice;
+    detailBody.innerHTML = `
+      <div class="chip-row" style="margin-bottom:12px"><span class="chip ${cls}">${label}</span>
+      <span class="chip">${UI.date(p.published_at || p.created_at)}</span></div>
+      <h2>${esc(p.title)}</h2>
+      ${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="" style="border-radius:var(--radius);margin:20px 0" loading="lazy">` : ""}
+      <div class="mt-3" style="white-space:pre-wrap;line-height:1.8">${esc(p.body)}</div>`;
+    list.classList.add("hidden"); filter.classList.add("hidden"); state.classList.add("hidden");
+    detail.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  document.getElementById("back-list").onclick = () => {
+    detail.classList.add("hidden");
+    list.classList.remove("hidden"); filter.classList.remove("hidden");
+    history.replaceState(null, "", location.pathname);
+  };
+
+  list.addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-id]");
+    if (!a) return;
+    e.preventDefault();
+    openDetail(a.dataset.id);
+  });
+
+  filter.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-cat]"); if (!b) return;
+    filter.querySelectorAll("button").forEach((x) => x.classList.remove("chip--amber"));
+    b.classList.add("chip--amber");
+    render(b.dataset.cat);
+  });
+
+  const c = Auth.client();
+  if (!c) { UI.alert(state, "warn", "소식 데이터베이스가 아직 연결되지 않았습니다. Supabase 설정 후 관리자 페이지에서 글을 올리면 이곳에 표시됩니다."); return; }
+
+  const { data, error } = await c.from("posts").select("*").eq("published", true)
+    .order("pinned", { ascending: false }).order("published_at", { ascending: false });
+  if (error) { UI.alert(state, "err", "소식을 불러오지 못했습니다: " + error.message); return; }
+  rows = data || [];
+  render("");
+  if (location.hash.startsWith("#post-")) openDetail(location.hash.replace("#post-", ""));
+})();
+</script>
+</body>
+</html>

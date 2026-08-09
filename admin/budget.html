@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정산 관리 — 용마미식거리 관리자</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div>
+        <h1>정산 관리</h1>
+        <p class="muted tiny" id="admin-who"></p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn--ghost btn--sm" id="btn-csv">CSV 내려받기</button>
+        <button class="btn btn--primary btn--sm" id="btn-add">항목 추가</button>
+      </div>
+    </div>
+
+    <div id="admin-msg" class="alert"></div>
+
+    <!-- 요약 -->
+    <div class="grid grid-4">
+      <div class="tile"><dt>총 편성액</dt><dd class="num" id="s-plan">-</dd></div>
+      <div class="tile"><dt>집행액</dt><dd class="num" id="s-spent">-</dd></div>
+      <div class="tile"><dt>잔액</dt><dd class="num" id="s-left">-</dd></div>
+      <div class="tile"><dt>집행률</dt><dd class="num" id="s-rate">-</dd><div class="bar mt-2"><span id="s-bar" style="width:0"></span></div></div>
+    </div>
+
+    <div class="panel mt-4">
+      <h3>단위사업별 집행 내역</h3>
+      <p class="panel-sub">
+        편성액은 최종 운영계획서(총 276,000천원) 기준입니다. 집행액과 증빙 메모를 갱신해 관리하십시오.
+        단위: 천원.
+      </p>
+
+      <div class="chip-row" id="filter" style="margin-bottom:18px">
+        <button class="chip chip--amber" data-f="">전체</button>
+        <button class="chip" data-f="[1]">[1] 브랜드·경관</button>
+        <button class="chip" data-f="[2]">[2] 인프라·안전</button>
+        <button class="chip" data-f="[3]">[3] K-미식·콘텐츠</button>
+        <button class="chip" data-f="[4]">[4] 창업·역량강화</button>
+        <button class="chip" data-f="[5]">[5] 마케팅·홍보</button>
+        <button class="chip" data-f="간접">간접사업비</button>
+      </div>
+
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr>
+              <th style="min-width:90px">분야</th>
+              <th style="min-width:230px">단위사업 / 세부과업</th>
+              <th>세목</th>
+              <th class="right">편성액</th>
+              <th class="right">집행액</th>
+              <th class="right">잔액</th>
+              <th class="right">집행률</th>
+              <th>비고</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">합계</td>
+              <td class="right" id="f-plan">-</td>
+              <td class="right" id="f-spent">-</td>
+              <td class="right" id="f-left">-</td>
+              <td class="right" id="f-rate">-</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>집행 시 유의사항</h3>
+      <p class="panel-sub">운영지침에서 자주 걸리는 항목만 정리했습니다.</p>
+      <ul class="stack">
+        <li>· <b>100만원 초과 집행 건</b>은 공단 지역본부 사전승인 대상입니다. 승인 소요 5일을 역산해 <b>집행예정일 최소 7일 전</b>에 신청하십시오.</li>
+        <li>· <b>수의계약 한도 초과 계약</b>은 공단 지정 전문기관의 원가계산을 거친 뒤 예산을 확정해야 합니다.</li>
+        <li>· <b>5천만원 이상 조달</b>은 5인 이상 선정위원회(외부전문가 80% 이상)를 구성해야 합니다. 동종 용역 통합발주 시 특히 유의하십시오.</li>
+        <li>· <b>특수이해관계자</b>와의 계약·거래·사업비 지급은 일체 금지되며, 위반 시 전액 환수 및 참여제한 3년입니다.</li>
+        <li>· <b>인건비</b>는 사업협의회 심의·의결 후 지급하며, 참여율 100% 인력의 겸직은 사전 승인이 필요합니다.</li>
+        <li>· <b>선금 80% 이상 집행</b> 후에야 잔금 신청이 가능합니다. (10월 말 관리 목표)</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("budget.html"))) return;
+
+  const TABLE = "budget_items";
+  let rows = [], filterKey = "";
+
+  const FIELDS = [
+    { k: "category",  label: "분야 (예: [3] K-미식·야간관광 콘텐츠)", req: true },
+    { k: "unit_code", label: "단위사업 코드 (예: [3]-2)" },
+    { k: "name",      label: "세부과업명", req: true },
+    { k: "semok",     label: "세목", type: "select",
+      options: [["일반용역비", "일반용역비"], ["임차료", "임차료"], ["일반수용비", "일반수용비"],
+                ["보수", "보수"], ["업무추진비", "업무추진비"], ["여비", "여비"], ["기타", "기타"]] },
+    { k: "planned",   label: "편성액 (천원)", type: "number", req: true },
+    { k: "spent",     label: "집행액 (천원)", type: "number", def: 0 },
+    { k: "basis",     label: "산출근거" },
+    { k: "note",      label: "비고 / 증빙 메모", type: "textarea" },
+    { k: "sort_order", label: "정렬 순서", type: "number", def: 999 },
+  ];
+
+  function calc(list) {
+    const p = list.reduce((s, r) => s + (r.planned || 0), 0);
+    const s = list.reduce((s2, r) => s2 + (r.spent || 0), 0);
+    return { p, s, left: p - s, rate: p ? (s / p) * 100 : 0 };
+  }
+
+  function render() {
+    const list = filterKey
+      ? rows.filter((r) => (r.category || "").startsWith(filterKey))
+      : rows;
+
+    document.getElementById("rows").innerHTML = list.map((r) => {
+      const left = (r.planned || 0) - (r.spent || 0);
+      const rate = r.planned ? ((r.spent || 0) / r.planned) * 100 : 0;
+      return `<tr>
+        <td class="tiny">${Admin.esc(r.category || "-")}</td>
+        <td><b>${Admin.esc(r.unit_code ? r.unit_code + " " : "")}${Admin.esc(r.name)}</b>
+            ${r.basis ? `<br><span class="tiny muted">${Admin.esc(r.basis)}</span>` : ""}</td>
+        <td class="tiny">${Admin.esc(r.semok || "-")}</td>
+        <td class="right num">${UI.money(r.planned)}</td>
+        <td class="right num">${UI.money(r.spent)}</td>
+        <td class="right num" style="color:${left < 0 ? "#B91C1C" : "inherit"}">${UI.money(left)}</td>
+        <td class="right num">${rate.toFixed(0)}%</td>
+        <td class="tiny muted">${Admin.esc(r.note || "")}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn--ghost btn--sm" data-edit="${r.id}">수정</button>
+          <button class="btn btn--ghost btn--sm" data-del="${r.id}">삭제</button>
+        </td></tr>`;
+    }).join("") || '<tr><td colspan="9" class="center muted">항목이 없습니다.</td></tr>';
+
+    const t = calc(list);
+    document.getElementById("f-plan").textContent = UI.money(t.p);
+    document.getElementById("f-spent").textContent = UI.money(t.s);
+    document.getElementById("f-left").textContent = UI.money(t.left);
+    document.getElementById("f-rate").textContent = t.rate.toFixed(1) + "%";
+
+    const a = calc(rows);
+    document.getElementById("s-plan").innerHTML = UI.money(a.p) + "<small>천원</small>";
+    document.getElementById("s-spent").innerHTML = UI.money(a.s) + "<small>천원</small>";
+    document.getElementById("s-left").innerHTML = UI.money(a.left) + "<small>천원</small>";
+    document.getElementById("s-rate").innerHTML = a.rate.toFixed(1) + "<small>%</small>";
+    document.getElementById("s-bar").style.width = Math.min(a.rate, 100) + "%";
+  }
+
+  async function reload() {
+    rows = await Admin.load(TABLE, { order: ["sort_order", true] });
+    render();
+  }
+
+  document.getElementById("filter").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-f]"); if (!b) return;
+    document.querySelectorAll("#filter button").forEach((x) => x.classList.remove("chip--amber"));
+    b.classList.add("chip--amber");
+    filterKey = b.dataset.f;
+    render();
+  });
+
+  document.getElementById("btn-add").onclick = () =>
+    Admin.modal({
+      title: "예산 항목 추가", fields: FIELDS, values: {},
+      onSave: async (v) => { await Admin.save(TABLE, v); await reload(); Admin.toast("ok", "추가했습니다."); },
+    });
+
+  document.getElementById("rows").addEventListener("click", async (e) => {
+    const ed = e.target.closest("[data-edit]"), de = e.target.closest("[data-del]");
+    if (ed) {
+      const row = rows.find((r) => String(r.id) === ed.dataset.edit);
+      Admin.modal({
+        title: "예산 항목 수정", fields: FIELDS, values: row,
+        onSave: async (v) => { await Admin.save(TABLE, v); await reload(); Admin.toast("ok", "저장했습니다."); },
+      });
+    }
+    if (de) {
+      if (!confirm("이 항목을 삭제하시겠습니까?")) return;
+      try { await Admin.remove(TABLE, de.dataset.del); await reload(); Admin.toast("ok", "삭제했습니다."); }
+      catch (err) { Admin.toast("err", err.message); }
+    }
+  });
+
+  document.getElementById("btn-csv").onclick = () => {
+    const head = ["분야", "단위사업", "세부과업", "세목", "편성액(천원)", "집행액(천원)", "잔액(천원)", "산출근거", "비고"];
+    const body = rows.map((r) => [r.category, r.unit_code, r.name, r.semok,
+      r.planned, r.spent, (r.planned || 0) - (r.spent || 0), r.basis, r.note]);
+    const csv = [head, ...body].map((r) =>
+      r.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = `용마미식거리_정산_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  try { await reload(); }
+  catch (e) { Admin.toast("err", "불러오지 못했습니다: " + e.message); }
+})();
+</script>
+</body>
+</html>

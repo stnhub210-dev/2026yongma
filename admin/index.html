@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대시보드 — 용마미식거리 관리자</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div>
+        <h1>대시보드</h1>
+        <p class="muted tiny" id="admin-who"></p>
+      </div>
+      <a class="btn btn--ghost btn--sm" href="../index.html">홈페이지 보기</a>
+    </div>
+
+    <div id="admin-msg" class="alert"></div>
+
+    <!-- 예산 집행 -->
+    <div class="panel">
+      <h3>사업비 집행 현황</h3>
+      <p class="panel-sub">총사업비 276,000천원 · 직접비 234,600 / 간접비 41,400 (85 : 15)</p>
+      <div class="grid grid-4" style="margin-bottom:22px">
+        <div class="tile tile--soft"><dt>총사업비</dt><dd class="num">276,000<small>천원</small></dd></div>
+        <div class="tile tile--soft"><dt>집행액</dt><dd class="num" id="k-spent">-</dd></div>
+        <div class="tile tile--soft"><dt>잔액</dt><dd class="num" id="k-left">-</dd></div>
+        <div class="tile tile--soft"><dt>집행률</dt><dd class="num" id="k-rate">-</dd></div>
+      </div>
+      <div class="bar"><span id="k-bar" style="width:0%"></span></div>
+      <div id="cat-list" class="grid grid-2 mt-4"></div>
+    </div>
+
+    <!-- 접수/회원 -->
+    <div class="grid grid-2">
+      <div class="panel">
+        <h3>참여 신청</h3>
+        <p class="panel-sub">최근 접수된 신청입니다.</p>
+        <div class="grid grid-3" style="margin-bottom:18px">
+          <div class="tile tile--soft"><dt>접수 대기</dt><dd class="num" id="a-recv">-</dd></div>
+          <div class="tile tile--soft"><dt>검토중</dt><dd class="num" id="a-rev">-</dd></div>
+          <div class="tile tile--soft"><dt>선정</dt><dd class="num" id="a-acc">-</dd></div>
+        </div>
+        <div id="recent-apps"></div>
+        <a class="btn btn--ghost btn--sm mt-3" href="applications.html">신청 전체 보기</a>
+      </div>
+
+      <div class="panel">
+        <h3>회원 · 콘텐츠</h3>
+        <p class="panel-sub">사이트 운영 현황입니다.</p>
+        <div class="grid grid-2" style="gap:16px">
+          <div class="tile tile--soft"><dt>가입 회원</dt><dd class="num" id="c-members">-</dd></div>
+          <div class="tile tile--soft"><dt>소식 게시글</dt><dd class="num" id="c-posts">-</dd></div>
+          <div class="tile tile--soft"><dt>등록 일정</dt><dd class="num" id="c-events">-</dd></div>
+          <div class="tile tile--soft"><dt>등록 점포</dt><dd class="num" id="c-shops">-</dd></div>
+        </div>
+        <div class="btn-row mt-3">
+          <a class="btn btn--ghost btn--sm" href="posts.html">공지 작성</a>
+          <a class="btn btn--ghost btn--sm" href="events.html">일정 추가</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 성과지표 -->
+    <div class="panel">
+      <h3>성과 목표</h3>
+      <p class="panel-sub">최종 운영계획서 기준 정량 목표입니다.</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>지표</th><th class="right">현재</th><th class="right">목표</th><th>산출 근거</th></tr></thead>
+          <tbody>
+            <tr><td>주말 야간(15~22시) 상권 내 방문객</td><td class="right">약 500명/일</td><td class="right">1,800명/일</td><td>6개 존 운영 + 버스킹 30회</td></tr>
+            <tr><td>월평균 매출액</td><td class="right">2,370만원</td><td class="right">2,963만원 (+25%)</td><td>야간 차없는 거리 운영</td></tr>
+            <tr><td>빈 점포 수</td><td class="right">10개</td><td class="right">4개 이상 감소</td><td>로컬창업 생태계 입주</td></tr>
+            <tr><td>골목어게인 버스킹</td><td class="right">0회</td><td class="right">30회</td><td>버스킹 15 + DJ 15</td></tr>
+            <tr><td>유튜브 콘텐츠</td><td class="right">0편</td><td class="right">롱폼 6 · 숏폼 10</td><td>인플루언서 제작</td></tr>
+            <tr><td>외국인 방문객</td><td class="right">측정 불가</td><td class="right">연 2,500명 이상</td><td>강릉 외국인 목표 40만명의 0.6%</td></tr>
+            <tr><td>로컬창업 입주</td><td class="right">0개사</td><td class="right">4개사 이상</td><td>빈 점포 매칭</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("index.html"))) return;
+
+  /* 예산 */
+  try {
+    const rows = await Admin.load("budget_items", { order: ["sort_order", true] });
+    const total = rows.reduce((s, r) => s + (r.planned || 0), 0);
+    const spent = rows.reduce((s, r) => s + (r.spent || 0), 0);
+    const rate = total ? (spent / total) * 100 : 0;
+    document.getElementById("k-spent").innerHTML = UI.money(spent) + "<small>천원</small>";
+    document.getElementById("k-left").innerHTML = UI.money(total - spent) + "<small>천원</small>";
+    document.getElementById("k-rate").innerHTML = rate.toFixed(1) + "<small>%</small>";
+    document.getElementById("k-bar").style.width = Math.min(rate, 100) + "%";
+
+    const byCat = {};
+    rows.forEach((r) => {
+      const k = r.category || "기타";
+      byCat[k] = byCat[k] || { p: 0, s: 0 };
+      byCat[k].p += r.planned || 0;
+      byCat[k].s += r.spent || 0;
+    });
+    document.getElementById("cat-list").innerHTML = Object.entries(byCat).map(([k, v]) => {
+      const r = v.p ? (v.s / v.p) * 100 : 0;
+      return `<div class="tile">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <b style="font-size:.9375rem">${Admin.esc(k)}</b>
+          <span class="tiny muted num">${UI.money(v.s)} / ${UI.money(v.p)}천원</span>
+        </div>
+        <div class="bar mt-2"><span style="width:${Math.min(r, 100)}%"></span></div>
+        <span class="delta">${r.toFixed(1)}%</span>
+      </div>`;
+    }).join("");
+  } catch (e) { Admin.toast("err", "예산 데이터를 불러오지 못했습니다: " + e.message); }
+
+  /* 신청 */
+  try {
+    const apps = await Admin.load("applications", { order: ["created_at", false] });
+    const cnt = (s) => apps.filter((a) => a.status === s).length;
+    document.getElementById("a-recv").textContent = cnt("received");
+    document.getElementById("a-rev").textContent = cnt("reviewing");
+    document.getElementById("a-acc").textContent = cnt("accepted");
+    const TYPE = { seller: "셀러", busker: "버스커", experience: "체험", startup: "창업" };
+    document.getElementById("recent-apps").innerHTML = apps.slice(0, 5).map((a) =>
+      `<div style="display:flex;gap:10px;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
+        <span><b>${Admin.esc(a.applicant_name)}</b> <span class="tiny muted">${TYPE[a.type] || a.type}</span></span>
+        <span class="tiny muted">${UI.date(a.created_at)}</span>
+      </div>`).join("") || '<p class="muted tiny">접수된 신청이 없습니다.</p>';
+  } catch (e) { /* 권한/테이블 미구성 시 무시 */ }
+
+  /* 콘텐츠 카운트 */
+  const count = async (t, el) => {
+    try {
+      const { count: n } = await Admin.c.from(t).select("*", { count: "exact", head: true });
+      document.getElementById(el).textContent = n ?? 0;
+    } catch { document.getElementById(el).textContent = "-"; }
+  };
+  count("profiles", "c-members"); count("posts", "c-posts");
+  count("events", "c-events");    count("shops", "c-shops");
+})();
+</script>
+</body>
+</html>

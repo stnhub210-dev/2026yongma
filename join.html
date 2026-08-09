@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>참여 신청 — 용마미식거리</title>
+<meta name="description" content="한번봐존 프리마켓 셀러, 골목어게인 버스커, 체험 프로그램, 로컬창업 상담 신청을 받습니다.">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="section section--soft" style="padding-block:clamp(44px,5vw,72px)">
+  <div class="wrap">
+    <span class="eyebrow">Join</span>
+    <h1>용마거리에서 함께하실래요?</h1>
+    <p class="lead mt-2" style="max-width:60ch">
+      프리마켓 셀러, 버스킹 참가자, 체험 프로그램, 창업 상담까지.
+      아래에서 유형을 고르고 신청해 주시면 담당자가 확인 후 연락드립니다.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap" style="max-width:860px">
+
+    <div class="grid grid-4" style="margin-bottom:34px">
+      <button class="tile reveal type-btn" data-type="seller" id="seller" style="text-align:left;cursor:pointer;border:1.5px solid var(--line)">
+        <div class="icon-badge">🧺</div><h3>프리마켓 셀러</h3><p class="muted tiny mt-1">한번봐존 · 시즌 6회</p>
+      </button>
+      <button class="tile reveal type-btn" data-type="busker" id="busker" style="text-align:left;cursor:pointer;border:1.5px solid var(--line)">
+        <div class="icon-badge">🎸</div><h3>버스커</h3><p class="muted tiny mt-1">골목어게인 · 총 30회</p>
+      </button>
+      <button class="tile reveal type-btn" data-type="experience" style="text-align:left;cursor:pointer;border:1.5px solid var(--line)">
+        <div class="icon-badge">🎨</div><h3>체험 프로그램</h3><p class="muted tiny mt-1">놀아존 · 향토음식·공예</p>
+      </button>
+      <button class="tile reveal type-btn" data-type="startup" id="startup" style="text-align:left;cursor:pointer;border:1.5px solid var(--line)">
+        <div class="icon-badge">🏪</div><h3>로컬창업 상담</h3><p class="muted tiny mt-1">빈 점포 매칭·멘토링</p>
+      </button>
+    </div>
+
+    <div class="panel" style="border-radius:var(--radius-lg)">
+      <h3 id="form-title">프리마켓 셀러 신청</h3>
+      <p class="panel-sub" id="form-desc">강릉 로컬 수공예·커피·디저트 등 셀러를 모집합니다. 참가비가 있으며 매대·천막은 주최 측이 준비합니다.</p>
+
+      <div id="msg" class="alert"></div>
+
+      <form id="apply-form" novalidate>
+        <input type="hidden" id="f-type" value="seller">
+
+        <div class="grid grid-2" style="gap:0 20px">
+          <div class="field">
+            <label for="f-name">신청자명 / 팀명</label>
+            <input class="input" id="f-name" required placeholder="예) 강릉공방 김○○">
+          </div>
+          <div class="field">
+            <label for="f-phone">연락처</label>
+            <input class="input" id="f-phone" type="tel" required placeholder="010-0000-0000">
+          </div>
+          <div class="field">
+            <label for="f-email">이메일</label>
+            <input class="input" id="f-email" type="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="f-date">희망 참여일 <span class="muted" style="font-weight:500">(선택)</span></label>
+            <input class="input" id="f-date" type="date">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-title" id="f-title-label">판매 품목</label>
+          <input class="input" id="f-title" required placeholder="예) 도자기 컵·화병">
+        </div>
+
+        <div class="field">
+          <label for="f-body" id="f-body-label">소개 및 요청사항</label>
+          <textarea class="textarea" id="f-body" placeholder="활동 이력, 필요한 공간·전기 사용 여부 등을 자유롭게 적어 주십시오."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="f-link">참고 링크 <span class="muted" style="font-weight:500">(선택)</span></label>
+          <input class="input" id="f-link" type="url" placeholder="인스타그램·유튜브·포트폴리오 주소">
+        </div>
+
+        <div class="field">
+          <label class="checkbox"><input type="checkbox" id="f-agree" required>
+            <span>[필수] 신청 접수 및 안내를 위한 개인정보 수집·이용에 동의합니다. (이름·연락처·이메일 / 사업 종료 후 1년 보관)</span></label>
+        </div>
+
+        <button class="btn btn--primary btn--block" type="submit">신청서 제출</button>
+        <p class="hint center mt-2">회원으로 로그인하면 <a href="mypage.html" style="color:var(--amber-700);font-weight:600">마이페이지</a>에서 진행 상태를 확인하실 수 있습니다.</p>
+      </form>
+    </div>
+
+    <div class="alert alert--info show mt-4" style="display:block">
+      <b>안내</b> · 신청은 상시 접수하며, 프로그램별 일정에 맞춰 순차 검토합니다.
+      버스킹은 공연 4주 전 선발을 원칙으로 하고, 프리마켓은 운영 2주 전 마감합니다.
+    </div>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(() => {
+  const TYPES = {
+    seller:     { t: "프리마켓 셀러 신청", d: "강릉 로컬 수공예·커피·디저트 등 셀러를 모집합니다. 참가비가 있으며 매대·천막은 주최 측이 준비합니다.", tl: "판매 품목", tp: "예) 도자기 컵·화병" },
+    busker:     { t: "버스커 참가 신청",   d: "인디밴드·어쿠스틱·보컬·댄스·국악 크로스오버 등 장르 제한 없이 모집합니다. 음향·무대는 주최 측이 제공합니다.", tl: "공연 장르·구성", tp: "예) 어쿠스틱 듀오 (기타+보컬)" },
+    experience: { t: "체험 프로그램 신청", d: "놀아존에서 진행할 향토음식·공예·캘리그라피 등 체험 운영자를 모집합니다.", tl: "체험 종목", tp: "예) 캘리그라피 엽서 만들기" },
+    startup:    { t: "로컬창업 상담 신청", d: "상권 내 빈 점포 매칭과 창업 멘토링, 핵점포 상품개발 컨설팅을 안내합니다.", tl: "희망 업종", tp: "예) 로스터리 카페" },
+  };
+
+  const msg = document.getElementById("msg");
+  const form = document.getElementById("apply-form");
+  const btns = document.querySelectorAll(".type-btn");
+
+  function select(type) {
+    const c = TYPES[type]; if (!c) return;
+    document.getElementById("f-type").value = type;
+    document.getElementById("form-title").textContent = c.t;
+    document.getElementById("form-desc").textContent = c.d;
+    document.getElementById("f-title-label").textContent = c.tl;
+    document.getElementById("f-title").placeholder = c.tp;
+    btns.forEach((b) => {
+      const on = b.dataset.type === type;
+      b.style.borderColor = on ? "var(--amber-500)" : "var(--line)";
+      b.style.background = on ? "var(--amber-50)" : "#fff";
+    });
+    UI.clearAlert(msg);
+  }
+  btns.forEach((b) => b.addEventListener("click", () => select(b.dataset.type)));
+  select(location.hash.replace("#", "") in TYPES ? location.hash.replace("#", "") : "seller");
+
+  if (!Auth.ready()) {
+    UI.alert(msg, "warn", "신청 접수 시스템이 아직 연결되지 않았습니다. Supabase 설정을 완료하면 바로 접수가 가능합니다.");
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    UI.clearAlert(msg);
+    if (!document.getElementById("f-agree").checked) {
+      return UI.alert(msg, "err", "개인정보 수집·이용 동의가 필요합니다.");
+    }
+    const c = Auth.client();
+    if (!c) return UI.alert(msg, "err", "신청 접수 시스템이 아직 연결되지 않았습니다.");
+
+    const btn = form.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      const user = await Auth.user();
+      const { error } = await c.from("applications").insert({
+        user_id: user ? user.id : null,
+        type: document.getElementById("f-type").value,
+        applicant_name: document.getElementById("f-name").value.trim(),
+        phone: document.getElementById("f-phone").value.trim(),
+        email: document.getElementById("f-email").value.trim(),
+        preferred_date: document.getElementById("f-date").value || null,
+        title: document.getElementById("f-title").value.trim(),
+        body: document.getElementById("f-body").value.trim(),
+        link: document.getElementById("f-link").value.trim() || null,
+        status: "received",
+      });
+      if (error) throw error;
+      form.reset();
+      select(document.getElementById("f-type").value);
+      UI.alert(msg, "ok", "신청이 접수되었습니다. 담당자가 확인 후 연락드리겠습니다.");
+      window.scrollTo({ top: form.offsetTop - 140, behavior: "smooth" });
+    } catch (err) {
+      UI.alert(msg, "err", "접수 중 오류가 발생했습니다: " + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
