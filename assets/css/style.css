@@ -196,11 +196,11 @@ h4 { font-size: 1.0625rem; }
 }
 .hero__badge b { background: var(--amber-500); color: #fff; padding: 3px 10px; border-radius: 999px; font-size: .75rem; }
 
-.hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 2px; margin-top: clamp(44px, 6vw, 68px); border-top: 1px solid rgba(255,255,255,.18); padding-top: 28px; }
+.hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px 8px; margin-top: clamp(44px, 6vw, 68px); border-top: 1px solid rgba(255,255,255,.18); padding-top: 28px; }
 .hero-stats div { padding-right: 16px; }
 .hero-stats dt { font-size: .8125rem; color: rgba(255,255,255,.62); font-weight: 600; }
-.hero-stats dd { font-size: clamp(1.375rem, 1.1rem + 1vw, 1.875rem); font-weight: 800; color: #fff; letter-spacing: -.02em; margin-top: 4px; }
-.hero-stats dd span { font-size: .875rem; font-weight: 600; color: var(--amber-400); margin-left: 3px; }
+.hero-stats dd { font-size: clamp(2.75rem, 2.2rem + 2vw, 3.75rem); font-weight: 800; color: #fff; letter-spacing: -.02em; margin-top: 6px; line-height: 1.05; }
+.hero-stats dd span { font-size: 1.75rem; font-weight: 600; color: var(--amber-400); margin-left: 5px; }
 
 /* ---------- Cards ---------- */
 .card {
