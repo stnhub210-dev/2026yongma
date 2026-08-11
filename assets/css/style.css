@@ -185,7 +185,15 @@ h4 { font-size: 1.0625rem; }
   background: linear-gradient(180deg, rgba(18,16,14,.5) 0%, rgba(18,16,14,.62) 45%, rgba(18,16,14,.88) 100%);
 }
 .hero__inner { position: relative; padding: clamp(72px, 12vw, 132px) 0 clamp(56px, 8vw, 92px); color: #fff; }
-.hero h1 { color: #fff; max-width: 17ch; }
+.hero h1 { color: #fff; max-width: 17ch; line-height: 1.32; padding-top: .14em; }
+/* 제목 강조 — 색상 + 글자마다 방점(드러냄표) */
+.em-dot {
+  font-style: normal; color: var(--amber-400);
+  -webkit-text-emphasis: filled dot currentColor;
+          text-emphasis: filled dot currentColor;
+  -webkit-text-emphasis-position: over right;
+          text-emphasis-position: over right;
+}
 .hero .lead { color: rgba(255,255,255,.86); max-width: 54ch; margin-top: 18px; }
 .hero .btn-row { margin-top: 32px; }
 .hero__badge {
