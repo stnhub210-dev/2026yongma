@@ -194,7 +194,13 @@ h4 { font-size: 1.0625rem; }
   -webkit-text-emphasis-position: over right;
           text-emphasis-position: over right;
 }
+.hero__sub {
+  margin-top: 12px; font-size: clamp(1.0625rem, .95rem + .5vw, 1.375rem);
+  font-weight: 600; color: rgba(255,255,255,.8); letter-spacing: -.01em;
+}
+.hero__sub b { color: var(--amber-400); font-weight: 800; }
 .hero .lead { color: rgba(255,255,255,.86); max-width: 54ch; margin-top: 18px; }
+.hero__sub + .lead { margin-top: 14px; }
 .hero .btn-row { margin-top: 32px; }
 .hero__badge {
   display: inline-flex; align-items: center; gap: 9px; padding: 7px 15px 7px 9px;
