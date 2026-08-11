@@ -195,7 +195,7 @@ h4 { font-size: 1.0625rem; }
           text-emphasis-position: over right;
 }
 .hero__sub {
-  margin-top: 12px; font-size: clamp(1.0625rem, .95rem + .5vw, 1.375rem);
+  margin-top: 14px; font-size: clamp(1.59375rem, 1.425rem + .75vw, 2.0625rem);
   font-weight: 600; color: rgba(255,255,255,.8); letter-spacing: -.01em;
 }
 .hero__sub b { color: var(--amber-400); font-weight: 800; }
