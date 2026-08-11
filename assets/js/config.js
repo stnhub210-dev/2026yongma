@@ -21,8 +21,8 @@ window.SITE = {
     localOffice: "강원특별자치도 강릉시 경강로 2258 3층",
   },
 
-  // 주요 운영: 매주 금·토 15:00~22:00
-  openHours: { days: "매주 금·토요일", time: "15:00 ~ 22:00", season: "2026년 9월 ~ 11월" },
+  // 주요 운영: 매주 금·토 17:00~22:00
+  openHours: { days: "매주 금·토요일", time: "17:00 ~ 22:00", season: "2026년 9월 ~ 11월" },
 
   supabase: {
     url: "https://YOUR-PROJECT-REF.supabase.co",
