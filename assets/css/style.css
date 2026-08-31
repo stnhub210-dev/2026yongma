@@ -194,6 +194,20 @@ h4 { font-size: 1.0625rem; }
   -webkit-text-emphasis-position: over right;
           text-emphasis-position: over right;
 }
+/* ---------- 마스코트(캐릭터) ---------- */
+.hero__mascot { display: none; }
+@media (min-width: 1000px) {
+  .hero__inner { display: grid; grid-template-columns: minmax(0, 1fr) clamp(190px, 19vw, 290px); column-gap: 40px; }
+  .hero__inner > .hero__badge, .hero__inner > .btn-row { justify-self: start; }
+  .hero__mascot {
+    display: block; grid-column: 2; grid-row: 1 / 6; align-self: end; width: 100%;
+    filter: drop-shadow(0 14px 26px rgba(0,0,0,.42));
+  }
+  .hero-stats { grid-column: 1 / -1; }
+}
+.mascot-top  { display: block; width: clamp(140px, 20vw, 196px); margin: 0 auto 14px; }
+.mascot-tail { display: block; width: clamp(120px, 15vw, 180px); margin: -10px 0 0 auto; }
+
 .hero__sub {
   margin-top: 14px; font-size: clamp(1.59375rem, 1.425rem + .75vw, 2.0625rem);
   font-weight: 600; color: rgba(255,255,255,.8); letter-spacing: -.01em;
