@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>용마미식거리 — 강릉역 여행자 거리</title>
-<meta name="description" content="강릉시 포남동 용마거리. KTX 강릉역 600m, 매주 금·토 17:00~22:00 차없는 거리로 열리는 야간 골목상권. 6개 존과 골목어게인 버스킹 30회로 강릉의 밤을 채웁니다.">
+<meta name="description" content="제2회 용마노포거리 맛집대축제 2026년 9월 18일(금) 개막. 강릉시 포남동 용마거리, KTX 강릉역 600m. 매주 금·토 15:00~22:00 차없는 거리로 열리는 야간 골목상권.">
 <meta property="og:title" content="용마미식거리 — 강릉역 여행자 거리">
 <meta property="og:description" content="강릉의 밤을 물들이는 예술·미식·문화 야간 골목상권">
 <meta property="og:image" content="https://2026yongma.com/assets/img/map-zones.webp">
@@ -36,6 +36,8 @@
       <a class="btn btn--onimg" href="programs.html" data-i18n="home.hero.cta2">이번 시즌 프로그램</a>
     </div>
 
+    <img class="hero__mascot" src="assets/img/mascot-wave.webp" alt="용마미식거리 캐릭터 용과 마가 손을 흔들며 인사하는 모습" width="820" height="645">
+
     <dl class="hero-stats">
       <div>
         <dt data-i18n="home.stat.visitors">강릉 연간 관광객</dt>
@@ -61,7 +63,7 @@
 <section style="background:var(--ink-900);color:#fff;padding:20px 0">
   <div class="wrap" style="display:flex;flex-wrap:wrap;gap:14px 32px;align-items:center;justify-content:center;text-align:center">
     <span class="chip chip--amber" style="background:var(--amber-500);color:#fff;border:0">운영 안내</span>
-    <strong style="font-size:1.0625rem">매주 금·토요일 17:00 – 22:00</strong>
+    <strong style="font-size:1.0625rem">매주 금·토요일 15:00 – 22:00</strong>
     <span style="color:rgba(255,255,255,.6)">|</span>
     <span style="color:rgba(255,255,255,.8)">2026년 9월 ~ 11월 · 차 없는 거리 운영</span>
     <span style="color:rgba(255,255,255,.6)">|</span>
@@ -69,10 +71,83 @@
   </div>
 </section>
 
+<!-- ================= 개막 안내 ================= -->
+<section class="section section--warm" id="opening">
+  <div class="wrap split split--wide">
+    <div class="reveal">
+      <span class="eyebrow">Grand Opening</span>
+      <h2>제2회 <em class="em-dot">용마노포거리</em> 맛집대축제</h2>
+      <p class="lead mt-2">
+        강릉의 맛있는 밤거리가 <b>9월 18일 금요일</b>에 문을 엽니다.
+        40년 노포와 맛집 운영부스, 플리마켓이 한 골목에서 처음으로 함께 불을 켭니다.
+      </p>
+
+      <div class="chip-row mt-3">
+        <span class="chip chip--amber">2026. 9. 18.(금) 15:00 ~ 22:00</span>
+        <span class="chip">개막 이후 매주 금 · 토요일</span>
+        <span class="chip">강릉시 포남동 용마거리 일원</span>
+      </div>
+
+      <div class="grid grid-2 mt-4" style="gap:16px">
+        <div class="tile tile--soft">
+          <dt>개막까지</dt>
+          <dd><b id="dday">–</b><small>일</small></dd>
+          <span class="delta" id="dday-note">2026년 9월 18일 금요일</span>
+        </div>
+        <div class="tile tile--soft">
+          <dt>개막 당일 운영</dt>
+          <dd><b>7</b><small>시간</small></dd>
+          <span class="delta">15:00 ~ 22:00 · 차 없는 거리</span>
+        </div>
+      </div>
+
+      <ul class="stack mt-4">
+        <li>· <b>15:00</b> 차 없는 거리 전환 — 맛집 운영부스 · 플리마켓 운영 시작</li>
+        <li>· <b>17:00</b> 공식행사 — 골목 한 바퀴 · 첫 구매 · 상인과의 만남</li>
+        <li>· <b>17:50</b> <b>「용마노포거리 첫 불 밝히기」</b> — 골목 스트링 조명부터 점포 앞 조명까지 순차 점등</li>
+        <li>· <b>18:00</b> 골목어게인 버스킹 → <b>19:00</b> DJ 음악다방 · 거리노래방</li>
+      </ul>
+
+      <div class="btn-row mt-4">
+        <a class="btn btn--primary" href="programs.html#opening">개막일 전체 진행 순서</a>
+        <a class="btn btn--ghost" href="join.html">셀러 · 버스커 신청</a>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <figure class="figure">
+        <img src="assets/img/poster-opening.webp"
+             alt="제2회 용마노포거리 맛집대축제 포스터 — 9월 18일 금요일 15시부터 22시까지, 강원특별자치도 강릉시 포남동 용마거리 일원"
+             width="1080" height="1350" loading="lazy">
+        <figcaption>개막 포스터 — 9. 18.(금) 15:00 개장</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<script>
+/* 개막 D-day — 자정 기준으로 남은 일수를 센다 */
+(function () {
+  var el = document.getElementById("dday");
+  if (!el) return;
+  var open = new Date(2026, 8, 18);          // 2026-09-18 (월은 0부터)
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var days = Math.round((open - today) / 86400000);
+  var note = document.getElementById("dday-note");
+  if (days > 0) { el.textContent = days; }
+  else if (days === 0) { el.textContent = "D"; el.nextElementSibling.textContent = "-DAY";
+                         if (note) note.textContent = "오늘 15:00 개장합니다"; }
+  else { el.parentElement.innerHTML = "<b>운영 중</b>";
+         if (note) note.textContent = "매주 금 · 토요일 15:00 ~ 22:00"; }
+})();
+</script>
+
 <!-- ================= WHY ================= -->
 <section class="section">
   <div class="wrap">
     <div class="sec-head sec-head--center reveal">
+      <img class="mascot-top" src="assets/img/mascot-flowers.webp" alt="" loading="lazy">
       <span class="eyebrow">Why Yongma</span>
       <h2 data-i18n="home.why.title">강릉에 밤이 오면, 갈 곳이 없었습니다</h2>
       <p data-i18n="home.why.lead">
@@ -172,6 +247,7 @@
     </div>
 
     <div class="center mt-5">
+      <img class="mascot-top" src="assets/img/mascot-duo.webp" alt="용마미식거리 캐릭터 용과 마" loading="lazy">
       <a class="btn btn--dark" href="zones.html">존별 상세 보기</a>
     </div>
   </div>
@@ -222,6 +298,7 @@
         <figure class="figure"><img src="assets/img/prog-market.webp" alt="프리마켓" loading="lazy"></figure>
         <figure class="figure"><img src="assets/img/prog-experience.webp" alt="향토음식 체험" loading="lazy"></figure>
       </div>
+      <img class="mascot-tail" src="assets/img/mascot-food.webp" alt="향토음식 한 그릇을 든 캐릭터 용" loading="lazy">
     </div>
   </div>
 </section>
@@ -275,7 +352,8 @@
         <table class="data">
           <tbody>
             <tr><th style="width:34%">주소</th><td>강원특별자치도 강릉시 포남동 용마거리 일원</td></tr>
-            <tr><th>운영</th><td>매주 금·토요일 17:00 ~ 22:00 (2026년 9~11월)</td></tr>
+            <tr><th>개막</th><td>2026. 9. 18.(금) 15:00 — 제2회 용마노포거리 맛집대축제</td></tr>
+            <tr><th>운영</th><td>매주 금·토요일 15:00 ~ 22:00 (2026년 9~11월)</td></tr>
             <tr><th>면적</th><td>29,171.14㎡ (상업지역 14,810.41㎡)</td></tr>
             <tr><th>점포</th><td>전체 168곳 · 상인회 회원 124곳</td></tr>
             <tr><th>KTX</th><td>강릉역 600m · 차량 약 5분 / 서울 청량리 1시간 24분</td></tr>
@@ -294,6 +372,7 @@
         <img src="assets/img/map-around.webp" alt="용마미식거리 주변 관광 인프라 지도" loading="lazy">
         <figcaption>주변 관광 자원과의 연계 동선</figcaption>
       </figure>
+      <img class="mascot-tail" src="assets/img/mascot-sign.webp" alt="포남동 먹거리촌 안내 사인" loading="lazy">
     </div>
   </div>
 </section>
