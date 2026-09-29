@@ -127,13 +127,13 @@
   </div>
 </section>
 
-<!-- 만화로 보는 용마거리 — 6편 × 10컷 (assets/img/comic/ep{편}-{컷}.webp) -->
+<!-- 만화로 보는 용마거리 — 4편 × 10컷 (assets/img/comic/ep{파일번호}-{컷}.webp, 쓰는 파일번호는 스크립트의 EPS) -->
 <section class="section section--warm" id="comic">
   <div class="wrap">
     <div class="sec-head sec-head--center reveal">
       <span class="eyebrow">Comic</span>
       <h2>만화로 보는 용마거리</h2>
-      <p>바다와 호수가 만나는 포남동에서 시작해, 용이 된 말의 전설을 지나 오늘의 용마미식거리까지. 여섯 편의 이야기로 따라가 보세요.</p>
+      <p>바다와 호수가 만나는 포남동에서 시작해, 용이 된 말의 전설을 지나 오늘의 용마미식거리까지. 네 편의 이야기로 따라가 보세요.</p>
     </div>
     <div class="comic-tabs" id="comic-tabs" role="tablist" aria-label="만화 편 선택"></div>
     <div class="comic" id="comic-grid"></div>
@@ -333,12 +333,13 @@
 <script>
 /* 만화로 보는 용마거리 — 편 버튼으로 10컷씩 보여 주고, 크게 보기에서는 60컷을 순서대로 넘긴다 */
 (function () {
-  const EPISODES = 6, PER = 10;
+  // 보여 줄 편 — 이미지 파일 번호(ep{n}). 기존 1편(2편과 겹침)·4편은 뺐다(2026-09-30)
+  const EPS = [2, 3, 5, 6], EPISODES = EPS.length, PER = 10;
   const tabs = document.getElementById("comic-tabs"), grid = document.getElementById("comic-grid");
   const lb = document.getElementById("comic-lb"), img = document.getElementById("comic-img");
   const nextBtn = document.getElementById("comic-nextep");
   if (!tabs || !grid) return;
-  const src = (ep, k) => `assets/img/comic/ep${ep}-${String(k).padStart(2, "0")}.webp`;
+  const src = (ep, k) => `assets/img/comic/ep${EPS[ep - 1]}-${String(k).padStart(2, "0")}.webp`;   // ep = 화면의 편 번호(1부터)
   const ALL = [];
   for (let e = 1; e <= EPISODES; e++) for (let k = 1; k <= PER; k++) ALL.push([e, k]);
   let ep = 1, cur = 0;
