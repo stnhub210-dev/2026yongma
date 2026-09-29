@@ -12,3 +12,7 @@ desktop.ini
 
 # 원본(대용량) 이미지 — 웹용은 assets/img 에만 둡니다
 /_raw/
+
+# 원본 자료(개인정보 포함 가능) — 사이트에 올리지 않음
+*.pdf
+KakaoTalk_*
