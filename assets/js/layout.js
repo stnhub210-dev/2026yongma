@@ -83,6 +83,7 @@ const NAV = [
           <li>강릉시 경강로 2258 3층<br>(상인회 사무실)</li>
           <li><a href="${B}news.html">공지사항</a></li>
           <li><a href="${B}login.html">회원 로그인</a></li>
+          <li><a href="https://stn6000.com/yongma/admin" rel="nofollow">관리자</a></li>
         </ul>
       </div>
     </div>

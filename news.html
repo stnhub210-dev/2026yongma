@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>소식 — 용마미식거리</title>
-<meta name="description" content="용마미식거리 공지사항과 소식을 전합니다.">
+<meta name="description" content="용마미식거리를 다룬 기사·블로그 글을 실시간으로 모아 보여 드리고, 공지사항을 전합니다.">
+<style>
+  .web-item { display: grid; gap: 6px; padding: 20px 4px; border-bottom: 1px solid var(--line); }
+  .web-item:hover h3 { color: var(--amber-700); }
+  .web-item h3 { font-size: 1.0625rem; transition: color .16s; }
+  .web-item h3::after { content: " ↗"; color: var(--ink-400); font-weight: 600; }
+  .web-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: .8125rem; color: var(--ink-500); }
+  .web-more { display: block; margin: 20px auto 0; }
+</style>
 <link rel="icon" href="assets/img/mascot-yong.webp">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -17,12 +25,35 @@
   <div class="wrap">
     <span class="eyebrow">News</span>
     <h1>소식</h1>
-    <p class="lead mt-2">공지사항과 행사 소식을 전합니다.</p>
+    <p class="lead mt-2">용마미식거리를 다룬 기사와 블로그 글을 모아 보여 드립니다. 제목을 누르면 원문으로 이동합니다.</p>
   </div>
 </section>
 
-<section class="section">
+<!-- 웹 소식 — STN 포털이 30분마다 기사·블로그를 모아 준다 (/yongma/api/news) -->
+<section class="section" id="web">
   <div class="wrap" style="max-width:900px">
+    <div class="sec-head" style="margin-bottom:20px">
+      <span class="eyebrow">On the Web</span>
+      <h2>웹에 올라온 소식</h2>
+      <p id="web-updated">기사·블로그를 불러오는 중입니다…</p>
+    </div>
+    <div class="chip-row" id="web-filter" style="margin-bottom:10px">
+      <button class="chip chip--amber" data-kind="">전체</button>
+      <button class="chip" data-kind="news">기사</button>
+      <button class="chip" data-kind="blog">블로그</button>
+    </div>
+    <div id="web-state" class="alert alert--info show">불러오는 중입니다…</div>
+    <div id="web-list"></div>
+    <button class="btn btn--ghost btn--sm web-more hidden" id="web-more">더 보기</button>
+  </div>
+</section>
+
+<section class="section section--soft" id="notice">
+  <div class="wrap" style="max-width:900px">
+    <div class="sec-head" style="margin-bottom:20px">
+      <span class="eyebrow">Notice</span>
+      <h2>공지사항</h2>
+    </div>
     <div class="chip-row" id="news-filter" style="margin-bottom:26px">
       <button class="chip chip--amber" data-cat="">전체</button>
       <button class="chip" data-cat="notice">공지</button>
@@ -52,6 +83,50 @@
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
+/* 웹 소식 — 기사·블로그 실시간 모음 */
+(async () => {
+  const API = "https://stn6000.com/yongma/api/news";
+  const box = document.getElementById("web-list"), state = document.getElementById("web-state");
+  const more = document.getElementById("web-more"), filter = document.getElementById("web-filter");
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+  const safe = (u) => /^https?:\/\//.test(u || "") ? u : "#";
+  let items = [], kind = "", shown = 15;
+
+  function render() {
+    const rows = kind ? items.filter((x) => (kind === "blog") === (x.kind === "blog")) : items;
+    if (!rows.length) { UI.alert(state, "info", kind === "blog" ? "아직 모은 블로그 글이 없습니다." : "모은 소식이 없습니다."); box.innerHTML = ""; more.classList.add("hidden"); return; }
+    state.className = "alert";
+    box.innerHTML = rows.slice(0, shown).map((x) => `
+      <a class="web-item" href="${esc(safe(x.link))}" target="_blank" rel="noopener noreferrer">
+        <div class="web-meta">
+          <span class="chip ${x.kind === "blog" ? "chip--green" : "chip--blue"}">${x.kind === "blog" ? "블로그" : "기사"}</span>
+          <b style="color:var(--ink-700)">${esc(x.source)}</b><span>${esc((x.date || "").slice(0, 10).replace(/-/g, ". "))}</span>
+        </div>
+        <h3>${esc(x.title)}</h3>
+        ${x.summary ? `<p class="muted tiny">${esc(x.summary)}</p>` : ""}
+      </a>`).join("");
+    more.classList.toggle("hidden", rows.length <= shown);
+  }
+  filter.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-kind]"); if (!b) return;
+    filter.querySelectorAll("button").forEach((x) => x.classList.toggle("chip--amber", x === b));
+    kind = b.dataset.kind; shown = 15; render();
+  });
+  more.onclick = () => { shown += 15; render(); };
+
+  try {
+    const j = await (await fetch(API)).json();
+    items = j.items || [];
+    document.getElementById("web-updated").textContent =
+      `${(j.sources || []).join(" · ") || "웹"}에서 ‘용마미식거리’ 관련 글을 모았습니다` + (j.updated ? ` · ${j.updated} 기준, 30분마다 갱신` : "");
+    render();
+  } catch (err) {
+    UI.alert(state, "warn", "지금은 웹 소식을 불러오지 못했습니다. 잠시 뒤 다시 확인해 주십시오.");
+    document.getElementById("web-updated").textContent = "";
+  }
+})();
+
+/* 공지사항 — Supabase posts */
 (async () => {
   const list = document.getElementById("news-list");
   const state = document.getElementById("news-state");
@@ -66,7 +141,7 @@
 
   function render(cat) {
     const items = cat ? rows.filter((r) => r.category === cat) : rows;
-    if (!items.length) { UI.alert(state, "info", "등록된 소식이 없습니다."); list.innerHTML = ""; return; }
+    if (!items.length) { UI.alert(state, "info", "등록된 공지가 없습니다."); list.innerHTML = ""; return; }
     state.className = "alert";
     list.innerHTML = items.map((p) => {
       const [label, cls] = CAT[p.category] || CAT.notice;
