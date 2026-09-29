@@ -449,7 +449,8 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .page-hero .muted { color: rgba(255,255,255,.72); }
 .page-hero .chip { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.28); backdrop-filter: blur(4px); }
 .page-hero .chip--amber { background: var(--amber-500); border-color: var(--amber-500); color: #fff; }
-.page-hero a:not(.btn) { color: var(--amber-400); }
+.page-hero a:not(.btn):not(.chip) { color: var(--amber-400); }
+.page-hero a.chip { color: #fff; }
 
 /* ---------- 언어 선택 띠 (구글 번역) ---------- */
 .lang-bar { background: var(--ink-900); color: rgba(255,255,255,.7); font-size: .8125rem; }
@@ -467,3 +468,12 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf, .VIpgJd-yAWNEb-L7lbkb { display: none !important; }
 body { top: 0 !important; position: static !important; }
 .goog-text-highlight, font[style] { background: none !important; box-shadow: none !important; }
+
+/* 로고·오른쪽 버튼은 줄어들지 않고, 메뉴가 넘치면 메뉴 버튼으로 접는다 (layout.js 의 fitNav) */
+.brand, .header-actions { flex: none; }
+.brand span, .brand small { white-space: nowrap; }
+.nav { min-width: 0; overflow: hidden; }
+html.nav-compact .nav { display: none !important; }
+html.nav-compact .nav-toggle { display: grid !important; }
+html.nav-compact .header-actions { margin-left: auto; }
+html.nav-compact .mobile-nav.open { display: block !important; }

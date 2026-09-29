@@ -57,7 +57,7 @@ window.googleTranslateElementInit = function () {
   const NAV_T = {
     en:      ["Home", "Yongma Story", "District", "6 Zones", "Programs", "Food Map", "Booths", "Gallery", "News", "Join"],
     "zh-CN": ["首页", "龙马街介绍", "商圈介绍", "六大区域", "活动项目", "美食地图", "摊位名单", "相册", "新闻", "参与申请"],
-    ja:      ["ホーム", "龍馬通りの由来", "商店街紹介", "6つのゾーン", "プログラム", "グルメマップ", "屋台一覧", "ギャラリー", "ニュース", "参加申込"],
+    ja:      ["ホーム", "龍馬の由来", "商店街", "6ゾーン", "プログラム", "グルメ地図", "屋台一覧", "ギャラリー", "ニュース", "参加申込"],
   };
   const lang = currentLang();
   const links = (cls) =>
@@ -101,6 +101,45 @@ window.googleTranslateElementInit = function () {
       b.setAttribute("aria-pressed", b.dataset.lang === now);
       b.addEventListener("click", () => { if (b.dataset.lang !== currentLang()) setLang(b.dataset.lang); });
     });
+    // 로그인 영역 버튼도 기계 번역 대신 짧은 이름으로 (영어 'join the membership' 처럼 길어져 메뉴가 밀리지 않게)
+    const AUTH_T = {
+      en:      { "로그인": "Log in", "회원가입": "Sign up", "로그아웃": "Log out", "마이페이지": "My page", "관리자": "Admin" },
+      "zh-CN": { "로그인": "登录", "회원가입": "注册", "로그아웃": "退出", "마이페이지": "我的", "관리자": "管理" },
+      ja:      { "로그인": "ログイン", "회원가입": "会員登録", "로그아웃": "ログアウト", "마이페이지": "マイページ", "관리자": "管理" },
+    };
+    const authBox = document.querySelector("[data-auth-box]");
+    if (authBox && AUTH_T[lang]) {
+      authBox.classList.add("notranslate");
+      authBox.setAttribute("translate", "no");
+      const relabel = () => authBox.querySelectorAll("a, button").forEach((el) => {
+        const t = AUTH_T[lang][el.textContent.trim()];
+        if (t) el.textContent = t;
+      });
+      relabel();
+      new MutationObserver(relabel).observe(authBox, { childList: true, subtree: true });
+    }
+
+    // 메뉴가 한 줄에 다 안 들어가면(긴 외국어 메뉴·화면 확대 등) 메뉴 버튼(☰)으로 접는다 — 로고가 잘리지 않게
+    let needed = 0;                                  // 메뉴를 펼쳤을 때 필요한 폭(펼쳐져 있을 때만 잴 수 있다)
+    const fitNav = () => {
+      const root = document.documentElement, nav = document.querySelector(".nav");
+      if (!nav) return;
+      if (!matchMedia("(min-width: 1260px)").matches) { root.classList.remove("nav-compact"); return; }  // 좁은 화면은 원래 접힘
+      const ul = nav.querySelector("ul");
+      if (!root.classList.contains("nav-compact") && ul.scrollWidth > 0) needed = ul.scrollWidth;
+      const wrap = nav.parentElement, brand = wrap.querySelector(".brand"), acts = wrap.querySelector(".header-actions");
+      const room = wrap.clientWidth - brand.offsetWidth - acts.offsetWidth - 44;   // 로고·버튼 사이 여백 포함
+      root.classList.toggle("nav-compact", needed > room);
+    };
+    fitNav();
+    window.addEventListener("resize", fitNav);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
+    // 글꼴을 늦게 불러오면 메뉴 폭이 나중에 바뀐다 — 항목 폭이 변할 때마다 다시 잰다
+    if ("ResizeObserver" in window) {
+      const ro = new ResizeObserver(() => fitNav());
+      document.querySelectorAll(".nav li, .header-actions, .brand").forEach((el) => ro.observe(el));   // 로그인 버튼이 번역돼 길어져도 다시 잰다
+    }
+
     // 번역 엔진은 한국어가 아닐 때만 불러온다 (한국어 방문자는 가볍게)
     if (now !== "ko") {
       const s = document.createElement("script");
