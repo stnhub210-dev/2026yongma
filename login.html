@@ -27,6 +27,31 @@
 
       <div id="msg" class="alert"></div>
 
+      <!-- 소셜 로그인 — 가입과 로그인이 한 번에 됩니다(처음이면 자동으로 가입) -->
+      <div class="social">
+        <button type="button" class="btn btn--block social-btn social-google" id="btn-google">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2 5-4.3 6.6v5.5h7c4.1-3.8 6.6-9.4 6.6-16.1z"/>
+            <path fill="#34A853" d="M24 46c5.8 0 10.7-1.9 14.3-5.2l-7-5.5c-1.9 1.3-4.4 2.1-7.3 2.1-5.6 0-10.4-3.8-12.1-8.9H4.7v5.6C8.3 41.400 15.6 46 24 46z"/>
+            <path fill="#FBBC05" d="M11.9 28.5c-.4-1.3-.7-2.7-.7-4.5s.3-3.2.7-4.5v-5.6H4.7C3.1 17.1 2.2 20.4 2.2 24s.9 6.9 2.5 10.1l7.2-5.6z"/>
+            <path fill="#EA4335" d="M24 9.5c3.2 0 6 1.1 8.2 3.2l6.2-6.2C34.7 3 29.8 1 24 1 15.6 1 8.3 5.6 4.7 13.9l7.2 5.6C13.6 13.3 18.4 9.5 24 9.5z"/>
+          </svg>
+          구글로 계속하기
+        </button>
+        <button type="button" class="btn btn--block social-btn social-kakao" id="btn-kakao">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#191919" d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.86 5.31 4.66 6.73l-.95 3.53c-.08.3.26.55.52.38l4.18-2.78c.52.07 1.05.11 1.59.11 5.52 0 10-3.58 10-7.97S17.52 3 12 3z"/>
+          </svg>
+          카카오로 계속하기
+        </button>
+        <p class="social-note">
+          처음이시면 누르는 즉시 회원으로 가입됩니다 ·
+          이름·이메일을 받아 신청 접수와 안내에만 쓰며, 사업 종료 후 1년까지 보관합니다.
+        </p>
+      </div>
+
+      <div class="or"><span>또는 이메일로</span></div>
+
       <!-- 로그인 -->
       <form id="form-in" novalidate>
         <div class="field">
@@ -106,6 +131,58 @@
     UI.alert(msg, "warn", "회원 시스템이 아직 연결되지 않았습니다. Supabase 설정(assets/js/config.js)을 완료하면 바로 사용할 수 있습니다.");
   }
 
+  /* ---------- 소셜 로그인(구글·카카오) ---------- */
+  const SOCIAL = { google: "구글", kakao: "카카오" };
+
+  async function social(provider, btn) {
+    UI.clearAlert(msg);
+    btn.disabled = true;
+    try {
+      // 돌아온 뒤 '가입을 막 마친 것'인지 알기 위해 표시를 남겨 둡니다
+      // 꺼진 업체로 보내면 Supabase 오류 화면으로 넘어가 버리므로, 켜져 있는지 먼저 확인한다
+      if (!Auth.ready()) throw new Error("NOT_CONFIGURED");
+      if (!(await Auth.enabledProviders()).includes(provider)) throw new Error("PROVIDER_OFF");
+      sessionStorage.setItem("oauth_from", provider);
+      await Auth.signInWithProvider(provider);
+      // 여기서 업체 로그인 화면으로 넘어갑니다(아래 줄은 보통 실행되지 않습니다)
+    } catch (err) {
+      sessionStorage.removeItem("oauth_from");
+      btn.disabled = false;
+      UI.alert(msg, "err",
+        err.message === "NOT_CONFIGURED" ? "회원 시스템이 아직 연결되지 않았습니다."
+        : err.message === "PROVIDER_OFF"
+          ? `${SOCIAL[provider]} 로그인이 아직 켜지지 않았습니다. 관리자가 Supabase에서 ${SOCIAL[provider]} 연결을 마치면 바로 사용할 수 있습니다. 그동안은 아래 이메일로 로그인해 주십시오.`
+        : err.message);
+    }
+  }
+  document.getElementById("btn-google").addEventListener("click", function () { social("google", this); });
+  document.getElementById("btn-kakao").addEventListener("click", function () { social("kakao", this); });
+
+  /* 소셜 로그인으로 돌아왔을 때 — Supabase가 주소의 인증 정보를 세션으로 바꿔 둡니다.
+     업체는 이름만 주고 연락처·수신동의는 주지 않으므로, 빈 칸만 채운 뒤 마이페이지로 보냅니다. */
+  (async () => {
+    const from = sessionStorage.getItem("oauth_from");
+    const hasAuthInUrl = /[?#].*(access_token|code=|error=)/.test(location.href);
+    if (!from && !hasAuthInUrl) return;
+
+    // 업체 쪽에서 거절·취소된 경우
+    const errTxt = new URLSearchParams(location.hash.replace(/^#/, "") || location.search)
+      .get("error_description");
+    if (errTxt) {
+      sessionStorage.removeItem("oauth_from");
+      history.replaceState(null, "", location.pathname);
+      return UI.alert(msg, "err", decodeURIComponent(errTxt.replace(/\+/g, " ")));
+    }
+    if (!Auth.ready()) return;
+
+    const u = await Auth.user();
+    if (!u) return;                       // 아직 세션이 안 잡혔으면 그대로 둡니다
+    sessionStorage.removeItem("oauth_from");
+    history.replaceState(null, "", location.pathname);   // 주소창에서 토큰을 지웁니다
+    try { await Auth.fillProfileAfterOAuth(false); } catch (e) { /* 프로필은 나중에 보완 가능 */ }
+    location.replace("mypage.html");
+  })();
+
   /* 로그인 */
   formIn.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -141,14 +218,23 @@
     const btn = formUp.querySelector("button[type=submit]");
     btn.disabled = true;
     try {
-      await Auth.signUp({
+      const name = document.getElementById("up-name").value.trim();
+      const data = await Auth.signUp({
         email: document.getElementById("up-email").value.trim(),
         password: pw,
-        name: document.getElementById("up-name").value.trim(),
+        name,
         phone: document.getElementById("up-phone").value.trim(),
         marketing: document.getElementById("up-mkt").checked,
       });
       formUp.reset();
+      if (data && data.session) {
+        // 메일 인증 없이 바로 가입·로그인된 경우 — 감사 인사 후 마이페이지로 이동
+        UI.alert(msg, "ok",
+          `${name ? name + "님, " : ""}용마미식거리 회원이 되어 주셔서 진심으로 감사합니다! ` +
+          "가입이 완료되었습니다. 이제 프리마켓·버스킹 신청과 소식 알림을 받아보실 수 있습니다. 잠시 후 마이페이지로 이동합니다.");
+        setTimeout(() => { location.href = "mypage.html"; }, 3000);
+        return;
+      }
       UI.alert(msg, "ok", "가입 확인 메일을 보냈습니다. 메일의 링크를 클릭하면 가입이 완료됩니다.");
     } catch (err) {
       UI.alert(msg, "err",
