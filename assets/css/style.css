@@ -309,6 +309,21 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .tabs button { flex: 1; padding: 10px; border: 0; background: transparent; border-radius: 999px; font-weight: 700; font-size: .9375rem; color: var(--ink-500); cursor: pointer; transition: .16s; }
 .tabs button.active { background: #fff; color: var(--ink-900); box-shadow: var(--shadow-sm); }
 
+/* ---------- 소셜 로그인 (구글 · 카카오) ---------- */
+/* 각 업체가 정한 색·로고를 그대로 씁니다. 임의로 바꾸면 심사에서 걸립니다. */
+.social { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.social-btn { border-width: 1px; font-size: .9375rem; padding: 12px 20px; }
+.social-btn svg { width: 19px; height: 19px; flex: none; }
+.social-google { background: #fff; color: #1F1F1F; border-color: #DADCE0; box-shadow: var(--shadow-sm); }
+.social-google:hover { background: #F8F9FA; border-color: #C6C8CC; }
+.social-kakao { background: #FEE500; color: #191919; border-color: #F5DC00; }
+.social-kakao:hover { background: #FADF00; border-color: #E8CF00; }
+.social-note { font-size: .78125rem; line-height: 1.6; color: var(--ink-500); margin-top: 4px; }
+/* '또는 이메일로' — 가운데 글자 양옆에 선 */
+.or { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.or span { font-size: .8125rem; color: var(--ink-500); font-weight: 600; }
+
 /* ---------- Alerts ---------- */
 .alert { padding: 13px 16px; border-radius: 12px; font-size: .875rem; font-weight: 600; margin-bottom: 18px; display: none; }
 .alert.show { display: block; }
@@ -435,3 +450,20 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .page-hero .chip { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.28); backdrop-filter: blur(4px); }
 .page-hero .chip--amber { background: var(--amber-500); border-color: var(--amber-500); color: #fff; }
 .page-hero a:not(.btn) { color: var(--amber-400); }
+
+/* ---------- 언어 선택 띠 (구글 번역) ---------- */
+.lang-bar { background: var(--ink-900); color: rgba(255,255,255,.7); font-size: .8125rem; }
+.lang-bar .wrap { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-height: 36px; }
+.lang-bar__label { margin-right: auto; font-size: .6875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid transparent; border-radius: 999px;
+            background: transparent; color: rgba(255,255,255,.78); font: inherit; font-weight: 600; cursor: pointer; transition: .16s; }
+.lang-btn img { width: 20px; height: 15px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,.2); }
+.lang-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.lang-btn.active { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.3); color: #fff; }
+@media (max-width: 560px) { .lang-btn span { display: none; } .lang-btn { padding: 5px 8px; } }
+
+/* 구글 번역 기본 막대·말풍선 숨김 — 국기 버튼으로만 조작 */
+.goog-te-banner-frame, iframe.skiptranslate, #goog-gt-tt, .goog-te-balloon-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf, .VIpgJd-yAWNEb-L7lbkb { display: none !important; }
+body { top: 0 !important; position: static !important; }
+.goog-text-highlight, font[style] { background: none !important; box-shadow: none !important; }

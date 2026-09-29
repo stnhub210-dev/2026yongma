@@ -16,21 +16,73 @@ const NAV = [
   ["join.html",     "참여 신청", "nav.join"],
 ];
 
+/* 구글 번역 — 기본 한국어, 국기 버튼으로 영어·중국어·일본어 자동 번역.
+   고른 언어는 googtrans 쿠키에 남아 다른 페이지로 옮겨 가도 유지된다. */
+const LANGS = [
+  ["ko",    "kr", "한국어"],
+  ["en",    "us", "English"],
+  ["zh-CN", "cn", "中文"],
+  ["ja",    "jp", "日本語"],
+];
+
+function currentLang() {
+  const m = document.cookie.match(/(?:^|;\s*)googtrans=\/ko\/([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : "ko";
+}
+
+function setLang(code) {
+  const host = location.hostname;
+  const kill = "expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+  // 쿠키는 주소 단위·도메인 단위 두 가지로 남을 수 있어 둘 다 정리한 뒤 새로 쓴다
+  document.cookie = `googtrans=; ${kill}`;
+  document.cookie = `googtrans=; ${kill}; domain=${host}`;
+  document.cookie = `googtrans=; ${kill}; domain=.${host.replace(/^www\./, "")}`;
+  if (code !== "ko") {
+    document.cookie = `googtrans=/ko/${code}; path=/`;
+    document.cookie = `googtrans=/ko/${code}; path=/; domain=.${host.replace(/^www\./, "")}`;
+  }
+  location.reload();
+}
+
+window.googleTranslateElementInit = function () {
+  new google.translate.TranslateElement(
+    { pageLanguage: "ko", includedLanguages: "en,zh-CN,ja", autoDisplay: false },
+    "google_translate_element"
+  );
+};
+
 (function renderLayout() {
   const B = document.documentElement.dataset.base || "";
+  // 상단 메뉴는 기계 번역 대신 직접 옮긴 이름을 쓴다(짧고 정확하게, 메뉴가 한 줄에 들어가도록)
+  const NAV_T = {
+    en:      ["Home", "Yongma Story", "District", "6 Zones", "Programs", "Food Map", "Booths", "Gallery", "News", "Join"],
+    "zh-CN": ["首页", "龙马街介绍", "商圈介绍", "六大区域", "活动项目", "美食地图", "摊位名单", "相册", "新闻", "参与申请"],
+    ja:      ["ホーム", "龍馬通りの由来", "商店街紹介", "6つのゾーン", "プログラム", "グルメマップ", "屋台一覧", "ギャラリー", "ニュース", "参加申込"],
+  };
+  const lang = currentLang();
   const links = (cls) =>
-    NAV.map(([href, label, key]) =>
-      `<li><a href="${B}${href}" data-i18n="${key}">${label}</a></li>`
+    NAV.map(([href, label, key], i) =>
+      `<li><a href="${B}${href}"${lang === "ko" ? ` data-i18n="${key}"` : ""} class="notranslate" translate="no">${(NAV_T[lang] || [])[i] || label}</a></li>`
     ).join("");
 
   const header = document.getElementById("site-header");
   if (header) {
     header.outerHTML = `
+<div class="lang-bar notranslate" translate="no">
+  <div class="wrap">
+    <span class="lang-bar__label">Language</span>
+    ${LANGS.map(([code, flag, label]) =>
+      `<button type="button" class="lang-btn" data-lang="${code}" title="${label}" aria-label="${label}">
+        <img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/4x3/${flag}.svg" alt="" width="20" height="15"><span>${label}</span>
+      </button>`).join("")}
+  </div>
+</div>
+<div id="google_translate_element" hidden></div>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="${B}index.html">
       <img src="${B}assets/img/mascot-yong.webp" alt="">
-      <span>용마미식거리<small>GANGNEUNG 2026</small></span>
+      <span class="notranslate" translate="no">용마미식거리<small>GANGNEUNG 2026</small></span>
     </a>
     <nav class="nav" aria-label="주 메뉴"><ul>${links()}</ul></nav>
     <div class="header-actions">
@@ -41,6 +93,21 @@ const NAV = [
   </div>
 </header>
 <div class="mobile-nav" id="mnav"><div class="wrap"><ul>${links()}</ul></div></div>`;
+
+    // 국기 버튼 — 지금 언어 표시 + 누르면 전환
+    const now = currentLang();
+    document.querySelectorAll(".lang-btn").forEach((b) => {
+      b.classList.toggle("active", b.dataset.lang === now);
+      b.setAttribute("aria-pressed", b.dataset.lang === now);
+      b.addEventListener("click", () => { if (b.dataset.lang !== currentLang()) setLang(b.dataset.lang); });
+    });
+    // 번역 엔진은 한국어가 아닐 때만 불러온다 (한국어 방문자는 가볍게)
+    if (now !== "ko") {
+      const s = document.createElement("script");
+      s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      s.async = true;
+      document.head.appendChild(s);
+    }
   }
 
   const footer = document.getElementById("site-footer");
