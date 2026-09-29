@@ -9,6 +9,7 @@ const NAV = [
   ["zones.html",    "6개 존",    "nav.zones"],
   ["programs.html", "프로그램",  "nav.programs"],
   ["food.html",     "미식 지도", "nav.food"],
+  ["booths.html",   "매대 명단", "nav.booths"],
   ["gallery.html",  "갤러리",    "nav.gallery"],
   ["news.html",     "소식",      "nav.news"],
   ["join.html",     "참여 신청", "nav.join"],
@@ -59,6 +60,7 @@ const NAV = [
           <li><a href="${B}zones.html">6개 존</a></li>
           <li><a href="${B}programs.html">프로그램·일정</a></li>
           <li><a href="${B}food.html">미식 지도</a></li>
+          <li><a href="${B}booths.html">매대 명단</a></li>
           <li><a href="${B}gallery.html">갤러리</a></li>
           <li><a href="${B}join.html">참여 신청</a></li>
         </ul>

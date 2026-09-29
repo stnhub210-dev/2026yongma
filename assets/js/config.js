@@ -27,8 +27,8 @@ window.SITE = {
   period: "협약일 ~ 2027. 3. 31.",
 
   supabase: {
-    url: "https://YOUR-PROJECT-REF.supabase.co",
-    anonKey: "YOUR-PUBLIC-ANON-KEY",
+    url: "https://xellnstqcvsdhrgveouh.supabase.co",
+    anonKey: "sb_publishable_ONMbttWvtDcBoJWLE0Za0g_Q2XMDg6g",
   },
 
   i18n: {

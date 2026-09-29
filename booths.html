@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>매대 명단 — 용마미식거리</title>
+<meta name="description" content="용마미식거리 먹거리부스 16곳과 플리마켓 4곳의 부스 번호·메뉴·가격, 부스 배치도를 안내합니다.">
+<meta property="og:title" content="매대 명단 — 용마미식거리">
+<meta property="og:description" content="먹거리부스 16곳 · 플리마켓 4곳 부스 배치도와 메뉴 안내">
+<meta property="og:image" content="https://2026yongma.com/assets/img/booth-layout.webp">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .booth-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+  .booth { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: start;
+           background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+  .booth__no { grid-row: span 3; display: flex; align-items: center; justify-content: center;
+               width: 42px; height: 42px; border-radius: 999px; font-weight: 800; color: #fff; background: var(--amber-500); }
+  .booth--market .booth__no { background: #E8B21C; }
+  .booth h3 { font-size: 1.0625rem; }
+  .booth__menu { font-size: .9375rem; color: var(--ink-700); }
+  .booth__price { font-size: .875rem; font-weight: 700; color: var(--amber-700); }
+  .booth__area { font-size: .75rem; color: var(--ink-500); margin-left: 6px; font-weight: 600; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .875rem; color: var(--ink-600); }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 999px; margin-right: 6px; vertical-align: -1px; }
+  .group-title { display: flex; align-items: baseline; gap: 10px; margin: 28px 0 12px; }
+  .group-title:first-of-type { margin-top: 0; }
+  .group-title h3 { font-size: 1.0625rem; }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="section section--soft" style="padding-block:clamp(44px,5vw,72px)">
+  <div class="wrap">
+    <span class="eyebrow">Booths</span>
+    <h1>매대 명단</h1>
+    <p class="lead mt-2" style="max-width:60ch">
+      매주 토요일 15:00~22:00, 용마미식거리에서 만나는 먹거리부스 16곳과 플리마켓 4곳입니다.
+      부스 번호로 배치도에서 위치를 찾을 수 있습니다.
+    </p>
+    <div class="chip-row mt-3">
+      <span class="chip chip--amber">먹거리부스 16곳</span>
+      <span class="chip">플리마켓 4곳</span>
+      <span class="chip">무대 · 운영본부 · 접객 파라솔</span>
+    </div>
+  </div>
+</section>
+
+<!-- ① 부스 배치도 -->
+<section class="section" id="map">
+  <div class="wrap split">
+    <div class="reveal">
+      <span class="eyebrow">Layout</span>
+      <h2>부스 배치도</h2>
+      <p class="lead mt-2">교차로 가운데 무대를 두고, 네 방향으로 먹거리부스와 플리마켓, 접객 파라솔이 이어집니다.</p>
+      <div class="legend mt-3">
+        <span><i style="background:#1DB954"></i>접객 파라솔</span>
+        <span><i style="background:#F47A20"></i>먹거리부스 1~16</span>
+        <span><i style="background:#FFD24A"></i>플리마켓 17~20</span>
+        <span><i style="background:#E5484D"></i>무대</span>
+        <span><i style="background:#4F5BD5"></i>운영본부</span>
+      </div>
+      <ul class="stack mt-3">
+        <li>· <b>1~5번</b> — 강릉한우마크나인 앞 먹거리부스 줄</li>
+        <li>· <b>6~16번</b> — 포남보양탕 방면 먹거리부스 줄</li>
+        <li>· <b>17~20번</b> — 만양맛값 방면 플리마켓</li>
+        <li>· 무대 바로 옆에 <b>운영본부</b>가 있습니다.</li>
+      </ul>
+    </div>
+    <div class="reveal">
+      <figure class="figure">
+        <img src="assets/img/booth-layout.webp" alt="포남용마거리 부스 배치도 — 교차로 중앙 무대, 운영본부, 먹거리부스 1~16번, 플리마켓 17~20번, 접객 파라솔 위치" width="915" height="1237" loading="lazy">
+        <figcaption>포남용마거리 부스 배치도 (최종)</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ② 먹거리부스 -->
+<section class="section section--soft" id="food">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Food Booths</span>
+      <h2>먹거리부스 16곳</h2>
+      <p>포남동 상인과 강릉 지역 셀러가 운영합니다. 가격은 현장 사정에 따라 달라질 수 있습니다.</p>
+    </div>
+    <div id="food-list"></div>
+  </div>
+</section>
+
+<!-- ③ 플리마켓 -->
+<section class="section" id="market">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Flea Market</span>
+      <h2>플리마켓 4곳</h2>
+      <p>강릉 로컬 셀러의 잡화·액세서리·수공예품을 만나 보세요.</p>
+    </div>
+    <div class="booth-grid" id="market-list"></div>
+  </div>
+</section>
+
+<section class="section section--warm">
+  <div class="wrap center">
+    <img class="mascot-top" src="assets/img/mascot-food.webp" alt="향토음식 한 그릇을 든 캐릭터 용" loading="lazy">
+    <h2>다음 토요일, 골목에서 만나요</h2>
+    <p class="lead mt-2">프리마켓 셀러는 상시 모집합니다. 참가비는 없습니다.</p>
+    <div class="btn-row mt-4" style="justify-content:center">
+      <a class="btn btn--primary" href="join.html#seller">셀러 신청</a>
+      <a class="btn btn--ghost" href="gallery.html">현장 사진 보기</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+/* 매대 명단 — 「매대운영자명단 최종본」·「부스 배치도(최종)」 기준.
+   공개 페이지이므로 운영자 성명·연락처·생년월일 등 개인정보는 싣지 않는다. */
+(function () {
+  const FOOD = [
+    [1,  "다원잔기지떡",               "잔기지떡 · 커피약과 · 커피건빵 · 식혜", "8,000원대",                    "포남동"],
+    [2,  "정동청과",                   "과일",                                 "10,000원",                     "포남동"],
+    [3,  "하루곱창",                   "찐만두 · 튀김만두 · 곱창구이",         "10,000 / 10,000 / 15,000원",   "포남동"],
+    [4,  "만양맛값",                   "자연산 골뱅이숙회",                    "10,000원",                     "포남동"],
+    [5,  "두루두루삼겹",               "냉삼 · 제육볶음",                      "10,000 / 8,000원",             "포남동"],
+    [6,  "신촌장칼국수",               "찐만두",                               "10,000원",                     "포남동"],
+    [7,  "인생포차",                   "오뎅 · 제육볶음",                      "2,000원~",                     "포남동"],
+    [8,  "정희이모",                   "커피 · 생맥주 · 기타",                 "3,000~5,000원",                "포남동"],
+    [9,  "강릉사랑로컬푸드",           "두부",                                 "10,000원",                     "포남동"],
+    [10, "유명참숯화로구이",           "소불고기 핫도그 · 롱소시지 핫도그",    "5,000원",                      "포남동"],
+    [11, "보경카페",                   "한방차",                               "8,000원대",                    "포남동"],
+    [12, "갤러리소풍",                 "새우부추전",                           "10,000원",                     "포남동"],
+    [13, "다래 1 (스트릿 철판명가)",   "팟타이 · 문어꼬치",                    "8,000 / 5,000원",              "강릉시"],
+    [14, "다래 2 (희양양 양꼬치)",     "양꼬치 · 막창꼬치 · 고급양갈비",       "6,000~10,000 / 5,000 / 8,000원", "강릉시"],
+    [15, "포항물회",                   "육회컵물회 · 고추잡채",                "9,000 / 6,000원",              "강릉시"],
+    [16, "강릉크로와상붕어빵",         "월화달빵",                             "3,000원",                      "강릉시"],
+  ];
+  const MARKET = [
+    [17, "시마",       "잡화",                                   "5,000~100,000원", "포남동"],
+    [18, "메이드노리터", "수공예 실버 액세서리 · 은반지 만들기 체험", "10,000원~",       "강릉시"],
+    [19, "와글와글",   "3D 출력물 클리커·키캡 · 수제 말랑이",     "2,000원~",        "강릉시"],
+    [20, "실버moon",   "실버·써지컬 주얼리",                     "5,000원~",        "강릉시"],
+  ];
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const card = ([no, name, menu, price, area], cls) => `
+    <article class="booth ${cls || ""}">
+      <span class="booth__no">${no}</span>
+      <h3>${esc(name)}<span class="booth__area">${esc(area)}</span></h3>
+      <p class="booth__menu">${esc(menu)}</p>
+      <p class="booth__price">${esc(price)}</p>
+    </article>`;
+
+  const groups = [["1~5번", "강릉한우마크나인 앞", FOOD.slice(0, 5)], ["6~16번", "포남보양탕 방면", FOOD.slice(5)]];
+  document.getElementById("food-list").innerHTML = groups.map(([t, where, list]) => `
+    <div class="group-title"><h3>${t}</h3><span class="muted tiny">${where}</span></div>
+    <div class="booth-grid">${list.map((b) => card(b)).join("")}</div>`).join("");
+  document.getElementById("market-list").innerHTML = MARKET.map((b) => card(b, "booth--market")).join("");
+})();
+</script>
+</body>
+</html>
