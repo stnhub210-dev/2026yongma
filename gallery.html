@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>갤러리 — 용마미식거리</title>
+<meta name="description" content="용마미식거리 현장 사진 갤러리. 2026년 9월 18일 제2회 용마미식거리 맛집대축제 개막일부터 매주 토요일 운영까지 날짜별로 모았습니다.">
+<meta property="og:title" content="갤러리 — 용마미식거리">
+<meta property="og:description" content="강릉 용마미식거리 현장 사진을 날짜별로 모았습니다.">
+<meta property="og:image" content="https://2026yongma.com/assets/img/gallery/20260918_201800.webp">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="section section--soft" style="padding-block:clamp(44px,5vw,72px)">
+  <div class="wrap">
+    <span class="eyebrow">Gallery</span>
+    <h1>골목의 날들</h1>
+    <p class="lead mt-2" style="max-width:60ch">
+      용마미식거리 현장 사진을 날짜별로 모았습니다. 최근 날짜가 위에 오고,
+      하루 안에서는 찍은 시간 순서대로 이어집니다.
+    </p>
+    <div class="chip-row mt-3" id="gal-summary"></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:clamp(28px,4vw,48px)">
+  <div class="wrap">
+    <nav class="gal-filter" id="gal-filter" aria-label="날짜 선택"></nav>
+    <div id="gal-days"></div>
+    <noscript><p class="muted">사진 목록을 보려면 자바스크립트를 켜 주세요.</p></noscript>
+  </div>
+</section>
+
+</main>
+
+<!-- 확대 보기 -->
+<dialog class="lightbox" id="lightbox" aria-label="사진 크게 보기">
+  <figure class="lightbox__fig">
+    <img id="lb-img" alt="">
+    <figcaption>
+      <span id="lb-cap"></span>
+      <span class="lightbox__meta" id="lb-meta"></span>
+    </figcaption>
+  </figure>
+  <button class="lightbox__btn lightbox__close" id="lb-close" aria-label="닫기">×</button>
+  <button class="lightbox__btn lightbox__prev" id="lb-prev" aria-label="이전 사진">‹</button>
+  <button class="lightbox__btn lightbox__next" id="lb-next" aria-label="다음 사진">›</button>
+</dialog>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/gallery-data.js"></script>
+<script>
+/* 갤러리 — assets/js/gallery-data.js 를 날짜별로 그린다 */
+(function () {
+  const G = window.GALLERY || { days: {}, photos: [] };
+  const IMG = "assets/img/gallery/";
+  const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+  const esc = (s) => String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  const dayLabel = (d) => {
+    const [y, m, dd] = d.split("-").map(Number);
+    const w = WEEK[new Date(y, m - 1, dd).getDay()];
+    return { short: `${m}. ${dd}.(${w})`, long: `${y}년 ${m}월 ${dd}일 ${w}요일` };
+  };
+  const bucket = (t) => {
+    const h = +t.slice(0, 2);
+    return h < 12 ? "오전" : h < 17 ? "오후" : h < 19 ? "저녁" : "밤";
+  };
+
+  // 날짜별 묶기 — 최근 날짜 먼저, 하루 안에서는 시간 순
+  const byDay = {};
+  G.photos.forEach((p) => (byDay[p.date] = byDay[p.date] || []).push(p));
+  const dates = Object.keys(byDay).sort().reverse();
+  const order = dates.flatMap((d) => byDay[d]);   // 확대 보기에서 넘기는 순서
+
+  document.getElementById("gal-summary").innerHTML =
+    `<span class="chip chip--amber">사진 ${G.photos.length}장</span><span class="chip">${dates.length}일의 기록</span>`;
+
+  const filter = document.getElementById("gal-filter");
+  filter.innerHTML = `<button class="active" data-d="all">전체</button>` +
+    dates.map((d) => `<button data-d="${d}">${dayLabel(d).short}</button>`).join("");
+
+  const box = document.getElementById("gal-days");
+  box.innerHTML = dates.map((d) => {
+    const info = G.days[d] || {};
+    const lab = dayLabel(d);
+    let last = "";
+    const items = byDay[d].map((p) => {
+      const b = bucket(p.time);
+      const head = b !== last ? `<p class="gal-bucket">${b}</p>` : "";
+      last = b;
+      const i = order.indexOf(p);
+      return head + `<button class="gal-item" data-i="${i}" aria-label="${esc(p.caption || "현장 사진")} 크게 보기">
+          <img src="${IMG}${p.id}_t.webp" alt="${esc(p.caption)}" loading="lazy" width="${p.w}" height="${p.h}">
+          <span class="gal-item__cap"><b>${p.time}</b>${esc(p.caption)}</span>
+        </button>`;
+    }).join("");
+    return `<section class="gal-day" id="d-${d}" data-d="${d}">
+      <header class="gal-day__head">
+        <div class="gal-day__date"><b>${lab.short}</b><span>${lab.long}</span></div>
+        <div>
+          <h2>${esc(info.title) || lab.long}</h2>
+          ${info.note ? `<p class="muted mt-1">${esc(info.note)}</p>` : ""}
+        </div>
+        <span class="chip">${byDay[d].length}장</span>
+      </header>
+      <div class="gal-grid">${items}</div>
+    </section>`;
+  }).join("") || `<p class="muted">등록된 사진이 없습니다.</p>`;
+
+  filter.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    filter.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b === btn));
+    box.querySelectorAll(".gal-day").forEach((s) => {
+      s.hidden = btn.dataset.d !== "all" && s.dataset.d !== btn.dataset.d;
+    });
+  });
+
+  // ---- 확대 보기 ----
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lb-img");
+  let cur = 0;
+  const show = (i) => {
+    cur = (i + order.length) % order.length;
+    const p = order[cur];
+    img.src = IMG + p.id + ".webp";
+    img.alt = p.caption || "현장 사진";
+    document.getElementById("lb-cap").textContent = p.caption || "";
+    document.getElementById("lb-meta").textContent =
+      `${dayLabel(p.date).long} ${p.time} · ${cur + 1} / ${order.length}`;
+  };
+  box.addEventListener("click", (e) => {
+    const it = e.target.closest(".gal-item");
+    if (!it) return;
+    show(+it.dataset.i);
+    lb.showModal();
+  });
+  document.getElementById("lb-close").onclick = () => lb.close();
+  document.getElementById("lb-prev").onclick = () => show(cur - 1);
+  document.getElementById("lb-next").onclick = () => show(cur + 1);
+  lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });
+  lb.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") show(cur - 1);
+    if (e.key === "ArrowRight") show(cur + 1);
+  });
+  let x0 = null;   // 휴대폰 좌우 밀기
+  lb.addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), { passive: true });
+  lb.addEventListener("touchend", (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+
+  // 주소에 #d-2026-09-18 처럼 날짜가 붙어 오면 그 날짜만 보여 준다
+  const fromHash = () => {
+    const pre = filter.querySelector(`button[data-d="${location.hash.replace("#d-", "")}"]`);
+    if (pre) pre.click();
+  };
+  fromHash();
+  window.addEventListener("hashchange", fromHash);
+})();
+</script>
+</body>
+</html>

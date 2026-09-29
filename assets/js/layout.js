@@ -9,6 +9,7 @@ const NAV = [
   ["zones.html",    "6개 존",    "nav.zones"],
   ["programs.html", "프로그램",  "nav.programs"],
   ["food.html",     "미식 지도", "nav.food"],
+  ["gallery.html",  "갤러리",    "nav.gallery"],
   ["news.html",     "소식",      "nav.news"],
   ["join.html",     "참여 신청", "nav.join"],
 ];
@@ -58,16 +59,18 @@ const NAV = [
           <li><a href="${B}zones.html">6개 존</a></li>
           <li><a href="${B}programs.html">프로그램·일정</a></li>
           <li><a href="${B}food.html">미식 지도</a></li>
+          <li><a href="${B}gallery.html">갤러리</a></li>
           <li><a href="${B}join.html">참여 신청</a></li>
         </ul>
       </div>
       <div>
-        <h4>사업 추진</h4>
+        <h4>주최 · 주관</h4>
         <ul class="stack" style="gap:8px">
-          <li>상권기획자 (주)에스티엔미디어</li>
-          <li>상인조직 포남용마거리 골목형상점가 상인회</li>
-          <li>협업기관 강원영동이벤트</li>
-          <li>강릉시 · 강원특별자치도</li>
+          <li>주최 강원지방중소벤처기업청</li>
+          <li>주최 소상공인시장진흥공단</li>
+          <li>주최 강원특별자치도 · 강릉시</li>
+          <li>주관 STN미디어</li>
+          <li>주관 포남용마거리 골목형상점가 상인회</li>
         </ul>
       </div>
       <div>
