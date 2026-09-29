@@ -5,6 +5,7 @@
 
 const NAV = [
   ["index.html",    "홈",        "nav.home"],
+  ["story.html",    "용마거리 소개", "nav.story"],
   ["about.html",    "상권 소개", "nav.about"],
   ["zones.html",    "6개 존",    "nav.zones"],
   ["programs.html", "프로그램",  "nav.programs"],
@@ -56,6 +57,7 @@ const NAV = [
       <div>
         <h4>바로가기</h4>
         <ul class="stack" style="gap:8px">
+          <li><a href="${B}story.html">용마거리 소개</a></li>
           <li><a href="${B}about.html">상권 소개</a></li>
           <li><a href="${B}zones.html">6개 존</a></li>
           <li><a href="${B}programs.html">프로그램·일정</a></li>

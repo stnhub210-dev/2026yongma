@@ -149,16 +149,16 @@ h4 { font-size: 1.0625rem; }
 .brand img { width: 34px; height: 34px; object-fit: contain; }
 .brand small { display: block; font-size: .625rem; font-weight: 600; color: var(--amber-600); letter-spacing: .1em; line-height: 1; }
 .nav { display: none; margin-left: auto; }
-.nav ul { display: flex; align-items: center; gap: 4px; }
+.nav ul { display: flex; align-items: center; gap: 2px; }
 .nav a {
-  display: block; padding: 9px 14px; border-radius: 999px;
-  font-size: .9375rem; font-weight: 600; color: var(--ink-600);
+  display: block; padding: 8px 9px; border-radius: 999px; white-space: nowrap;
+  font-size: .875rem; font-weight: 600; color: var(--ink-600);
   transition: background-color .16s, color .16s;
 }
 .nav a:hover { background: var(--amber-50); color: var(--amber-700); }
 .nav a[aria-current="page"] { color: var(--ink-900); background: var(--bg-soft); }
 .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-@media (min-width: 1020px) { .nav { display: block; } .header-actions { margin-left: 0; } .nav-toggle { display: none; } }
+@media (min-width: 1260px) { .nav { display: block; } .header-actions { margin-left: 0; } .nav-toggle { display: none; } }
 
 .nav-toggle {
   display: grid; place-items: center; width: 42px; height: 42px;
@@ -174,7 +174,7 @@ h4 { font-size: 1.0625rem; }
 .mobile-nav.open { display: block; }
 .mobile-nav ul { padding: 12px 0 20px; }
 .mobile-nav a { display: block; padding: 12px 4px; font-weight: 600; border-bottom: 1px solid var(--bg-soft); }
-@media (min-width: 1020px) { .mobile-nav { display: none !important; } }
+@media (min-width: 1260px) { .mobile-nav { display: none !important; } }
 
 /* ---------- Hero ---------- */
 .hero { position: relative; overflow: hidden; background: var(--ink-900); }

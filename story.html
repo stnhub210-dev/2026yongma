@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>용마거리 소개 — 용마미식거리</title>
+<meta name="description" content="용마(龍馬), 용이 된 말. 고려 부마 최문한의 말이 포남동 연못에서 용이 되어 하늘로 올랐다는 강릉 용지(龍池) 전설에서 용마거리의 이름이 왔습니다.">
+<meta property="og:title" content="용마거리 소개 — 용이 된 말, 용마(龍馬)">
+<meta property="og:description" content="600년 강릉 용지 전설에서 이름을 얻은 골목, 포남 용마거리 이야기">
+<meta property="og:image" content="https://2026yongma.com/assets/img/mascot-pair.webp">
+<link rel="icon" href="assets/img/mascot-yong.webp">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* 첫 화면 — 한자 두 글자와 캐릭터 */
+  .story-hero { position: relative; overflow: hidden; background: var(--ink-900); color: #fff; }
+  .story-hero .wrap { position: relative; display: grid; gap: 28px; align-items: center;
+                      padding: clamp(64px, 10vw, 120px) 0 clamp(56px, 8vw, 96px); }
+  @media (min-width: 900px) { .story-hero .wrap { grid-template-columns: 1.1fr .9fr; } }
+  .story-hero h1 { color: #fff; line-height: 1.25; }
+  .story-hero h1 em { font-style: normal; color: var(--amber-400); }
+  .story-hero .lead { color: rgba(255,255,255,.82); margin-top: 18px; max-width: 46ch; }
+  .hanja { position: absolute; right: -2vw; top: 50%; transform: translateY(-50%); font-size: clamp(9rem, 26vw, 22rem);
+           font-weight: 800; line-height: 1; color: rgba(255,255,255,.05); letter-spacing: -.05em; pointer-events: none;
+           font-family: "Noto Serif KR", "Batang", serif; }
+  .hero-chars { display: flex; justify-content: center; align-items: flex-end; gap: 4%; }
+  .hero-chars img { width: 44%; max-width: 230px; filter: drop-shadow(0 18px 30px rgba(0,0,0,.45)); }
+
+  /* 뜻 풀이 카드 */
+  .meaning { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+  .meaning .tile { text-align: center; padding: 30px 22px; }
+  .meaning .big { font-size: clamp(3rem, 2.4rem + 2vw, 4rem); font-weight: 800; color: var(--amber-600); line-height: 1;
+                  font-family: "Noto Serif KR", "Batang", serif; }
+  .meaning h3 { margin-top: 12px; }
+  .meaning p { margin-top: 6px; color: var(--ink-600); font-size: .9375rem; }
+
+  /* 전설 — 장면 순서 */
+  .chapters { counter-reset: ch; display: grid; gap: 14px; }
+  .chapter { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; background: #fff; border: 1px solid var(--line);
+             border-radius: var(--radius); padding: 20px 22px; }
+  .chapter::before { counter-increment: ch; content: counter(ch, decimal-leading-zero); grid-row: span 2;
+                     font-size: 1.5rem; font-weight: 800; color: var(--amber-500); line-height: 1.1; }
+  .chapter h3 { font-size: 1.0625rem; }
+  .chapter p { color: var(--ink-600); font-size: .9375rem; }
+  .chapter--key { background: var(--amber-50); border-color: var(--amber-200); }
+
+  /* 말 → 용 변신 장면 */
+  .transform { display: flex; align-items: center; justify-content: center; gap: 4%; padding: 28px 16px;
+               background: linear-gradient(180deg, #FDFBF7, #EEF4FB); border-radius: var(--radius-lg); border: 1px solid var(--line); }
+  .transform figure { width: 36%; max-width: 220px; text-align: center; }
+  .transform figcaption { margin-top: 8px; font-weight: 700; color: var(--ink-700); font-size: .9375rem; }
+  .transform .arrow { font-size: clamp(1.5rem, 4vw, 2.5rem); color: var(--amber-500); font-weight: 800; text-align: center; line-height: 1.2; }
+  .transform .arrow small { display: block; font-size: .75rem; color: var(--ink-500); font-weight: 700; margin-top: 4px; }
+
+  /* 용마가 지나간 길 */
+  .route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .route span { padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-weight: 700; font-size: .9375rem; }
+  .route i { color: var(--amber-500); font-style: normal; font-weight: 800; }
+
+  /* 캐릭터 */
+  .char-card { display: grid; grid-template-columns: 120px 1fr; gap: 18px; align-items: center; }
+  .char-card img { width: 120px; }
+  .char-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin-top: 10px; font-size: .9375rem; }
+  .char-card dt { color: var(--ink-500); font-weight: 700; font-size: .875rem; }
+  .char-card dd { font-size: .9375rem; font-weight: 600; color: var(--ink-800); margin: 0; letter-spacing: 0; }
+  .sources { font-size: .8125rem; color: var(--ink-500); }
+  .sources a { color: var(--amber-700); text-decoration: underline; text-underline-offset: 2px; }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<!-- 첫 화면 -->
+<section class="story-hero">
+  <span class="hanja" aria-hidden="true">龍馬</span>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow" style="color:var(--amber-400)">Story of Yongma</span>
+      <h1>용이 된 말,<br><em>용마(龍馬)</em>의 거리</h1>
+      <p class="lead">
+        포남동 용마거리의 이름에는 600년을 이어 온 강릉의 전설이 담겨 있습니다.
+        충절을 지킨 고려 부마의 말이 연못에 뛰어들어 용이 되어 하늘로 올랐다는 이야기,
+        그 용마가 오늘 미식의 골목으로 다시 깨어납니다.
+      </p>
+      <div class="btn-row mt-4">
+        <a class="btn btn--primary" href="#legend">전설 읽기</a>
+        <a class="btn btn--onimg" href="#today">오늘의 용마</a>
+      </div>
+    </div>
+    <div class="hero-chars">
+      <img src="assets/img/mascot-ma.webp" alt="용마미식거리 캐릭터 마(馬)" width="600" height="850">
+      <img src="assets/img/mascot-yong.webp" alt="용마미식거리 캐릭터 용(龍)" width="600" height="669">
+    </div>
+  </div>
+</section>
+
+<!-- 이름 풀이 -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head sec-head--center reveal">
+      <span class="eyebrow">Meaning</span>
+      <h2>두 글자에 담긴 뜻</h2>
+      <p>용마는 ‘용 룡(龍)’과 ‘말 마(馬)’, 곧 <b>용이 된 말</b>입니다. 예로부터 뛰어난 준마이자 하늘로 오르는 상서로운 존재를 뜻했습니다.</p>
+    </div>
+    <div class="meaning">
+      <div class="tile reveal"><div class="big">龍</div><h3>용 룡</h3><p>하늘로 오르는 힘, 새로운 도약</p></div>
+      <div class="tile reveal"><div class="big">馬</div><h3>말 마</h3><p>주인을 싣고 달린 충직한 준마</p></div>
+      <div class="tile tile--soft reveal"><div class="big" style="color:var(--ink-900)">浦南</div><h3>포남동</h3><p>경포 남쪽 마을이라는 뜻. 옛 이름 ‘보람이’를 한자로 옮긴 말이라고도 합니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 전설 -->
+<section class="section section--soft" id="legend">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Legend</span>
+      <h2>용지(龍池) 전설 — 말이 용이 된 연못</h2>
+      <p>강릉 사람들이 대대로 전해 온 이야기입니다. 채록한 책마다 줄거리가 조금씩 다르게 남아 있습니다.</p>
+    </div>
+    <div class="split split--wide">
+      <ol class="chapters reveal">
+        <li class="chapter"><h3>고려의 부마, 최문한</h3><p>최문한(崔文漢)은 고려 충숙왕의 부마도위였고, 훗날 강릉 최씨의 시조로 받들어졌습니다.</p></li>
+        <li class="chapter"><h3>두 임금을 섬기지 않겠다</h3><p>고려가 기울고 조선이 서자, 그는 불사이군(不事二君)의 충절을 지키려 두문동에 들었다가 강릉으로 내려와 몸을 숨겼습니다.</p></li>
+        <li class="chapter"><h3>개성을 오가던 준마</h3><p>강릉에 머무는 동안에도 그는 아끼는 준마를 타고 옛 도읍 개성(송경)을 오갔습니다.</p></li>
+        <li class="chapter chapter--key"><h3>연못에 뛰어든 말</h3><p>어느 날 연못가 버드나무에 말을 매어 두고 씻기는데, 갑자기 구름과 안개가 일더니 말이 연못 한가운데로 뛰어들었습니다. 말은 용으로 변해 하늘로 올라갔습니다.</p></li>
+        <li class="chapter"><h3>용지, 그리고 용마</h3><p>사람들은 말이 용이 된 그 못을 <b>용지(龍池)</b>라 불렀고, 용이 된 말 <b>용마(龍馬)</b>의 이름은 이 일대의 지명과 거리 이름으로 이어졌습니다.</p></li>
+      </ol>
+      <div class="reveal">
+        <div class="transform" role="img" aria-label="말이 연못에 뛰어들어 용이 되는 전설의 장면">
+          <figure><img src="assets/img/mascot-ma.webp" alt="" width="600" height="850"><figcaption>준마(馬)</figcaption></figure>
+          <div class="arrow">→<small>연못에 뛰어들어</small></div>
+          <figure><img src="assets/img/mascot-yong.webp" alt="" width="600" height="669"><figcaption>용(龍)으로 승천</figcaption></figure>
+        </div>
+        <p class="tiny muted mt-2 center">용마미식거리 캐릭터 ‘마’와 ‘용’은 이 전설 속 용마를 두 캐릭터로 나누어 만든 것입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 용지각과 용마가 남긴 지명 -->
+<section class="section">
+  <div class="wrap split">
+    <div class="reveal">
+      <span class="eyebrow">Heritage</span>
+      <h2>지금도 남아 있는 용지</h2>
+      <p class="lead mt-2">전설의 연못 용지는 강릉여자고등학교 곁에 지금도 남아 있습니다.</p>
+      <ul class="stack mt-3">
+        <li>· 연못가에는 비각 <b>용지각(龍池閣)</b>이 서 있고, 그 안에 「고려 부마도위 최공문한 유적비」가 있습니다.</li>
+        <li>· 용지는 <b>강원특별자치도 기념물</b>로 지정되어 보호받고 있습니다.</li>
+        <li>· 동물이 변신하는 이야기와 용이 하늘로 오르는 이야기가 합쳐진 설화로, 강릉의 여러 지명 유래와 이어져 있습니다.</li>
+      </ul>
+    </div>
+    <div class="reveal">
+      <div class="tile tile--soft">
+        <dt>용마가 지나간 길</dt>
+        <p class="muted tiny mt-1">일부 채록본에는 용마가 강릉 곳곳을 지나며 지명을 남겼다고 전합니다.</p>
+        <div class="route mt-3">
+          <span>쑥뎅이</span><i>→</i><span>발락고개</span><i>→</i><span>비름돌</span><i>→</i>
+          <span>코풀재</span><i>→</i><span>북바위</span><i>→</i><span>죽일</span>
+        </div>
+        <p class="muted tiny mt-3">※ 전하는 책에 따라 줄거리와 지명이 조금씩 다릅니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 오늘의 용마 -->
+<section class="section section--warm" id="today">
+  <div class="wrap">
+    <div class="sec-head sec-head--center reveal">
+      <span class="eyebrow">Yongma Today</span>
+      <h2>용이 된 말처럼, 골목이 다시 오릅니다</h2>
+      <p>40년 동안 동네 사람들의 끼니를 책임져 온 생활 골목이, 강릉의 밤을 여는 미식거리로 새롭게 비상합니다.</p>
+    </div>
+
+    <figure class="figure reveal mb-3" style="margin-bottom:32px">
+      <img src="assets/img/gallery/20260918_201800.webp" alt="용마미식거리 — 저녁 시간 K-미식벨트 테이블을 가득 채운 방문객" loading="lazy">
+      <figcaption>2026년 9월, 불을 밝힌 용마미식거리</figcaption>
+    </figure>
+
+    <div class="grid grid-2">
+      <article class="tile reveal char-card">
+        <img src="assets/img/mascot-yong.webp" alt="캐릭터 용" loading="lazy">
+        <div>
+          <h3>용 (龍) · DRAGON</h3>
+          <p class="muted mt-1">하늘로 오른 용마의 기운을 담은 리더형 캐릭터</p>
+          <dl><dt>성격</dt><dd>활동적 · 앞장서는 리드형</dd><dt>상징</dt><dd>블루 스카프 · 크림색 뿔</dd></dl>
+        </div>
+      </article>
+      <article class="tile reveal char-card">
+        <img src="assets/img/mascot-ma.webp" alt="캐릭터 마" loading="lazy">
+        <div>
+          <h3>마 (馬) · HORSE</h3>
+          <p class="muted mt-1">주인을 싣고 달린 충직한 준마를 담은 친구형 캐릭터</p>
+          <dl><dt>성격</dt><dd>친화적 · 곁을 지키는 서포트형</dd><dt>상징</dt><dd>하얀 데이지 · 웨이브 갈기</dd></dl>
+        </div>
+      </article>
+    </div>
+
+    <div class="center mt-5">
+      <img class="mascot-top" src="assets/img/mascot-duo.webp" alt="나란히 선 캐릭터 용과 마" loading="lazy">
+      <p class="lead">매주 토요일 15:00~22:00, 용과 마가 기다리는 골목으로 오세요.</p>
+      <div class="btn-row mt-3" style="justify-content:center">
+        <a class="btn btn--primary" href="zones.html">6개 존 둘러보기</a>
+        <a class="btn btn--ghost" href="booths.html">매대 명단 보기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 출처 -->
+<section class="section" style="padding-block:32px">
+  <div class="wrap">
+    <p class="sources">
+      <b>참고 자료</b> ·
+      <a href="https://gangneung.grandculture.net/gangneung/toc/GC00306201" target="_blank" rel="noopener">디지털강릉문화대전 「용지」</a> ·
+      <a href="https://encykorea.aks.ac.kr/Article/E0039688" target="_blank" rel="noopener">한국민족문화대백과사전 「용지(龍池)」</a> ·
+      <a href="https://gangneung.grandculture.net/gangneung/toc/GC00303751" target="_blank" rel="noopener">디지털강릉문화대전 「포남동」</a> ·
+      <a href="https://www.kukinews.com/article/view/kuk202609080100" target="_blank" rel="noopener">쿠키뉴스(2026. 9. 8.)</a>
+    </p>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
