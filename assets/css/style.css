@@ -477,3 +477,77 @@ html.nav-compact .nav { display: none !important; }
 html.nav-compact .nav-toggle { display: grid !important; }
 html.nav-compact .header-actions { margin-left: auto; }
 html.nav-compact .mobile-nav.open { display: block !important; }
+
+/* ---------- 모바일 가독성·잘림 방지 ---------- */
+/* 그리드·분할 칸 안의 긴 글자가 칸을 넓혀 화면 밖으로 밀어내지 않게 */
+.split > *, .grid > *, .hero__inner > *, .booth-grid > *, .gal-grid > * { min-width: 0; }
+.chip { white-space: normal; line-height: 1.35; }
+img, video, iframe, table { max-width: 100%; }
+
+@media (max-width: 640px) {
+  .wrap { width: calc(100% - 32px); }                     /* 양옆 16px 여백 */
+  .section { padding: 52px 0; }
+  .sec-head { margin-bottom: 26px; }
+  .sec-head p, .lead { font-size: 1rem; }
+  body { font-size: 15.5px; line-height: 1.7; }
+
+  /* 헤더 — 로고·로그인·메뉴 버튼이 한 줄에 들어가게 */
+  .site-header .wrap { gap: 10px; }
+  .brand { font-size: 1rem; gap: 8px; }
+  .brand img { width: 30px; height: 30px; }
+  .header-actions { gap: 6px; }
+  [data-auth-box] .btn--sm { padding: 7px 12px; font-size: .8125rem; }
+  [data-auth-box] .btn--primary { display: none; }       /* 회원가입은 로그인 화면에서 */
+  .lang-bar__label { display: none; }
+  .lang-bar .wrap { justify-content: center; gap: 10px; }
+
+  /* 홈 첫 화면 숫자 — 2×2 로 한눈에 */
+  .hero-stats { grid-template-columns: 1fr 1fr; gap: 18px 12px; padding-top: 22px; margin-top: 36px; }
+  .hero-stats div { padding-right: 0; }
+  .hero-stats dd { font-size: 2.25rem; }
+  .hero-stats dd span { font-size: 1.125rem; }
+  .hero .btn-row .btn { flex: 1 1 100%; }
+
+  /* 홈 운영 안내 띠 — 줄바꿈되면 구분선이 어색해서 숨김 */
+  .info-bar .info-sep { display: none; }
+  .info-bar .wrap { gap: 8px 16px !important; }
+
+  /* 카드·표 */
+  .tile { padding: 20px 18px; }
+  .card__body { padding: 18px 18px 20px; }
+  .figure figcaption { padding: 11px 14px; font-size: .8125rem; }
+  table.data th, table.data td { padding: 10px 12px; font-size: .875rem; }
+  .timeline { padding-left: 26px; }
+  .chip-row { gap: 6px; }
+}
+@media (max-width: 380px) {
+  .brand small { display: none; }                         /* 아주 좁은 화면은 영문 줄 숨김 */
+}
+@media (max-width: 640px) {
+  /* 머리글 줄이 없는 두 칸짜리 표(항목·내용)는 옆으로 밀지 않고 한 화면에 */
+  table.data:not(:has(thead)) { min-width: 0; }
+  table.data:not(:has(thead)) th { width: 32% !important; white-space: normal; vertical-align: top; }
+}
+/* 카드 안 분류 표시는 글자 길이만큼만 */
+.card__body > .zone-tag, .card__body > .chip { align-self: flex-start; }
+@media (max-width: 640px) {
+  /* 표는 옆으로 밀지 않고 화면 폭에 맞춘다 — 글자를 조금 줄이고 줄바꿈 허용 */
+  table.data { min-width: 0; font-size: .8125rem; }
+  table.data th, table.data td { padding: 9px 8px; word-break: keep-all; overflow-wrap: anywhere; }
+  table.data thead th { white-space: normal; font-size: .75rem; }
+  table.data td.right, table.data th.right { white-space: nowrap; }
+}
+@media (max-width: 640px) {
+  /* 첫 칸(항목 이름)은 단어 중간에서 끊기지 않게 */
+  table.data tr > :first-child { min-width: 5.6em; overflow-wrap: normal; }
+}
+@media (max-width: 640px) {
+  table.data tr > :first-child { min-width: 4.6em; }
+  table.data td.right, table.data th.right { white-space: normal; padding-left: 4px; padding-right: 8px; font-size: .75rem; }
+}
+@media (max-width: 640px) {
+  /* 숫자 표(오른쪽 정렬 칸이 있는 표)는 칸 폭을 고정 비율로 — 숫자는 중간에서 끊기지 않고 띄어쓰기에서만 줄바꿈 */
+  table.data:has(td.right) { table-layout: fixed; }
+  table.data:has(td.right) tr > :first-child { width: 28%; min-width: 0; }
+  table.data td.right, table.data th.right { overflow-wrap: normal; word-break: keep-all; }
+}
