@@ -10,7 +10,6 @@
   .web-item > div { display: grid; gap: 6px; min-width: 0; }
   .web-thumb { aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: var(--amber-50); }
   .web-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s var(--ease); }
-  .web-thumb.fallback img { object-fit: contain; padding: 10px; }
   .web-item:hover .web-thumb img { transform: scale(1.04); }
   @media (max-width: 640px) { .web-item { grid-template-columns: 112px 1fr; gap: 12px; } .web-item h3 { font-size: .9375rem; } .web-item .muted { display: none; } }
   .web-item:hover h3 { color: var(--amber-700); }
@@ -103,15 +102,20 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const safe = (u) => /^https?:\/\//.test(u || "") ? u : "#";
   let items = [], kind = "", shown = 15;
-  const FALLBACK = "assets/img/mascot-duo.webp";   // 대표사진이 없는 글에 쓰는 기본 이미지
+  /* 대표사진 — 포털이 받아 둔 저장본을 쓴다(언론사가 외부 표시를 막아도 보이게).
+     사진이 없거나 못 불러오면 용마미식거리 현장 사진을 번갈아 넣는다. */
+  const IMG_API = "https://stn6000.com/yongma/api/news/img?u=";
+  const FIELD = ["20260918_201800", "20260918_185900", "20260918_185855", "20260918_112248",
+                 "20260918_174812", "20260919_180757"].map((id) => `assets/img/gallery/${id}_t.webp`);
+  const fieldFor = (i) => FIELD[i % FIELD.length];
 
   function render() {
     const rows = kind ? items.filter((x) => (kind === "blog") === (x.kind === "blog")) : items;
     if (!rows.length) { UI.alert(state, "info", kind === "blog" ? "아직 모은 블로그 글이 없습니다." : "모은 소식이 없습니다."); box.innerHTML = ""; more.classList.add("hidden"); return; }
     state.className = "alert";
-    box.innerHTML = rows.slice(0, shown).map((x) => `
+    box.innerHTML = rows.slice(0, shown).map((x, i) => `
       <a class="web-item" href="${esc(safe(x.link))}" target="_blank" rel="noopener noreferrer">
-        <span class="web-thumb${x.image ? "" : " fallback"}"><img src="${esc(safe(x.image) === "#" ? FALLBACK : x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${FALLBACK}';this.parentNode.classList.add('fallback')"></span>
+        <span class="web-thumb"><img src="${esc(safe(x.image) === "#" ? fieldFor(i) : IMG_API + encodeURIComponent(x.image))}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${fieldFor(i)}'"></span>
         <div>
         <div class="web-meta">
           <span class="chip ${x.kind === "blog" ? "chip--green" : "chip--blue"}">${x.kind === "blog" ? "블로그" : "기사"}</span>
