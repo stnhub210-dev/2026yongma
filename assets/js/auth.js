@@ -100,9 +100,6 @@ const Auth = {
       provider,
       options: {
         redirectTo: `${location.origin}${location.pathname}`,
-        // 카카오 이메일(account_email)은 비즈니스 앱 전환을 해야 동의항목에 생깁니다.
-        // 없는 항목을 요청하면 카카오가 로그인을 거부하므로 닉네임만 받습니다.
-        scopes: provider === "kakao" ? "profile_nickname" : undefined,
       },
     });
     if (error) {
