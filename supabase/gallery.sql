@@ -60,3 +60,57 @@ create policy "방문객사진 목록 누구나 등록" on public.gallery_upload
 drop policy if exists "방문객사진 목록 관리자만 삭제" on public.gallery_uploads;
 create policy "방문객사진 목록 관리자만 삭제" on public.gallery_uploads
   for delete using (public.is_staff());
+
+
+-- 3. 올린 사람이 직접 지울 수 있게 하는 열쇠 -------------------------------
+-- 로그인이 없으므로 "누가 올렸는지" 를 알 수 없습니다. 그래서 사진마다 임의의
+-- 열쇠를 하나 만들어 올린 사람 브라우저에만 남겨 두고, 그 열쇠가 맞을 때만
+-- 지워지게 합니다. 열쇠는 아래 표에 따로 담아 두고 아무도 읽지 못하게 막습니다.
+create table if not exists public.gallery_upload_keys (
+  photo_id   bigint primary key references public.gallery_uploads(id) on delete cascade,
+  delete_key text not null
+);
+
+alter table public.gallery_upload_keys enable row level security;
+
+-- 읽기 정책을 만들지 않았으므로 아무도 열쇠를 들여다볼 수 없습니다(등록만 가능).
+drop policy if exists "열쇠 등록만 허용" on public.gallery_upload_keys;
+create policy "열쇠 등록만 허용" on public.gallery_upload_keys
+  for insert with check (length(delete_key) between 10 and 100);
+
+-- 열쇠가 맞을 때만 사진을 지우고, 지워진 파일 경로를 알려 줍니다.
+create or replace function public.gallery_delete(p_id bigint, p_key text)
+returns table (path text, thumb_path text)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_key is null or length(p_key) < 10 then
+    return;                                   -- 열쇠가 없거나 너무 짧으면 아무것도 안 함
+  end if;
+  if not exists (
+    select 1 from public.gallery_upload_keys k
+     where k.photo_id = p_id and k.delete_key = p_key
+  ) then
+    return;                                   -- 열쇠가 맞지 않으면 아무것도 안 함
+  end if;
+  return query
+    delete from public.gallery_uploads g
+     where g.id = p_id
+    returning g.path, g.thumb_path;
+end $$;
+
+grant execute on function public.gallery_delete(bigint, text) to anon, authenticated;
+
+-- 목록에서 빠진 사진 파일은 누구나 치울 수 있게 합니다.
+-- 목록에 살아 있는 사진은 이 조건에 걸리지 않으므로 남의 사진은 지워지지 않습니다.
+drop policy if exists "방문객사진 주인 없는 파일 정리" on storage.objects;
+create policy "방문객사진 주인 없는 파일 정리" on storage.objects
+  for delete using (
+    bucket_id = 'gallery'
+    and not exists (
+      select 1 from public.gallery_uploads g
+       where g.path = name or g.thumb_path = name
+    )
+  );

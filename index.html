@@ -148,6 +148,32 @@
 })();
 </script>
 
+<!-- ================= 만화로 보는 용마거리 =================
+     story.html 의 같은 섹션을 홈에도 둔다. 모양은 assets/css/style.css,
+     동작은 assets/js/comic.js 를 두 페이지가 함께 쓴다. -->
+<section class="section section--warm" id="comic">
+  <div class="wrap">
+    <div class="sec-head sec-head--center reveal">
+      <span class="eyebrow">Comic</span>
+      <h2>만화로 보는 용마거리</h2>
+      <p>바다와 호수가 만나는 포남동에서 시작해, 용이 된 말의 전설을 지나 오늘의 용마미식거리까지. 네 편의 이야기로 따라가 보세요.</p>
+    </div>
+    <div class="comic-tabs" id="comic-tabs" role="tablist" aria-label="만화 편 선택"></div>
+    <div class="comic" id="comic-grid"></div>
+    <div class="comic-foot">
+      <span class="tiny muted">그림을 누르면 크게 볼 수 있습니다.</span>
+      <button class="btn btn--dark btn--sm" type="button" id="comic-nextep">다음 편 →</button>
+    </div>
+  </div>
+</section>
+
+<dialog class="lightbox" id="comic-lb" aria-label="만화 크게 보기">
+  <figure class="lightbox__fig"><img id="comic-img" alt=""><figcaption><span class="lightbox__meta" id="comic-meta"></span></figcaption></figure>
+  <button class="lightbox__btn lightbox__close" id="comic-close" aria-label="닫기">×</button>
+  <button class="lightbox__btn lightbox__prev" id="comic-prev" aria-label="이전 장면">‹</button>
+  <button class="lightbox__btn lightbox__next" id="comic-next" aria-label="다음 장면">›</button>
+</dialog>
+
 <!-- ================= 현장 사진 ================= -->
 <section class="section" style="padding-bottom:0">
   <div class="wrap">
@@ -430,5 +456,6 @@
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/comic.js"></script>
 </body>
 </html>

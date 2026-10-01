@@ -22,6 +22,20 @@
 
   const sb = () => (window.Auth && Auth.ready() ? Auth.client() : null);
 
+  /* ---------- 내가 올린 사진 기억하기 ----------
+     로그인이 없으므로 "누가 올렸는지" 를 알 수 없습니다. 사진마다 임의의 열쇠를
+     만들어 이 브라우저에만 남겨 두고, 그 열쇠로 본인 사진만 지울 수 있게 합니다.
+     (브라우저를 바꾸거나 기록을 지우면 삭제 버튼이 사라집니다) */
+  const MINE_KEY = "yongma_my_photos";
+  const mine = () => { try { return JSON.parse(localStorage.getItem(MINE_KEY)) || {}; } catch (e) { return {}; } };
+  const remember = (id, key) => { try { const m = mine(); m[id] = key; localStorage.setItem(MINE_KEY, JSON.stringify(m)); } catch (e) { /* 저장 못 해도 올리기는 됩니다 */ } };
+  const forget = (id) => { try { const m = mine(); delete m[id]; localStorage.setItem(MINE_KEY, JSON.stringify(m)); } catch (e) { /* 무시 */ } };
+  const newKey = () => {
+    const a = new Uint8Array(16);
+    (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => (a[i] = Math.floor(Math.random() * 256)));
+    return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
+  };
+
   /* ---------- 사진에서 찍은 날짜 읽기 (JPEG EXIF) ---------- */
   async function shotTime(file) {
     const fallback = new Date(file.lastModified || Date.now());
@@ -92,9 +106,9 @@
     const small = await shrink(file, THUMB, 0.78);
     if (!big.blob || !small.blob) throw new Error("사진을 변환하지 못했습니다");
 
-    const key = day.replace(/-/g, "") + "/" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    const path = key + ".webp";
-    const thumb = key + "_t.webp";
+    const stem = day.replace(/-/g, "") + "/" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    const path = stem + ".webp";
+    const thumb = stem + "_t.webp";
     const opt = { contentType: "image/webp", cacheControl: "31536000" };
 
     let up = await c.storage.from(BUCKET).upload(path, big.blob, opt);
@@ -106,8 +120,28 @@
       path, thumb_path: thumb,
       caption: meta.caption, uploader: meta.uploader,
       taken_on: day, taken_at: hm, w: big.w, h: big.h,
-    });
+    }).select("id").single();
     if (ins.error) throw ins.error;
+
+    // 올린 본인만 지울 수 있도록 열쇠를 하나 남깁니다
+    const key = newKey();
+    const k = await c.from("gallery_upload_keys").insert({ photo_id: ins.data.id, delete_key: key });
+    if (!k.error) remember(ins.data.id, key);
+  }
+
+  /* ---------- 내가 올린 사진 지우기 ---------- */
+  async function removeOne(id) {
+    const c = sb();
+    const key = mine()[id];
+    if (!c || !key) return false;
+    const { data, error } = await c.rpc("gallery_delete", { p_id: id, p_key: key });
+    if (error) { console.warn("삭제 실패:", error); return false; }
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return false;                        // 열쇠가 맞지 않았습니다
+    // 목록에서 빠진 뒤에야 파일을 치울 수 있습니다(정책이 그렇게 되어 있습니다)
+    await c.storage.from(BUCKET).remove([row.path, row.thumb_path].filter(Boolean));
+    forget(id);
+    return true;
   }
 
   /* ---------- 여러 장 올리기 (3장씩 나눠서) ---------- */
@@ -167,12 +201,16 @@
     if (!grid) return;
     count.textContent = list.length ? `${list.length}장` : loadError ? "준비 중" : "아직 없음";
     if (loadError) { grid.innerHTML = `<p class="muted" style="grid-column:1/-1">${esc(loadError)}</p>`; return; }
+    const m = mine();
     grid.innerHTML = list.length
       ? list.map((p, i) => `
-          <button class="gal-item" data-i="${i}" aria-label="${esc(p.caption || "방문객 사진")} 크게 보기">
-            <img src="${p.thumbUrl}" alt="${esc(p.caption)}" loading="lazy" width="${p.w || 480}" height="${p.h || 360}">
-            <span class="gal-item__cap"><b>${esc(p.taken_at || "")}</b>${esc(p.caption || (p.uploader ? p.uploader + "님" : ""))}</span>
-          </button>`).join("")
+          <div class="gal-cell">
+            <button class="gal-item" data-i="${i}" aria-label="${esc(p.caption || "방문객 사진")} 크게 보기">
+              <img src="${p.thumbUrl}" alt="${esc(p.caption)}" loading="lazy" width="${p.w || 480}" height="${p.h || 360}">
+              <span class="gal-item__cap"><b>${esc(p.taken_at || "")}</b>${esc(p.caption || (p.uploader ? p.uploader + "님" : ""))}</span>
+            </button>
+            ${m[p.id] ? `<button class="gal-del" data-del="${p.id}" type="button" title="내가 올린 사진 지우기">지우기</button>` : ""}
+          </div>`).join("")
       : `<p class="muted" style="grid-column:1/-1">첫 사진을 올려 주세요. 위의 버튼을 누르면 됩니다.</p>`;
   }
 
@@ -259,7 +297,25 @@
       await load();
     }
 
-    $("#up-grid").addEventListener("click", (e) => {
+    $("#up-grid").addEventListener("click", async (e) => {
+      // 지우기 — 이 브라우저에서 올린 사진에만 버튼이 보입니다
+      const del = e.target.closest("[data-del]");
+      if (del) {
+        if (!confirm("이 사진을 지울까요? 되돌릴 수 없습니다.")) return;
+        del.disabled = true;
+        del.textContent = "지우는 중…";
+        const ok = await removeOne(+del.dataset.del);
+        if (!ok) {
+          del.disabled = false;
+          del.textContent = "지우기";
+          msg.textContent = "사진을 지우지 못했습니다. 이 브라우저에서 올린 사진만 지울 수 있습니다.";
+          return;
+        }
+        msg.textContent = "사진을 지웠습니다.";
+        await load();
+        return;
+      }
+
       const it = e.target.closest(".gal-item");
       if (!it || !window.GalleryLightbox) return;
       window.GalleryLightbox(list.map((p) => ({
