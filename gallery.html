@@ -36,6 +36,13 @@
   </div>
 </section>
 
+<!-- 방문객 사진 — 누구나 올리기 (assets/js/gallery-upload.js) -->
+<section class="section section--warm" id="visitor">
+  <div class="wrap">
+    <div id="gal-upload"></div>
+  </div>
+</section>
+
 </main>
 
 <!-- 확대 보기 -->
@@ -130,21 +137,35 @@
   });
 
   // ---- 확대 보기 ----
+  // 공식 기록사진과 방문객 사진이 같은 창을 씁니다. 보여 줄 목록(items)만 갈아 끼웁니다.
   const lb = document.getElementById("lightbox");
   const img = document.getElementById("lb-img");
+  const official = order.map((p) => ({
+    url: IMG + p.id + ".webp",
+    caption: p.caption || "현장 사진",
+    meta: `${dayLabel(p.date).long} ${p.time}`,
+  }));
+  let items = official;
   let cur = 0;
   const show = (i) => {
-    cur = (i + order.length) % order.length;
-    const p = order[cur];
-    img.src = IMG + p.id + ".webp";
-    img.alt = p.caption || "현장 사진";
-    document.getElementById("lb-cap").textContent = p.caption || "";
-    document.getElementById("lb-meta").textContent =
-      `${dayLabel(p.date).long} ${p.time} · ${cur + 1} / ${order.length}`;
+    if (!items.length) return;
+    cur = (i + items.length) % items.length;
+    const p = items[cur];
+    img.src = p.url;
+    img.alt = p.caption;
+    document.getElementById("lb-cap").textContent = p.caption;
+    document.getElementById("lb-meta").textContent = `${p.meta} · ${cur + 1} / ${items.length}`;
+  };
+  /* 방문객 사진 쪽(gallery-upload.js)에서 이 창을 열 때 씁니다 */
+  window.GalleryLightbox = (list, i) => {
+    items = list;
+    show(i);
+    lb.showModal();
   };
   box.addEventListener("click", (e) => {
     const it = e.target.closest(".gal-item");
     if (!it) return;
+    items = official;
     show(+it.dataset.i);
     lb.showModal();
   });
@@ -174,5 +195,6 @@
   window.addEventListener("hashchange", fromHash);
 })();
 </script>
+<script src="assets/js/gallery-upload.js"></script>
 </body>
 </html>
