@@ -316,9 +316,12 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
   gap: 28px; align-items: start;
 }
 .join-types { display: grid; gap: 14px; }
-.join-types .tile { padding: 16px 16px 18px; }
-.join-types .type-thumb { margin-bottom: 12px; }
-.join-types .type-thumb img { height: 96px; }
+/* 사진을 넉넉히 보여 주고, 제목·설명은 그 아래에 바짝 붙여 한 덩어리로 읽히게 한다. */
+.join-types .tile { padding: 14px 14px 16px; }
+.join-types .type-thumb { margin-bottom: 10px; }
+.join-types .type-thumb img { height: 150px; }
+.join-types h3 { font-size: 1.0625rem; line-height: 1.3; }
+.join-types .tile p { margin-top: 3px; line-height: 1.4; }
 
 /* 화면이 충분히 긴 데스크톱에서만 카드를 고정한다.
    긴 신청서를 채우는 동안 유형을 바로 바꿀 수 있고, 짧은 화면에서는 잘리지 않게 끈다. */
