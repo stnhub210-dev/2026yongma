@@ -265,9 +265,11 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
 /* 요약 카드(강조형) — 제목은 둥근 버튼, 테두리는 굵게.
    마우스를 올리면 커지고 테두리를 따라 빛이 한 바퀴 돈다. */
 .tile--glow { position: relative; isolation: isolate; border: 2px solid var(--line); border-radius: var(--radius-lg); padding: 24px 22px; overflow: hidden; }
-.tile--glow dt { display: inline-block; font-size: .9375rem; font-weight: 800; color: var(--ink-800);
-  background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; }
-.tile--glow dd { font-size: 2.125rem; margin-top: 12px; }
+.tile--glow dt { display: inline-block; font-size: 1rem; font-weight: 800; color: var(--ink-800);
+  background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; }
+.tile--glow dd { font-size: 2.375rem; margin-top: 14px; }
+.tile--glow dd small { font-size: 1rem; }
+.tile--glow .delta { margin-top: 12px; font-size: .875rem; padding: 4px 12px; }
 /* 테두리를 도는 빛 — 카드보다 큰 원뿔형 그라데이션을 돌리고 안쪽을 덮어 테두리만 남긴다 */
 .tile--glow::before { content: ""; position: absolute; z-index: -2; left: 50%; top: 50%; width: 170%; aspect-ratio: 1;
   translate: -50% -50%; opacity: 0; transition: opacity .25s var(--ease);
