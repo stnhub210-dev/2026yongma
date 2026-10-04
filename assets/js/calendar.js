@@ -19,9 +19,9 @@
       if (w !== 5 && w !== 6) continue;
       EVENTS[key(d)] = { kind: "reg", name: "정규행사", sub: "버스킹" };
     }
-    // 10/30·31 은 중기부 동행축제 연계 — 정규행사보다 크게 치른다
-    EVENTS["2026-10-30"] = { kind: "dh", name: "동행축제", sub: "동행축제" };
-    EVENTS["2026-10-31"] = { kind: "dh", name: "동행축제", sub: "동행축제" };
+    // 10/30·31 은 중기부 동행축제 연계 — 정규행사보다 크게 치르고, 버스킹도 함께 연다
+    EVENTS["2026-10-30"] = { kind: "dh", name: "동행축제", sub: "동행축제", sub2: "버스킹" };
+    EVENTS["2026-10-31"] = { kind: "dh", name: "동행축제", sub: "동행축제", sub2: "버스킹" };
     EVENTS["2026-12-25"] = { kind: "sp", name: "특별행사", sub: "크리스마스" };
   })();
 
@@ -50,10 +50,11 @@
       if (w === 0) cls += " sun";
       if (w === 6) cls += " sat";
       if (ev) { cls += " on on--" + ev.kind; count++; }
-      cells += '<span class="' + cls + '"' +
-        (ev ? ' title="' + esc(ev.name + " · " + ev.sub) + '"' : "") + ">" +
+      var tip = ev ? ev.name + (ev.sub2 ? " · " + ev.sub2 + " 동시 진행" : " · " + ev.sub) : "";
+      cells += '<span class="' + cls + '"' + (ev ? ' title="' + esc(tip) + '"' : "") + ">" +
         '<b>' + day + "</b>" +
-        (ev ? '<em>' + esc(ev.sub) + "</em>" : "") + "</span>";
+        (ev ? '<em>' + esc(ev.sub) + "</em>" : "") +
+        (ev && ev.sub2 ? '<em class="sub2">+' + esc(ev.sub2) + "</em>" : "") + "</span>";
     }
 
     return '<article class="cal-card">' +

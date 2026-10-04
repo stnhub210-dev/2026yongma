@@ -16,3 +16,6 @@ desktop.ini
 # 원본 자료(개인정보 포함 가능) — 사이트에 올리지 않음
 *.pdf
 KakaoTalk_*
+
+# 이미지 교체 전 원본 (사이트에는 올리지 않음)
+assets/img/_backup/
