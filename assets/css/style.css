@@ -418,6 +418,59 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .gal-item__cap { position: absolute; inset: auto 0 0 0; padding: 26px 12px 10px; font-size: .8125rem; font-weight: 600; color: #fff; text-align: left; background: linear-gradient(transparent, rgba(0,0,0,.72)); }
 .gal-item__cap b { display: inline-block; margin-right: 8px; padding: 1px 7px; border-radius: 999px; background: rgba(255,255,255,.2); font-size: .75rem; font-variant-numeric: tabular-nums; }
 
+/* 행사일정 달력 — 홈(index)의 #schedule. 내용은 assets/js/calendar.js 가 그립니다. */
+.cal-legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 20px; margin-bottom: clamp(20px, 3vw, 30px); font-size: .875rem; font-weight: 600; color: var(--ink-700); }
+.cal-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.cal-legend i { width: 13px; height: 13px; border-radius: 4px; }
+.cal-legend i.reg { background: var(--amber-500); }
+.cal-legend i.dh { background: #6D28D9; }
+.cal-legend i.sp { background: var(--amber-700); }
+
+.cal-months { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(14px, 2vw, 22px); }
+
+.cal-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: clamp(16px, 2vw, 22px); }
+.cal-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-bottom: 12px; margin-bottom: 10px; border-bottom: 2px solid var(--ink-900); }
+.cal-head h3 { font-size: 1.375rem; letter-spacing: -.02em; }
+.cal-count { font-size: .75rem; font-weight: 700; color: var(--amber-700); background: var(--amber-50, #FEF6EE); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+
+.cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+.cal-week span { text-align: center; font-size: .6875rem; font-weight: 800; color: var(--ink-500); padding: 4px 0; }
+.cal-week .sun { color: #DC2626; }
+.cal-week .sat { color: #2563EB; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-d { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; aspect-ratio: 1 / 1; border-radius: 10px; font-variant-numeric: tabular-nums; transition: transform .22s var(--ease), box-shadow .22s var(--ease); }
+.cal-d b { font-size: .8125rem; font-weight: 600; color: var(--ink-800); }
+.cal-d em { font-style: normal; font-size: .5625rem; font-weight: 700; line-height: 1; }
+.cal-d--pad { visibility: hidden; }
+.cal-d.sun b { color: #DC2626; }
+.cal-d.sat b { color: #2563EB; }
+
+/* 행사가 있는 날 */
+.cal-d.on { cursor: pointer; color: #fff; }
+.cal-d.on b, .cal-d.on.sun b, .cal-d.on.sat b { color: #fff; font-weight: 800; }
+.cal-d.on em { color: rgba(255,255,255,.88); }
+.cal-d.on--reg { background: var(--amber-500); }
+.cal-d.on--sp { background: var(--amber-700); }
+/* 동행축제 — 정규행사보다 크게 치르는 날이라 색을 달리하고 테두리로 한 번 더 띄운다 */
+.cal-d.on--dh { background: #6D28D9; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6D28D9, var(--shadow); }
+.cal-d.on--dh b { font-size: .875rem; }
+.cal-d.on--dh em { color: #fff; letter-spacing: -.03em; }
+/* 마우스를 올리면 커진다 */
+.cal-d.on:hover, .cal-d.on:focus-visible { transform: scale(1.18); box-shadow: var(--shadow-lg); z-index: 2; }
+.cal-d.on--dh:hover, .cal-d.on--dh:focus-visible { transform: scale(1.26); box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6D28D9, var(--shadow-lg); }
+@media (prefers-reduced-motion: reduce) { .cal-d { transition: none; } .cal-d.on:hover { transform: none; } }
+
+/* 운영일마다 함께 열리는 3개 존 */
+.cal-zones { margin-top: clamp(18px, 2.5vw, 28px); }
+.cal-zones__head { text-align: center; font-size: .9375rem; font-weight: 600; color: var(--ink-700); margin-bottom: 12px; }
+.cal-zones__head b { color: var(--amber-700); font-weight: 800; }
+.cal-zones__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 10px; }
+.cal-zone { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--amber-500); border-radius: var(--radius); background: #fff; text-decoration: none; transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s; }
+.cal-zone:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-left-color: var(--amber-700); text-decoration: none; }
+.cal-zone .n { font-size: .9375rem; font-weight: 800; color: var(--ink-900); }
+.cal-zone .d { font-size: .8125rem; color: var(--ink-500); line-height: 1.55; word-break: keep-all; }
+
 /* 만화로 보는 용마거리 — 홈(index)과 이야기(story) 두 곳에서 씁니다.
    10컷을 PC 5칸, 태블릿 3칸, 휴대폰 2칸으로 보여 줍니다. */
 .comic { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
