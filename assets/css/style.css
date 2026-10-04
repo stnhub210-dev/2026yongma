@@ -289,6 +289,23 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
   background: var(--amber-50); color: var(--amber-600); margin-bottom: 16px; font-size: 1.375rem;
 }
 
+/* 신청 유형 카드 썸네일 — 이모지 아이콘 대신 실제 사진을 올린다.
+   사진은 바깥 테두리를 건드리지 않도록 카드 안쪽 여백 안에 둥글게 넣고,
+   확대 애니메이션이 모서리 밖으로 비어져 나오지 않게 감싸는 상자에서 잘라 낸다. */
+.type-thumb {
+  display: block; overflow: hidden; border-radius: 12px;
+  margin-bottom: 16px; background: var(--bg-soft);
+}
+.type-thumb img {
+  display: block; width: 100%; height: 112px; object-fit: cover;
+  transition: transform .3s var(--ease);
+}
+.type-btn:hover .type-thumb img { transform: scale(1.06); }
+@media (prefers-reduced-motion: reduce) {
+  .type-thumb img { transition: none; }
+  .type-btn:hover .type-thumb img { transform: none; }
+}
+
 /* ---------- Timeline ---------- */
 .timeline { position: relative; padding-left: 30px; }
 .timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
