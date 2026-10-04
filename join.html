@@ -25,9 +25,11 @@
 </section>
 
 <section class="section">
-  <div class="wrap" style="max-width:860px">
+  <div class="wrap" style="max-width:1120px">
 
-    <div class="grid grid-4" style="margin-bottom:34px">
+    <div class="join-split">
+
+    <div class="join-types">
       <button class="tile reveal type-btn" data-type="seller" id="seller" style="text-align:left;cursor:pointer;border:1.5px solid var(--line)">
         <span class="type-thumb"><img src="assets/img/prog-market.webp" alt="" loading="lazy"></span>
         <h3>프리마켓 셀러</h3><p class="muted tiny mt-1">한번봐존 · 행사기간 상시</p>
@@ -46,7 +48,7 @@
       </button>
     </div>
 
-    <div class="panel" style="border-radius:var(--radius-lg)">
+    <div class="panel" id="join-form" style="border-radius:var(--radius-lg)">
       <h3 id="form-title">프리마켓 셀러 신청</h3>
       <p class="panel-sub" id="form-desc">강릉 로컬 수공예·커피·디저트 등 셀러를 모집합니다. 참가비는 없으며 매대·천막은 주최 측이 준비합니다.</p>
 
@@ -70,7 +72,10 @@
           </div>
           <div class="field">
             <label for="f-date">희망 참여일 <span class="muted" style="font-weight:500">(선택)</span></label>
-            <input class="input" id="f-date" type="date">
+            <!-- 운영일(매주 금·토)만 고를 수 있다. 목록은 assets/js/events.js 가 채운다. -->
+            <select class="input" id="f-date">
+              <option value="">운영일 중에서 선택해 주십시오</option>
+            </select>
           </div>
         </div>
 
@@ -102,6 +107,8 @@
       </form>
     </div>
 
+    </div><!-- /.join-split -->
+
   </div>
 </section>
 
@@ -114,6 +121,8 @@
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/main.js"></script>
+<!-- 운영일 목록(희망 참여일 선택지) — 홈 화면 달력과 같은 파일을 쓴다 -->
+<script src="assets/js/events.js"></script>
 <script>
 (() => {
   const TYPES = {
@@ -126,6 +135,31 @@
   const msg = document.getElementById("msg");
   const form = document.getElementById("apply-form");
   const btns = document.querySelectorAll(".type-btn");
+
+  /* 희망 참여일 — 홈 화면 달력과 같은 운영일(매주 금·토)만 고를 수 있게 채운다.
+     날짜 데이터는 assets/js/events.js 한 곳에만 있어 달력과 어긋날 일이 없다. */
+  (() => {
+    const sel = document.getElementById("f-date");
+    const days = window.YM_EVENT_DAYS || [];
+    if (!sel || !days.length) return;
+    const byMonth = new Map();
+    days.forEach((d) => {
+      const m = Number(d.date.slice(5, 7));
+      if (!byMonth.has(m)) byMonth.set(m, []);
+      byMonth.get(m).push(d);
+    });
+    byMonth.forEach((list, m) => {
+      const g = document.createElement("optgroup");
+      g.label = m + "월";
+      list.forEach((d) => {
+        const o = document.createElement("option");
+        o.value = d.date;
+        o.textContent = d.label;          // 예) 10월 16일(금) · 정규행사
+        g.appendChild(o);
+      });
+      sel.appendChild(g);
+    });
+  })();
 
   function select(type) {
     const c = TYPES[type]; if (!c) return;
@@ -141,7 +175,14 @@
     });
     UI.clearAlert(msg);
   }
-  btns.forEach((b) => b.addEventListener("click", () => select(b.dataset.type)));
+  btns.forEach((b) => b.addEventListener("click", () => {
+    select(b.dataset.type);
+    /* 넓은 화면에서는 신청서가 바로 옆에 있어 그대로 보인다.
+       좁은 화면에서는 카드 아래로 밀려나 눌러도 안 보이므로 그때만 신청서로 내려 준다. */
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      document.getElementById("join-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }));
   select(location.hash.replace("#", "") in TYPES ? location.hash.replace("#", "") : "seller");
 
   /* 신청서는 STN 포털이 받아 저장한다 (홈페이지는 정적 사이트라 서버가 없음) */

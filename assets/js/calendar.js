@@ -1,5 +1,6 @@
 /* 포남용마거리 행사일정 달력 — 10·11·12월 세 장을 그린다.
-   일정을 바꾸려면 아래 EVENTS 만 고치면 된다(날짜 → 행사 이름·종류).
+   일정(EVENTS)은 assets/js/events.js 한 곳에만 두고 여기서는 가져다 쓴다.
+   달력과 참여 신청 화면이 서로 다른 날짜를 보여 주는 일이 없게 하기 위함이다.
    종류 reg = 정규행사(주황) / dh = 동행축제(보라·강조) / sp = 특별행사(진한 주황). */
 (function () {
   "use strict";
@@ -10,20 +11,7 @@
     { y: 2026, m: 12 }
   ];
 
-  /* 정규행사 — 10/16(금)·17(토)부터 11/28(토)까지 매주 금·토 */
-  var EVENTS = {};
-  (function () {
-    var d = new Date(2026, 9, 16), end = new Date(2026, 10, 28);
-    for (; d <= end; d.setDate(d.getDate() + 1)) {
-      var w = d.getDay();                                  // 5=금, 6=토
-      if (w !== 5 && w !== 6) continue;
-      EVENTS[key(d)] = { kind: "reg", name: "정규행사", sub: "버스킹" };
-    }
-    // 10/30·31 은 중기부 동행축제 연계 — 정규행사보다 크게 치르고, 버스킹도 함께 연다
-    EVENTS["2026-10-30"] = { kind: "dh", name: "동행축제", sub: "동행축제", sub2: "버스킹" };
-    EVENTS["2026-10-31"] = { kind: "dh", name: "동행축제", sub: "동행축제", sub2: "버스킹" };
-    EVENTS["2026-12-25"] = { kind: "sp", name: "특별행사", sub: "크리스마스" };
-  })();
+  var EVENTS = window.YM_EVENTS || {};
 
   function key(d) {
     return d.getFullYear() + "-" +

@@ -306,6 +306,34 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
   .type-btn:hover .type-thumb img { transform: none; }
 }
 
+/* 참여 신청 2단 레이아웃 — 왼쪽은 유형 카드(세로 1열), 오른쪽은 선택한 유형의 신청서.
+   카드를 누르면 오른쪽 신청서가 그 유형으로 바뀐다. */
+.join-split {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr);
+  gap: 28px; align-items: start;
+}
+.join-types { display: grid; gap: 14px; }
+.join-types .tile { padding: 16px 16px 18px; }
+.join-types .type-thumb { margin-bottom: 12px; }
+.join-types .type-thumb img { height: 96px; }
+
+/* 화면이 충분히 긴 데스크톱에서만 카드를 고정한다.
+   긴 신청서를 채우는 동안 유형을 바로 바꿀 수 있고, 짧은 화면에서는 잘리지 않게 끈다. */
+@media (min-width: 901px) and (min-height: 860px) {
+  .join-types { position: sticky; top: calc(var(--nav-h) + 16px); }
+}
+
+/* 좁은 화면에서는 위아래로 쌓고, 카드는 2개씩 묶어 신청서가 너무 멀어지지 않게 한다. */
+@media (max-width: 900px) {
+  .join-split { grid-template-columns: 1fr; gap: 22px; }
+  .join-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .join-types { grid-template-columns: 1fr; }
+}
+/* 카드를 눌러 신청서로 내려올 때 고정 헤더가 제목을 가리지 않게 한다. */
+#join-form { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
 /* ---------- Timeline ---------- */
 .timeline { position: relative; padding-left: 30px; }
 .timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
