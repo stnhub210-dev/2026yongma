@@ -177,7 +177,10 @@ const Auth = {
     }
     const u = await this.user();
     if (!u) {
+      // 관리자 버튼은 로그인 전에도 보여 준다. 운영자가 바로 들어갈 수 있어야 하고,
+      // 관리자 화면 자체가 로그인과 권한을 다시 확인하므로 노출돼도 위험하지 않다.
       box.innerHTML =
+        `<a class="btn btn--ghost btn--sm" href="${base}admin/index.html">관리자</a>` +
         `<a class="btn btn--ghost btn--sm" href="${base}login.html">로그인</a>` +
         `<a class="btn btn--primary btn--sm" href="${base}login.html#signup">회원가입</a>`;
       return;

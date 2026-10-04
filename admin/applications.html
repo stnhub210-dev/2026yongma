@@ -16,6 +16,13 @@
     </div>
     <div id="admin-msg" class="alert"></div>
 
+    <!-- 홈페이지 신청서는 STN 포털로 들어가고, 이 표는 Supabase 를 읽는다.
+         두 저장소가 아직 이어져 있지 않아, 실제 접수 현황은 포털에서 봐야 한다. -->
+    <div class="alert alert--info show" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+      <span>홈페이지에서 들어온 신청서는 <b>STN 포털</b>에 저장됩니다. 실제 접수 현황과 알림 메일은 포털에서 확인해 주십시오.</span>
+      <a class="btn btn--primary btn--sm" href="https://stn6000.com/yongma/applications" target="_blank" rel="noopener">포털 접수현황 열기</a>
+    </div>
+
     <div class="grid grid-4">
       <div class="tile"><dt>전체</dt><dd class="num" id="n-all">-</dd></div>
       <div class="tile"><dt>접수</dt><dd class="num" id="n-received">-</dd></div>
@@ -41,10 +48,10 @@
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../assets/js/config.js"></script>
-<script src="../assets/js/auth.js"></script>
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/admin.js"></script>
+<script src="../assets/js/config.js?v=20261005b"></script>
+<script src="../assets/js/auth.js?v=20261005b"></script>
+<script src="../assets/js/main.js?v=20261005b"></script>
+<script src="../assets/js/admin.js?v=20261005b"></script>
 <script>
 (async () => {
   if (!(await Admin.boot("applications.html"))) return;
