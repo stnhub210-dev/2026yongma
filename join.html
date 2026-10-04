@@ -204,25 +204,41 @@
     }
     const btn = form.querySelector("button[type=submit]");
     btn.disabled = true;
+    const payload = {
+      type: document.getElementById("f-type").value,
+      applicant_name: document.getElementById("f-name").value.trim(),
+      phone: document.getElementById("f-phone").value.trim(),
+      email: document.getElementById("f-email").value.trim(),
+      preferred_date: document.getElementById("f-date").value || null,
+      title: document.getElementById("f-title").value.trim(),
+      body: document.getElementById("f-body").value.trim(),
+      link: document.getElementById("f-link").value.trim() || null,
+    };
     try {
       const res = await fetch(APPLY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-        type: document.getElementById("f-type").value,
-        applicant_name: document.getElementById("f-name").value.trim(),
-        phone: document.getElementById("f-phone").value.trim(),
-        email: document.getElementById("f-email").value.trim(),
-        preferred_date: document.getElementById("f-date").value || null,
-        title: document.getElementById("f-title").value.trim(),
-        body: document.getElementById("f-body").value.trim(),
-        link: document.getElementById("f-link").value.trim() || null,
-        website: document.getElementById("f-website").value,
-        agree: true,
+          ...payload,
+          website: document.getElementById("f-website").value,   // 자동 등록기 차단용 빈칸
+          agree: true,
         }),
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok || !j.ok) throw new Error(j.error || "서버 응답 오류 (" + res.status + ")");
+
+      /* 포털에 저장되고 알림 메일이 나간 뒤, 홈페이지 관리자 화면이 읽는 Supabase 에도 같은 내용을 넣는다.
+         여기서 실패해도 접수 자체는 이미 끝났으므로 손님 화면에는 영향을 주지 않는다. */
+      try {
+        const c = Auth.client();
+        if (c) {
+          const u = await Auth.user().catch(() => null);
+          await c.from("applications").insert({ ...payload, user_id: u ? u.id : null });
+        }
+      } catch (e) {
+        console.warn("관리자 화면용 저장 실패(접수는 정상):", e);
+      }
+
       form.reset();
       select(document.getElementById("f-type").value);
       UI.alert(msg, "ok", "신청이 접수되었습니다. 담당자가 확인 후 연락드리겠습니다.");
