@@ -413,15 +413,16 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
   }
 }
 
-/* ---------- 관람 동선 다이어그램 (사진이 있는 단계) ----------
-   짐 맡기기 → 음식 → 버스킹 → 사진 → 체험 순서를 사진과 함께 보여 준다.
-   .flow 와 같은 flow-in 애니메이션을 써서 한 단계씩 차례로 나타난다. */
+/* ---------- 관람 동선 다이어그램 ----------
+   다섯 단계를 가로로 늘어놓고, 원형 아이콘을 가로선으로 잇는다.
+   선 위의 작은 점이 각 단계의 위치를 찍어 준다.
+   뒤로 갈수록 색이 짙어지도록 각 li 에 --c 를 직접 준다. */
 .journey {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 34px;
+  list-style: none; margin: 0; padding: 0; text-align: center;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .journey li {
-  position: relative;
+  display: flex; flex-direction: column; align-items: stretch;
   animation: flow-in .55s var(--ease) both;
 }
 .journey li:nth-child(1) { animation-delay: .05s; }
@@ -430,56 +431,49 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
 .journey li:nth-child(4) { animation-delay: .65s; }
 .journey li:nth-child(5) { animation-delay: .85s; }
 
-.journey figure {
-  margin: 0 0 12px; overflow: hidden; border-radius: 14px;
-  border: 1.5px solid var(--line); background: var(--bg-soft);
+/* 원형 아이콘 — 굵은 테두리에 흰 속, 아이콘 색은 테두리와 같다 */
+.j-circle {
+  width: 92px; height: 92px; margin: 0 auto; border-radius: 50%;
+  border: 5px solid var(--c, var(--amber-500)); background: #fff;
+  display: grid; place-items: center; color: var(--c, var(--amber-500));
+  transition: transform .25s var(--ease);
 }
-.journey img {
-  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
-  transition: transform .3s var(--ease);
+.j-circle svg { width: 38px; height: 38px; }
+.journey li:hover .j-circle { transform: translateY(-4px); }
+
+/* 단계를 잇는 가로선과 그 위의 점.
+   선을 항목마다 반쪽씩 그려 이어 붙이면, 칸 너비가 바뀌어도 어긋나지 않는다. */
+.j-line { display: flex; align-items: center; margin: 20px 0 16px; }
+.j-line::before, .j-line::after { content: ""; flex: 1; height: 2px; background: var(--line); }
+.journey li:first-child .j-line::before,
+.journey li:last-child  .j-line::after { background: transparent; }
+.j-dot {
+  flex: none; width: 14px; height: 14px; border-radius: 50%;
+  border: 3px solid var(--c, var(--amber-500)); background: #fff;
 }
-.journey li:hover img { transform: scale(1.06); }
 
-.journey b { display: flex; align-items: center; gap: 8px; font-size: .9375rem; color: var(--ink-900); }
-.journey b::before {
-  content: counter(j); counter-increment: j;
-  display: grid; place-items: center; width: 22px; height: 22px; flex: none;
-  border-radius: 50%; background: var(--amber-400); color: #fff;
-  font-size: .75rem; font-weight: 800;
-}
-.journey { counter-reset: j; }
-.journey small { display: block; margin-top: 4px; padding-left: 30px; font-size: .8125rem; color: var(--ink-500); }
+.journey b { display: block; font-size: .9375rem; color: var(--c, var(--ink-900)); letter-spacing: .01em; }
+.journey small { display: block; margin-top: 6px; padding: 0 6px; font-size: .8125rem; color: var(--ink-500); line-height: 1.5; }
 
-/* 뒤 단계로 갈수록 번호 색이 짙어진다 */
-.journey li:nth-child(2) b::before { background: var(--amber-500); }
-.journey li:nth-child(3) b::before { background: var(--amber-600); }
-.journey li:nth-child(4) b::before { background: var(--amber-700); }
-.journey li:nth-child(5) b::before { background: var(--ink-900); }
-
-/* 단계 사이 화살표 — 사진 높이 한가운데를 가리킨다 */
-.journey li:not(:last-child)::after {
-  content: ""; position: absolute; right: -22px; top: 28%;
-  width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent;
-  border-left: 9px solid var(--amber-400);
-  animation: flow-in .35s var(--ease) both;
-}
-.journey li:nth-child(1)::after { animation-delay: .25s; }
-.journey li:nth-child(2)::after { animation-delay: .45s; }
-.journey li:nth-child(3)::after { animation-delay: .65s; }
-.journey li:nth-child(4)::after { animation-delay: .85s; }
-
-/* 좁은 화면에서는 여러 줄로 접히므로 화살표를 감춘다. 순서는 번호가 알려 준다. */
+/* 좁은 화면 — 가로 순서를 유지한 채 옆으로 밀어 본다.
+   세로로 쌓으면 '순서대로 가로 정렬'이라는 모양 자체가 사라지기 때문. */
 @media (max-width: 1000px) {
-  .journey { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-  .journey li::after { display: none; }
+  .journey {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(148px, 1fr);
+    overflow-x: auto; padding-bottom: 6px;
+    scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+  }
+  .journey li { scroll-snap-align: center; }
+  .j-circle { width: 76px; height: 76px; border-width: 4px; }
+  .j-circle svg { width: 32px; height: 32px; }
 }
-@media (max-width: 580px) {
-  .journey { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-  .journey small { padding-left: 0; }
-}
+/* 옆으로 밀 수 있다는 안내 — 가로 스크롤이 생기는 좁은 화면에서만 보인다 */
+.journey-hint { display: none; }
+@media (max-width: 1000px) { .journey-hint { display: block; } }
+
 @media (prefers-reduced-motion: reduce) {
-  .journey li, .journey li::after { animation: none; opacity: 1; translate: none; }
-  .journey li:hover img { transform: none; }
+  .journey li { animation: none; opacity: 1; translate: none; }
+  .journey li:hover .j-circle { transform: none; }
 }
 
 /* ---------- Timeline ---------- */
