@@ -334,6 +334,82 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
 /* 카드를 눌러 신청서로 내려올 때 고정 헤더가 제목을 가리지 않게 한다. */
 #join-form { scroll-margin-top: calc(var(--nav-h) + 12px); }
 
+/* ---------- 단계 다이어그램 (물품보관소 맡기고 찾는 순서) ----------
+   좁은 화면에서는 위에서 아래로, 넓은 화면에서는 왼쪽에서 오른쪽으로 흐른다.
+   표 안에서 쓸 때는 .flow-cell 로 감싸 한 줄 전체를 쓴다. */
+.flow-cell { padding: 18px 16px !important; }
+.flow-title {
+  display: inline-block; margin-bottom: 12px; font-size: .8125rem; font-weight: 700;
+  color: var(--amber-700); background: var(--amber-50);
+  padding: 4px 11px; border-radius: 999px;
+}
+.flow {
+  list-style: none; margin: 0; padding: 0; counter-reset: flow;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.flow li {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border: 1.5px solid var(--amber-200); border-radius: 12px;
+  background: var(--amber-50); font-size: .875rem; font-weight: 600; color: var(--ink-900);
+  /* 순차 등장 — 한 단계씩 차례로 나타난다.
+     스크롤 리빌(.in)에 맡기지 않고 CSS 애니메이션으로 둔 이유: 맡기고 찾는 방법은
+     꼭 읽혀야 하는 안내라, 자바스크립트가 막히거나 관찰이 빗나가면 글이 영영 안 보인다.
+     fill-mode both 라 애니메이션이 끝나면 반드시 보이는 상태로 남는다. */
+  animation: flow-in .5s var(--ease) both;
+}
+@keyframes flow-in {
+  from { opacity: 0; translate: 0 10px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+.flow li:nth-child(1) { animation-delay: .05s; }
+.flow li:nth-child(2) { animation-delay: .23s; }
+.flow li:nth-child(3) { animation-delay: .41s; }
+.flow li:nth-child(4) { animation-delay: .59s; }
+.flow li::before {
+  counter-increment: flow; content: counter(flow);
+  display: grid; place-items: center; width: 22px; height: 22px; flex: none;
+  border-radius: 50%; background: var(--amber-400); color: #fff;
+  font-size: .75rem; font-weight: 800;
+}
+
+/* 뒤 단계로 갈수록 색이 짙어져 진행 방향이 한눈에 보이게 한다 */
+.flow li:nth-child(2) { background: var(--amber-100); border-color: var(--amber-400); }
+.flow li:nth-child(2)::before { background: var(--amber-500); }
+.flow li:nth-child(3) { background: var(--amber-200); border-color: var(--amber-500); }
+.flow li:nth-child(3)::before { background: var(--amber-600); }
+.flow li:nth-child(4) { background: var(--amber-400); border-color: var(--amber-600); }
+.flow li:nth-child(4)::before { background: var(--amber-700); }
+
+/* 화살표도 앞 단계가 나타난 뒤에 따라 들어온다 */
+.flow li:not(:last-child)::after { animation: flow-in .3s var(--ease) both; }
+.flow li:nth-child(1)::after { animation-delay: .23s; }
+.flow li:nth-child(2)::after { animation-delay: .41s; }
+.flow li:nth-child(3)::after { animation-delay: .59s; }
+
+/* 모션 최소화를 켠 사용자에게는 움직임 없이 바로 보여 준다 */
+@media (prefers-reduced-motion: reduce) {
+  .flow li, .flow li::after { animation: none; opacity: 1; translate: none; }
+}
+/* 단계 이름과 설명은 위아래로 쌓는다 (li 가 flex 라 span 으로 묶어야 옆으로 안 붙는다) */
+.flow li > span { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.flow li small { font-weight: 500; color: var(--ink-500); font-size: .78125rem; line-height: 1.4; }
+/* 단계 사이 화살표 — 세로 배치일 때는 아래쪽 */
+.flow li:not(:last-child)::after {
+  content: ""; position: absolute; left: 50%; bottom: -17px; translate: -50% 0;
+  width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent;
+  border-top: 8px solid var(--amber-400);
+}
+@media (min-width: 700px) {
+  .flow { flex-direction: row; align-items: stretch; gap: 28px; }
+  .flow li { flex: 1; }
+  /* 가로 배치일 때는 오른쪽을 가리킨다 */
+  .flow li:not(:last-child)::after {
+    left: auto; right: -19px; bottom: auto; top: 50%; translate: 0 -50%;
+    border-left: 8px solid var(--amber-400); border-right: 0;
+    border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+  }
+}
+
 /* ---------- Timeline ---------- */
 .timeline { position: relative; padding-left: 30px; }
 .timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
