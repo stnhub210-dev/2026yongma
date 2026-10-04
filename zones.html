@@ -30,8 +30,7 @@
   </div>
 </section>
 
-<!-- 관람 동선 — 다섯 단계를 가로로 늘어놓은 다이어그램.
-     원형 아이콘을 선으로 잇고, 뒤로 갈수록 색이 짙어진다.
+<!-- 관람 동선 — 글로 쓰면 지나치기 쉬운 순서를 사진 다이어그램으로 보여 준다.
      단계가 차례로 나타난다(스타일은 style.css 의 .journey). -->
 <section class="section" style="padding-bottom:0">
   <div class="wrap">
@@ -42,34 +41,27 @@
     </div>
 
     <ol class="journey mt-4">
-      <li style="--c:var(--amber-400)">
-        <span class="j-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg></span>
-        <span class="j-line" aria-hidden="true"><i class="j-dot"></i></span>
+      <li>
+        <figure><img src="assets/img/zone-gateway.webp" alt="물품보관소에 캐리어를 맡기는 방문객" loading="lazy"></figure>
         <b>짐 맡기기</b><small>물품보관소 · 무료</small>
       </li>
-      <li style="--c:var(--amber-500)">
-        <span class="j-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.4 1-1.9 1-3"/><path d="M12 7c0-1.4 1-1.9 1-3"/><path d="M16 7c0-1.4 1-1.9 1-3"/></svg></span>
-        <span class="j-line" aria-hidden="true"><i class="j-dot"></i></span>
+      <li>
+        <figure><img src="assets/img/gallery/20260918_185900_t.webp" alt="스트링 조명 아래 먹거리 부스" loading="lazy"></figure>
         <b>음식 맛보기</b><small>어서와존 K-미식벨트</small>
       </li>
-      <li style="--c:var(--amber-600)">
-        <span class="j-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/></svg></span>
-        <span class="j-line" aria-hidden="true"><i class="j-dot"></i></span>
+      <li>
+        <figure><img src="assets/img/prog-stage.webp" alt="거리 무대에서 연주하는 버스킹 팀" loading="lazy"></figure>
         <b>버스킹 듣기</b><small>골목어게인 · 금·토 15회</small>
       </li>
-      <li style="--c:var(--amber-700)">
-        <span class="j-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
-        <span class="j-line" aria-hidden="true"><i class="j-dot"></i></span>
+      <li>
+        <figure><img src="assets/img/zone-photo.webp" alt="용마거리 벽화 포토존" loading="lazy"></figure>
         <b>사진 남기기</b><small>벽화 포토존 3개소</small>
       </li>
-      <li style="--c:var(--ink-900)">
-        <span class="j-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 1 9-9c0 2-1.6 3-3 3h-1.4a1.6 1.6 0 0 0-1.1 2.7c.4.4.5 1 .2 1.5A2 2 0 0 1 12 21Z"/><circle cx="8" cy="11" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r="1.2" fill="currentColor" stroke="none"/></svg></span>
-        <span class="j-line" aria-hidden="true"><i class="j-dot"></i></span>
+      <li>
+        <figure><img src="assets/img/prog-experience.webp" alt="향토음식 만들기 체험 부스" loading="lazy"></figure>
         <b>체험하기</b><small>놀아존 · 향토음식·공예</small>
       </li>
     </ol>
-    <!-- 좁은 화면에서는 옆으로 밀어야 나머지 단계가 보여 안내를 둔다 -->
-    <p class="journey-hint tiny muted center mt-2">옆으로 밀면 다음 단계가 나옵니다 →</p>
   </div>
 </section>
 
