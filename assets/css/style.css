@@ -245,11 +245,14 @@ h4 { font-size: 1.0625rem; }
 .card__body p { color: var(--ink-600); font-size: .9375rem; }
 .card__foot { margin-top: auto; padding-top: 16px; }
 
+/* 존 버튼 — 섹션의 머리표. 멀리서도 어떤 존인지 바로 읽히도록 큼직하게. */
 .zone-tag {
-  display: inline-flex; align-items: center; gap: 7px; font-size: .75rem; font-weight: 800;
-  letter-spacing: .04em; padding: 5px 12px; border-radius: 999px; margin-bottom: 12px;
+  display: inline-flex; align-items: center; gap: 8px; font-size: .9375rem; font-weight: 800;
+  letter-spacing: .02em; padding: 9px 20px; border-radius: 999px; margin-bottom: 14px;
   background: var(--z, var(--amber-500)); color: #fff;
 }
+/* 카드 안에서는 제목보다 커지지 않게 조금 줄인다 */
+.card__body > .zone-tag { font-size: .8125rem; padding: 6px 14px; }
 .zone-card { border-top: 4px solid var(--z, var(--amber-500)); }
 
 /* ---------- Stat / feature tiles ---------- */
@@ -408,6 +411,75 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
     border-left: 8px solid var(--amber-400); border-right: 0;
     border-top: 6px solid transparent; border-bottom: 6px solid transparent;
   }
+}
+
+/* ---------- 관람 동선 다이어그램 (사진이 있는 단계) ----------
+   짐 맡기기 → 음식 → 버스킹 → 사진 → 체험 순서를 사진과 함께 보여 준다.
+   .flow 와 같은 flow-in 애니메이션을 써서 한 단계씩 차례로 나타난다. */
+.journey {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 34px;
+}
+.journey li {
+  position: relative;
+  animation: flow-in .55s var(--ease) both;
+}
+.journey li:nth-child(1) { animation-delay: .05s; }
+.journey li:nth-child(2) { animation-delay: .25s; }
+.journey li:nth-child(3) { animation-delay: .45s; }
+.journey li:nth-child(4) { animation-delay: .65s; }
+.journey li:nth-child(5) { animation-delay: .85s; }
+
+.journey figure {
+  margin: 0 0 12px; overflow: hidden; border-radius: 14px;
+  border: 1.5px solid var(--line); background: var(--bg-soft);
+}
+.journey img {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  transition: transform .3s var(--ease);
+}
+.journey li:hover img { transform: scale(1.06); }
+
+.journey b { display: flex; align-items: center; gap: 8px; font-size: .9375rem; color: var(--ink-900); }
+.journey b::before {
+  content: counter(j); counter-increment: j;
+  display: grid; place-items: center; width: 22px; height: 22px; flex: none;
+  border-radius: 50%; background: var(--amber-400); color: #fff;
+  font-size: .75rem; font-weight: 800;
+}
+.journey { counter-reset: j; }
+.journey small { display: block; margin-top: 4px; padding-left: 30px; font-size: .8125rem; color: var(--ink-500); }
+
+/* 뒤 단계로 갈수록 번호 색이 짙어진다 */
+.journey li:nth-child(2) b::before { background: var(--amber-500); }
+.journey li:nth-child(3) b::before { background: var(--amber-600); }
+.journey li:nth-child(4) b::before { background: var(--amber-700); }
+.journey li:nth-child(5) b::before { background: var(--ink-900); }
+
+/* 단계 사이 화살표 — 사진 높이 한가운데를 가리킨다 */
+.journey li:not(:last-child)::after {
+  content: ""; position: absolute; right: -22px; top: 28%;
+  width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+  border-left: 9px solid var(--amber-400);
+  animation: flow-in .35s var(--ease) both;
+}
+.journey li:nth-child(1)::after { animation-delay: .25s; }
+.journey li:nth-child(2)::after { animation-delay: .45s; }
+.journey li:nth-child(3)::after { animation-delay: .65s; }
+.journey li:nth-child(4)::after { animation-delay: .85s; }
+
+/* 좁은 화면에서는 여러 줄로 접히므로 화살표를 감춘다. 순서는 번호가 알려 준다. */
+@media (max-width: 1000px) {
+  .journey { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+  .journey li::after { display: none; }
+}
+@media (max-width: 580px) {
+  .journey { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .journey small { padding-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey li, .journey li::after { animation: none; opacity: 1; translate: none; }
+  .journey li:hover img { transform: none; }
 }
 
 /* ---------- Timeline ---------- */

@@ -7,7 +7,7 @@ const NAV = [
   ["index.html",    "홈",        "nav.home"],
   ["story.html",    "용마거리 소개", "nav.story"],
   ["about.html",    "상권 소개", "nav.about"],
-  ["zones.html",    "6개 존",    "nav.zones"],
+  ["zones.html",    "4개 존",    "nav.zones"],
   ["programs.html", "프로그램",  "nav.programs"],
   ["food.html",     "미식 지도", "nav.food"],
   ["booths.html",   "매대 명단", "nav.booths"],
@@ -55,9 +55,9 @@ window.googleTranslateElementInit = function () {
   const B = document.documentElement.dataset.base || "";
   // 상단 메뉴는 기계 번역 대신 직접 옮긴 이름을 쓴다(짧고 정확하게, 메뉴가 한 줄에 들어가도록)
   const NAV_T = {
-    en:      ["Home", "Yongma Story", "District", "6 Zones", "Programs", "Food Map", "Booths", "Gallery", "News", "Join"],
-    "zh-CN": ["首页", "龙马街介绍", "商圈介绍", "六大区域", "活动项目", "美食地图", "摊位名单", "相册", "新闻", "参与申请"],
-    ja:      ["ホーム", "龍馬の由来", "商店街", "6ゾーン", "プログラム", "グルメ地図", "屋台一覧", "ギャラリー", "ニュース", "参加申込"],
+    en:      ["Home", "Yongma Story", "District", "4 Zones", "Programs", "Food Map", "Booths", "Gallery", "News", "Join"],
+    "zh-CN": ["首页", "龙马街介绍", "商圈介绍", "四大区域", "活动项目", "美食地图", "摊位名单", "相册", "新闻", "参与申请"],
+    ja:      ["ホーム", "龍馬の由来", "商店街", "4ゾーン", "プログラム", "グルメ地図", "屋台一覧", "ギャラリー", "ニュース", "参加申込"],
   };
   const lang = currentLang();
   const links = (cls) =>
@@ -165,7 +165,7 @@ window.googleTranslateElementInit = function () {
         <ul class="stack" style="gap:8px">
           <li><a href="${B}story.html">용마거리 소개</a></li>
           <li><a href="${B}about.html">상권 소개</a></li>
-          <li><a href="${B}zones.html">6개 존</a></li>
+          <li><a href="${B}zones.html">4개 존</a></li>
           <li><a href="${B}programs.html">프로그램·일정</a></li>
           <li><a href="${B}food.html">미식 지도</a></li>
           <li><a href="${B}booths.html">매대 명단</a></li>
