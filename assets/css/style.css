@@ -262,6 +262,26 @@ h4 { font-size: 1.0625rem; }
 a.tile { display: block; transition: transform .2s var(--ease), border-color .2s, box-shadow .2s var(--ease); }
 a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-shadow: var(--shadow-lg); }
 
+/* 요약 카드(강조형) — 제목은 둥근 버튼, 테두리는 굵게.
+   마우스를 올리면 커지고 테두리를 따라 빛이 한 바퀴 돈다. */
+.tile--glow { position: relative; isolation: isolate; border: 2px solid var(--line); border-radius: var(--radius-lg); padding: 24px 22px; overflow: hidden; }
+.tile--glow dt { display: inline-block; font-size: .9375rem; font-weight: 800; color: var(--ink-800);
+  background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; }
+.tile--glow dd { font-size: 2.125rem; margin-top: 12px; }
+/* 테두리를 도는 빛 — 카드보다 큰 원뿔형 그라데이션을 돌리고 안쪽을 덮어 테두리만 남긴다 */
+.tile--glow::before { content: ""; position: absolute; z-index: -2; left: 50%; top: 50%; width: 170%; aspect-ratio: 1;
+  translate: -50% -50%; opacity: 0; transition: opacity .25s var(--ease);
+  background: conic-gradient(transparent 0 62%, var(--amber-400) 80%, #fff 90%, var(--amber-600) 100%); }
+.tile--glow::after { content: ""; position: absolute; z-index: -1; inset: 2px; border-radius: calc(var(--radius-lg) - 2px); background: #fff; }
+.tile--glow:hover { transform: scale(1.045); border-color: transparent; box-shadow: var(--shadow-lg); }
+.tile--glow:hover::before { opacity: 1; animation: tile-glow 1.6s linear infinite; }
+.tile--glow:hover dt { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-700); }
+@keyframes tile-glow { to { rotate: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+  .tile--glow:hover { transform: none; }
+  .tile--glow:hover::before { animation: none; }
+}
+
 .icon-badge {
   width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px;
   background: var(--amber-50); color: var(--amber-600); margin-bottom: 16px; font-size: 1.375rem;
