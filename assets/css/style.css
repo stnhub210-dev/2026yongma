@@ -418,10 +418,13 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
    .flow 와 같은 flow-in 애니메이션을 써서 한 단계씩 차례로 나타난다. */
 .journey {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 34px;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 38px;                       /* 사진 사이 간격 (화살표가 들어갈 자리이기도 하다) */
+  align-items: start;              /* 설명 줄 길이가 달라도 사진 윗선은 항상 맞는다 */
 }
 .journey li {
   position: relative;
+  container-type: inline-size;     /* 화살표 위치를 칸 너비로 계산하기 위함 */
   animation: flow-in .55s var(--ease) both;
 }
 .journey li:nth-child(1) { animation-delay: .05s; }
@@ -430,35 +433,42 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
 .journey li:nth-child(4) { animation-delay: .65s; }
 .journey li:nth-child(5) { animation-delay: .85s; }
 
+/* 사진은 다섯 장 모두 같은 크기·같은 모서리로 보이게 한다.
+   원본 비율이 제각각이라 4:3 틀에 맞춰 잘라 넣는다(object-fit: cover). */
 .journey figure {
-  margin: 0 0 12px; overflow: hidden; border-radius: 14px;
+  margin: 0 0 14px; overflow: hidden; border-radius: 16px;
   border: 1.5px solid var(--line); background: var(--bg-soft);
+  line-height: 0;                  /* 사진 아래 생기는 빈 틈 제거 */
 }
 .journey img {
-  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover;
   transition: transform .3s var(--ease);
 }
 .journey li:hover img { transform: scale(1.06); }
 
 .journey b { display: flex; align-items: center; gap: 8px; font-size: .9375rem; color: var(--ink-900); }
+/* 번호는 counter() 대신 칸마다 직접 지정한다.
+   li 에 container-type 을 쓰면 style containment 가 걸려 카운터가 칸마다 1로 돌아가기 때문. */
 .journey b::before {
-  content: counter(j); counter-increment: j;
+  content: "1";
   display: grid; place-items: center; width: 22px; height: 22px; flex: none;
   border-radius: 50%; background: var(--amber-400); color: #fff;
   font-size: .75rem; font-weight: 800;
 }
-.journey { counter-reset: j; }
 .journey small { display: block; margin-top: 4px; padding-left: 30px; font-size: .8125rem; color: var(--ink-500); }
 
-/* 뒤 단계로 갈수록 번호 색이 짙어진다 */
-.journey li:nth-child(2) b::before { background: var(--amber-500); }
-.journey li:nth-child(3) b::before { background: var(--amber-600); }
-.journey li:nth-child(4) b::before { background: var(--amber-700); }
-.journey li:nth-child(5) b::before { background: var(--ink-900); }
+/* 단계 번호와, 뒤로 갈수록 짙어지는 색 */
+.journey li:nth-child(2) b::before { content: "2"; background: var(--amber-500); }
+.journey li:nth-child(3) b::before { content: "3"; background: var(--amber-600); }
+.journey li:nth-child(4) b::before { content: "4"; background: var(--amber-700); }
+.journey li:nth-child(5) b::before { content: "5"; background: var(--ink-900); }
 
 /* 단계 사이 화살표 — 사진 높이 한가운데를 가리킨다 */
 .journey li:not(:last-child)::after {
-  content: ""; position: absolute; right: -22px; top: 28%;
+  content: ""; position: absolute; right: -24px; top: 0;
+  /* 사진은 칸 너비의 3/4 높이라, 그 절반(37.5cqw)에서 화살표 반쪽을 뺀 자리가 중앙이다.
+     translate 는 등장 애니메이션이 쓰고 있어 margin-top 으로 내린다. */
+  margin-top: calc(37.5cqw - 7px);
   width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent;
   border-left: 9px solid var(--amber-400);
   animation: flow-in .35s var(--ease) both;
