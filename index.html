@@ -12,7 +12,7 @@
 <meta property="og:locale" content="ko_KR">
 <link rel="icon" href="assets/img/mascot-yong.webp">
 <link rel="apple-touch-icon" href="assets/img/mascot-yong.webp">
-<link rel="stylesheet" href="assets/css/style.css?v=20261005b">
+<link rel="stylesheet" href="assets/css/style.css?v=20261005d">
 </head>
 <body>
 
@@ -168,24 +168,29 @@
 
     <div class="cal-months reveal" id="cal-months"></div>
 
-    <!-- 운영일마다 함께 열리는 3개 존 (예산표 [3]-1 K-미식벨트 운영) -->
-    <div class="cal-zones reveal">
-      <p class="cal-zones__head">운영일에는 <b>3개 존</b>이 함께 열립니다</p>
-      <div class="cal-zones__grid">
-        <a class="cal-zone" href="zones.html#food">
-          <span class="n">어서와존</span>
-          <span class="d">K-미식벨트 먹거리 부스 · 인플루언서 현장 판매</span>
-        </a>
-        <a class="cal-zone" href="zones.html#play">
-          <span class="n">놀아존</span>
-          <span class="d">체험·참여 콘텐츠 · 아날로그 게임 · 외국인 체험</span>
-        </a>
-        <a class="cal-zone" href="zones.html#startup">
-          <span class="n">한번봐존</span>
-          <span class="d">프리마켓 상시 운영 · 로컬 수공예 셀러</span>
-        </a>
-      </div>
-    </div>
+    <!-- 운영일마다 함께 열리는 4개 존 — 한 거리에 차례로 늘어선 모습으로 보여 준다.
+         존별 색은 배치도(map-zones)와 존 소개 페이지의 색을 그대로 쓴다. -->
+    <figure class="zonemap reveal">
+      <figcaption class="zonemap__head">운영일에는 <b>4개 존</b>이 한 거리에서 함께 열립니다</figcaption>
+      <ol class="zonemap__street">
+        <li style="--z:var(--z-food)"><a href="zones.html#food">
+          <span class="zonemap__dot" aria-hidden="true"></span>
+          <span class="zonemap__txt"><b>어서와존</b><small>K-미식벨트 먹거리 부스</small></span>
+        </a></li>
+        <li style="--z:var(--z-busking)"><a href="zones.html#busking">
+          <span class="zonemap__dot" aria-hidden="true"></span>
+          <span class="zonemap__txt"><b>골목어게인</b><small>버스킹 · DJ 음악다방</small></span>
+        </a></li>
+        <li style="--z:var(--z-play)"><a href="zones.html#play">
+          <span class="zonemap__dot" aria-hidden="true"></span>
+          <span class="zonemap__txt"><b>놀아존</b><small>체험 · 게임 · 외국인 체험</small></span>
+        </a></li>
+        <li style="--z:var(--z-startup)"><a href="zones.html#startup">
+          <span class="zonemap__dot" aria-hidden="true"></span>
+          <span class="zonemap__txt"><b>한번봐존</b><small>프리마켓 로컬 수공예 셀러</small></span>
+        </a></li>
+      </ol>
+    </figure>
   </div>
 </section>
 
@@ -331,10 +336,23 @@
       </article>
     </div>
 
-    <div class="center mt-5">
-      <img class="mascot-top" src="assets/img/mascot-duo.webp" alt="용마미식거리 캐릭터 용과 마" loading="lazy">
-      <a class="btn btn--dark" href="zones.html">존별 상세 보기</a>
-    </div>
+    <!-- 존별 바로가기 — 누르면 존 소개 페이지의 해당 존 자리로 바로 내려간다.
+         색은 배치도·존 소개의 존별 색을 그대로 쓴다. -->
+    <nav class="zonejump reveal" aria-label="존별 바로가기">
+      <p class="zonejump__head">보고 싶은 존을 누르면 그 자리로 바로 이동합니다</p>
+      <ul>
+        <li style="--z:var(--z-gateway)"><a href="zones.html#gateway">
+          <b>이용 안내</b><small>물품보관소 · 무료</small></a></li>
+        <li style="--z:var(--z-food)"><a href="zones.html#food">
+          <b>어서와존</b><small>K-미식벨트</small></a></li>
+        <li style="--z:var(--z-busking)"><a href="zones.html#busking">
+          <b>골목어게인</b><small>버스킹 · DJ</small></a></li>
+        <li style="--z:var(--z-play)"><a href="zones.html#play">
+          <b>놀아존</b><small>체험 · 게임</small></a></li>
+        <li style="--z:var(--z-startup)"><a href="zones.html#startup">
+          <b>한번봐존</b><small>프리마켓 · 창업</small></a></li>
+      </ul>
+    </nav>
   </div>
 </section>
 
@@ -485,13 +503,13 @@
 <div id="site-footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/js/config.js?v=20261005b"></script>
-<script src="assets/js/layout.js?v=20261005b"></script>
-<script src="assets/js/i18n.js?v=20261005b"></script>
-<script src="assets/js/auth.js?v=20261005b"></script>
-<script src="assets/js/main.js?v=20261005b"></script>
-<script src="assets/js/comic.js?v=20261005b"></script>
-<script src="assets/js/events.js?v=20261005b"></script>
-<script src="assets/js/calendar.js?v=20261005b"></script>
+<script src="assets/js/config.js?v=20261005d"></script>
+<script src="assets/js/layout.js?v=20261005d"></script>
+<script src="assets/js/i18n.js?v=20261005d"></script>
+<script src="assets/js/auth.js?v=20261005d"></script>
+<script src="assets/js/main.js?v=20261005d"></script>
+<script src="assets/js/comic.js?v=20261005d"></script>
+<script src="assets/js/events.js?v=20261005d"></script>
+<script src="assets/js/calendar.js?v=20261005d"></script>
 </body>
 </html>

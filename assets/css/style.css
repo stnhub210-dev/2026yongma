@@ -731,14 +731,104 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 @media (prefers-reduced-motion: reduce) { .cal-d { transition: none; } .cal-d.on:hover { transform: none; } }
 
 /* 운영일마다 함께 열리는 3개 존 */
-.cal-zones { margin-top: clamp(18px, 2.5vw, 28px); }
-.cal-zones__head { text-align: center; font-size: .9375rem; font-weight: 600; color: var(--ink-700); margin-bottom: 12px; }
-.cal-zones__head b { color: var(--amber-700); font-weight: 800; }
-.cal-zones__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 10px; }
-.cal-zone { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--amber-500); border-radius: var(--radius); background: #fff; text-decoration: none; transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s; }
-.cal-zone:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-left-color: var(--amber-700); text-decoration: none; }
-.cal-zone .n { font-size: .9375rem; font-weight: 800; color: var(--ink-900); }
-.cal-zone .d { font-size: .8125rem; color: var(--ink-500); line-height: 1.55; word-break: keep-all; }
+/* 운영일에 함께 열리는 존 — 카드 나열 대신, 한 거리에 늘어선 모습의 인포그래픽.
+   점선이 '차 없는 거리'이고 동그라미가 각 존의 자리다. 색은 배치도와 맞춘다. */
+.zonemap {
+  margin: clamp(20px, 2.5vw, 30px) 0 0;
+  padding: clamp(22px, 3vw, 30px) clamp(16px, 3vw, 34px);
+  border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg-soft);
+}
+.zonemap__head {
+  text-align: center; font-size: .9375rem; font-weight: 600; color: var(--ink-700);
+  margin-bottom: clamp(20px, 2.6vw, 28px);
+}
+.zonemap__head b { color: var(--amber-700); font-weight: 800; }
+
+.zonemap__street {
+  list-style: none; margin: 0; padding: 0; position: relative;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* 거리 — 점선 한 줄. 양 끝 존의 동그라미까지만 긋는다(1/8 ~ 7/8 지점). */
+.zonemap__street::before {
+  content: ""; position: absolute; left: 12.5%; right: 12.5%; top: 8px; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--line) 0 7px, transparent 7px 13px);
+}
+.zonemap__street li { text-align: center; }
+.zonemap__street a { display: block; padding: 0 10px; text-decoration: none; }
+.zonemap__dot {
+  display: block; width: 18px; height: 18px; margin: 0 auto 14px; border-radius: 50%;
+  background: #fff; border: 4px solid var(--z, var(--amber-500)); position: relative; z-index: 1;
+  transition: transform .2s var(--ease);
+}
+.zonemap__street b { display: block; font-size: .9375rem; font-weight: 800; color: var(--ink-900); }
+.zonemap__street small {
+  display: block; margin-top: 5px; font-size: .8125rem; color: var(--ink-500);
+  line-height: 1.5; word-break: keep-all;
+}
+.zonemap__street a:hover { text-decoration: none; }
+.zonemap__street a:hover b { color: var(--z, var(--amber-700)); }
+.zonemap__street a:hover .zonemap__dot { transform: scale(1.25); }
+
+/* 좁은 화면 — 거리를 세로로 세우고 왼쪽에 점선을 둔다 */
+@media (max-width: 720px) {
+  .zonemap__street { grid-template-columns: 1fr; gap: 18px; }
+  .zonemap__street::before {
+    left: 9px; right: auto; top: 8px; bottom: 8px; width: 2px; height: auto;
+    background: repeating-linear-gradient(180deg, var(--line) 0 7px, transparent 7px 13px);
+  }
+  .zonemap__street li { text-align: left; }
+  .zonemap__street a { display: flex; align-items: flex-start; gap: 14px; padding: 0; }
+  .zonemap__dot { margin: 1px 0 0; flex: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zonemap__dot { transition: none; }
+  .zonemap__street a:hover .zonemap__dot { transform: none; }
+}
+
+/* 존별 바로가기 — 홈에서 누르면 존 소개 페이지의 그 존 자리로 내려간다.
+   위쪽 색 띠로 어느 존인지 구분하고, 화살표가 '이동'을 알려 준다. */
+.zonejump { margin-top: clamp(30px, 4vw, 46px); }
+.zonejump__head {
+  text-align: center; font-size: .875rem; color: var(--ink-500); margin-bottom: 16px;
+}
+.zonejump ul {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px;
+}
+.zonejump a {
+  display: block; position: relative; overflow: hidden;
+  padding: 16px 16px 15px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: #fff; text-decoration: none;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s;
+}
+.zonejump a::before {                 /* 위쪽 색 띠 */
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px;
+  background: var(--z, var(--amber-500));
+}
+.zonejump a::after {                  /* 이동을 알리는 화살표 */
+  content: "→"; position: absolute; right: 14px; bottom: 13px;
+  font-size: .9375rem; font-weight: 800; color: var(--z, var(--amber-500));
+  opacity: 0; translate: -6px 0; transition: opacity .2s var(--ease), translate .2s var(--ease);
+}
+.zonejump a:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-lg);
+  border-color: var(--z, var(--amber-200)); text-decoration: none;
+}
+.zonejump a:hover::after { opacity: 1; translate: 0 0; }
+.zonejump b { display: block; font-size: .9375rem; font-weight: 800; color: var(--ink-900); }
+.zonejump small {
+  display: block; margin-top: 4px; font-size: .8125rem; color: var(--ink-500);
+  word-break: keep-all; padding-right: 18px;
+}
+@media (max-width: 900px) { .zonejump ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .zonejump ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+@media (prefers-reduced-motion: reduce) {
+  .zonejump a, .zonejump a::after { transition: none; }
+  .zonejump a:hover { transform: none; }
+}
+
+/* 존 소개 페이지 — 바로가기로 내려올 때 고정 헤더가 존 제목을 가리지 않게 한다 */
+#gateway, #food, #busking, #play, #startup { scroll-margin-top: calc(var(--nav-h) + 20px); }
 
 /* 만화로 보는 용마거리 — 홈(index)과 이야기(story) 두 곳에서 씁니다.
    10컷을 PC 5칸, 태블릿 3칸, 휴대폰 2칸으로 보여 줍니다. */
