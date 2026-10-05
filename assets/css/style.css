@@ -185,12 +185,12 @@ h4 { font-size: 1.0625rem; }
   content: ""; position: absolute; inset: 0;
   background: rgba(0, 0, 0, .10);
 }
-.hero__inner { position: relative; padding: clamp(72px, 12vw, 132px) 0 clamp(56px, 8vw, 92px); color: #fff; }
+.hero__inner { position: relative; padding: clamp(36px, 5.5vh, 76px) 0 clamp(30px, 4.5vh, 60px); color: #fff; }
 .hero h1 { color: #fff; max-width: 17ch; line-height: 1.32; padding-top: .14em; }
 /* 제목을 붓글씨 로고로 쓸 때 — 글자 상자 대신 그림 크기로 맞춘다 */
 .hero__logo {
   position: relative; max-width: none; padding-top: 0; margin-bottom: 4px;
-  width: min(100%, 560px);
+  width: min(100%, clamp(300px, 36vh, 520px));
 }
 .hero__logo img {
   display: block; width: 100%; height: auto;
@@ -239,26 +239,26 @@ h4 { font-size: 1.0625rem; }
 .mascot-tail { display: block; width: clamp(120px, 15vw, 180px); margin: -10px 0 0 auto; }
 
 .hero__sub {
-  margin-top: 14px; font-size: clamp(1.59375rem, 1.425rem + .75vw, 2.0625rem);
+  margin-top: clamp(8px, 1.4vh, 14px); font-size: clamp(1.59375rem, 1.425rem + .75vw, 2.0625rem);
   font-weight: 600; color: rgba(255,255,255,.8); letter-spacing: -.01em;
 }
 .hero__sub b { color: var(--amber-400); font-weight: 800; }
-.hero .lead { color: rgba(255,255,255,.86); max-width: 54ch; margin-top: 18px; }
-.hero__sub + .lead { margin-top: 14px; }
-.hero .btn-row { margin-top: 32px; }
+.hero .lead { color: rgba(255,255,255,.86); max-width: 54ch; margin-top: clamp(10px, 1.6vh, 18px); }
+.hero__sub + .lead { margin-top: clamp(8px, 1.3vh, 14px); }
+.hero .btn-row { margin-top: clamp(16px, 2.8vh, 32px); }
 .hero__badge {
   display: inline-flex; align-items: center; gap: 9px; padding: 7px 15px 7px 9px;
   background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.24);
   border-radius: 999px; font-size: .8125rem; font-weight: 600; color: #fff;
-  backdrop-filter: blur(8px); margin-bottom: 22px;
+  backdrop-filter: blur(8px); margin-bottom: clamp(12px, 2vh, 22px);
 }
 .hero__badge b { background: var(--amber-500); color: #fff; padding: 3px 10px; border-radius: 999px; font-size: .75rem; }
 
-.hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px 8px; margin-top: clamp(44px, 6vw, 68px); border-top: 1px solid rgba(255,255,255,.18); padding-top: 28px; }
+.hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px 8px; margin-top: clamp(20px, 3.6vh, 56px); border-top: 1px solid rgba(255,255,255,.18); padding-top: clamp(14px, 2.2vh, 28px); }
 .hero-stats div { padding-right: 16px; }
 .hero-stats dt { font-size: .8125rem; color: rgba(255,255,255,.62); font-weight: 600; }
-.hero-stats dd { font-size: clamp(2.75rem, 2.2rem + 2vw, 3.75rem); font-weight: 800; color: #fff; letter-spacing: -.02em; margin-top: 6px; line-height: 1.05; }
-.hero-stats dd span { font-size: 1.75rem; font-weight: 600; color: var(--amber-400); margin-left: 5px; }
+.hero-stats dd { font-size: clamp(1.875rem, 1.4rem + 1.7vw, 3rem); font-weight: 800; color: #fff; letter-spacing: -.02em; margin-top: 6px; line-height: 1.05; }
+.hero-stats dd span { font-size: clamp(1.125rem, .9rem + .7vw, 1.625rem); font-weight: 600; color: var(--amber-400); margin-left: 5px; }
 
 /* ---------- Cards ---------- */
 .card {
