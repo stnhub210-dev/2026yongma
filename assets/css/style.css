@@ -879,6 +879,12 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 /* 존 소개 페이지 — 바로가기로 내려올 때 고정 헤더가 존 제목을 가리지 않게 한다 */
 #gateway, #food, #busking, #play, #startup { scroll-margin-top: calc(var(--nav-h) + 20px); }
 
+/* 섹션 머리말 위에 올리는 상권 로고 */
+.sec-logo {
+  display: block; width: min(100%, clamp(260px, 34vw, 420px)); height: auto;
+  margin: 0 auto clamp(14px, 2vw, 22px);
+}
+
 /* 만화로 보는 용마거리 — 홈(index)과 이야기(story) 두 곳에서 씁니다.
    10컷을 PC 5칸, 태블릿 3칸, 휴대폰 2칸으로 보여 줍니다. */
 .comic { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
