@@ -756,7 +756,7 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 /* 칸을 늘려 놓고 가운데 정렬은 안에서 한다.
    justify-items:center 를 쓰면 칸 너비가 내용에 맞춰 줄어들어 원이 찌그러진다. */
 .zonemap__circles li { display: flex; justify-content: center; min-width: 0; }
-.zonemap__circles a { display: block; width: 100%; max-width: 232px; text-decoration: none; }
+.zonemap__circles a { display: block; width: 100%; max-width: 252px; text-decoration: none; }
 
 /* 바깥 원 — 얇은 링 */
 .zc {
@@ -774,19 +774,19 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .zc__disc {
   position: absolute; inset: 9px; border-radius: 50%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 5px; padding: 10px 16px; text-align: center;
+  gap: 7px; padding: 12px 20px; text-align: center;
   background: linear-gradient(160deg, #fff 0%, #F4F4F5 100%);
   box-shadow: 0 12px 26px rgba(24, 20, 16, .10), 0 2px 6px rgba(24, 20, 16, .06);
   transition: transform .25s var(--ease), box-shadow .25s var(--ease);
 }
-.zc__icon { width: 26px; height: 26px; color: var(--z, var(--amber-500)); flex: none; }
+.zc__icon { width: 30px; height: 30px; color: var(--z, var(--amber-500)); flex: none; }
 .zonemap__circles b {
-  display: block; font-size: .9375rem; font-weight: 800; letter-spacing: -.01em;
-  color: var(--z, var(--ink-900));
+  display: block; font-size: clamp(1rem, .94rem + .22vw, 1.125rem); font-weight: 800;
+  letter-spacing: -.01em; color: var(--z, var(--ink-900));
 }
 .zonemap__circles small {
-  display: block; font-size: .75rem; line-height: 1.45; color: var(--ink-500);
-  word-break: keep-all;
+  display: block; font-size: clamp(.8125rem, .78rem + .13vw, .875rem); line-height: 1.5;
+  color: var(--ink-500); word-break: keep-all;
 }
 .zonemap__circles a:hover { text-decoration: none; }
 .zonemap__circles a:hover .zc__disc {
@@ -797,7 +797,7 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 @media (max-width: 860px) { .zonemap__circles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 420px) {
   .zonemap__circles { grid-template-columns: 1fr; }
-  .zonemap__circles a { max-width: 212px; }
+  .zonemap__circles a { max-width: 236px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .zc__disc { transition: none; }
