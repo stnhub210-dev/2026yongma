@@ -731,58 +731,75 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 @media (prefers-reduced-motion: reduce) { .cal-d { transition: none; } .cal-d.on:hover { transform: none; } }
 
 /* 운영일마다 함께 열리는 3개 존 */
-/* 운영일에 함께 열리는 존 — 카드 나열 대신, 한 거리에 늘어선 모습의 인포그래픽.
-   점선이 '차 없는 거리'이고 동그라미가 각 존의 자리다. 색은 배치도와 맞춘다. */
+/* 운영일에 함께 열리는 존 — 원형 인포그래픽.
+   얇은 링(테두리) 위에 굵은 호를 얹고, 안쪽에 그림자로 떠 있는 흰 원판을 둔다.
+   굵은 호는 원뿔 그라디언트를 고리 모양으로 오려 만든다(5시 → 10시 구간).
+   색은 배치도·존 소개의 존별 색을 그대로 쓴다. */
 .zonemap {
-  margin: clamp(20px, 2.5vw, 30px) 0 0;
-  padding: clamp(22px, 3vw, 30px) clamp(16px, 3vw, 34px);
+  margin: clamp(22px, 3vw, 34px) 0 0;
+  padding: clamp(24px, 3vw, 34px) clamp(14px, 3vw, 30px) clamp(28px, 3.4vw, 38px);
   border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg-soft);
 }
 .zonemap__head {
   text-align: center; font-size: .9375rem; font-weight: 600; color: var(--ink-700);
-  margin-bottom: clamp(20px, 2.6vw, 28px);
+  margin-bottom: clamp(22px, 3vw, 32px);
 }
 .zonemap__head b { color: var(--amber-700); font-weight: 800; }
 
-.zonemap__street {
-  list-style: none; margin: 0; padding: 0; position: relative;
+.zonemap__circles {
+  list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 2.2vw, 26px);
 }
-/* 거리 — 점선 한 줄. 양 끝 존의 동그라미까지만 긋는다(1/8 ~ 7/8 지점). */
-.zonemap__street::before {
-  content: ""; position: absolute; left: 12.5%; right: 12.5%; top: 8px; height: 2px;
-  background: repeating-linear-gradient(90deg, var(--line) 0 7px, transparent 7px 13px);
-}
-.zonemap__street li { text-align: center; }
-.zonemap__street a { display: block; padding: 0 10px; text-decoration: none; }
-.zonemap__dot {
-  display: block; width: 18px; height: 18px; margin: 0 auto 14px; border-radius: 50%;
-  background: #fff; border: 4px solid var(--z, var(--amber-500)); position: relative; z-index: 1;
-  transition: transform .2s var(--ease);
-}
-.zonemap__street b { display: block; font-size: .9375rem; font-weight: 800; color: var(--ink-900); }
-.zonemap__street small {
-  display: block; margin-top: 5px; font-size: .8125rem; color: var(--ink-500);
-  line-height: 1.5; word-break: keep-all;
-}
-.zonemap__street a:hover { text-decoration: none; }
-.zonemap__street a:hover b { color: var(--z, var(--amber-700)); }
-.zonemap__street a:hover .zonemap__dot { transform: scale(1.25); }
+/* 칸을 늘려 놓고 가운데 정렬은 안에서 한다.
+   justify-items:center 를 쓰면 칸 너비가 내용에 맞춰 줄어들어 원이 찌그러진다. */
+.zonemap__circles li { display: flex; justify-content: center; min-width: 0; }
+.zonemap__circles a { display: block; width: 100%; max-width: 232px; text-decoration: none; }
 
-/* 좁은 화면 — 거리를 세로로 세우고 왼쪽에 점선을 둔다 */
-@media (max-width: 720px) {
-  .zonemap__street { grid-template-columns: 1fr; gap: 18px; }
-  .zonemap__street::before {
-    left: 9px; right: auto; top: 8px; bottom: 8px; width: 2px; height: auto;
-    background: repeating-linear-gradient(180deg, var(--line) 0 7px, transparent 7px 13px);
-  }
-  .zonemap__street li { text-align: left; }
-  .zonemap__street a { display: flex; align-items: flex-start; gap: 14px; padding: 0; }
-  .zonemap__dot { margin: 1px 0 0; flex: none; }
+/* 바깥 원 — 얇은 링 */
+.zc {
+  display: block; position: relative; aspect-ratio: 1;
+  border: 2px solid var(--z, var(--amber-500)); border-radius: 50%;
+}
+/* 굵은 호 — 5시에서 10시까지 (전체의 42%) */
+.zc::before {
+  content: ""; position: absolute; inset: -5px; border-radius: 50%;
+  background: conic-gradient(from 150deg, var(--z, var(--amber-500)) 0 42%, transparent 42%);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 calc(100% - 8px));
+          mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 calc(100% - 8px));
+}
+/* 안쪽 흰 원판 — 그림자로 살짝 떠 보이게 */
+.zc__disc {
+  position: absolute; inset: 9px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; padding: 10px 16px; text-align: center;
+  background: linear-gradient(160deg, #fff 0%, #F4F4F5 100%);
+  box-shadow: 0 12px 26px rgba(24, 20, 16, .10), 0 2px 6px rgba(24, 20, 16, .06);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.zc__icon { width: 26px; height: 26px; color: var(--z, var(--amber-500)); flex: none; }
+.zonemap__circles b {
+  display: block; font-size: .9375rem; font-weight: 800; letter-spacing: -.01em;
+  color: var(--z, var(--ink-900));
+}
+.zonemap__circles small {
+  display: block; font-size: .75rem; line-height: 1.45; color: var(--ink-500);
+  word-break: keep-all;
+}
+.zonemap__circles a:hover { text-decoration: none; }
+.zonemap__circles a:hover .zc__disc {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 34px rgba(24, 20, 16, .14), 0 3px 8px rgba(24, 20, 16, .07);
+}
+
+@media (max-width: 860px) { .zonemap__circles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) {
+  .zonemap__circles { grid-template-columns: 1fr; }
+  .zonemap__circles a { max-width: 212px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .zonemap__dot { transition: none; }
-  .zonemap__street a:hover .zonemap__dot { transform: none; }
+  .zc__disc { transition: none; }
+  .zonemap__circles a:hover .zc__disc { transform: none; }
 }
 
 /* 존별 바로가기 — 홈에서 누르면 존 소개 페이지의 그 존 자리로 내려간다.

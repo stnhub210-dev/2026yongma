@@ -12,7 +12,7 @@
 <meta property="og:locale" content="ko_KR">
 <link rel="icon" href="assets/img/mascot-yong.webp">
 <link rel="apple-touch-icon" href="assets/img/mascot-yong.webp">
-<link rel="stylesheet" href="assets/css/style.css?v=20261005d">
+<link rel="stylesheet" href="assets/css/style.css?v=20261005e">
 </head>
 <body>
 
@@ -168,26 +168,47 @@
 
     <div class="cal-months reveal" id="cal-months"></div>
 
-    <!-- 운영일마다 함께 열리는 4개 존 — 한 거리에 차례로 늘어선 모습으로 보여 준다.
+    <!-- 운영일마다 함께 열리는 4개 존 — 원형 인포그래픽.
+         얇은 링 위에 굵은 호를 얹고, 안쪽에 떠 있는 흰 원판을 둔다.
          존별 색은 배치도(map-zones)와 존 소개 페이지의 색을 그대로 쓴다. -->
     <figure class="zonemap reveal">
       <figcaption class="zonemap__head">운영일에는 <b>4개 존</b>이 한 거리에서 함께 열립니다</figcaption>
-      <ol class="zonemap__street">
+      <ol class="zonemap__circles">
         <li style="--z:var(--z-food)"><a href="zones.html#food">
-          <span class="zonemap__dot" aria-hidden="true"></span>
-          <span class="zonemap__txt"><b>어서와존</b><small>K-미식벨트 먹거리 부스</small></span>
+          <span class="zc">
+            <span class="zc__disc">
+              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.4 1-1.9 1-3"/><path d="M12 7c0-1.4 1-1.9 1-3"/><path d="M16 7c0-1.4 1-1.9 1-3"/></svg>
+              <b>어서와존</b>
+              <small>K-미식벨트 먹거리 부스</small>
+            </span>
+          </span>
         </a></li>
         <li style="--z:var(--z-busking)"><a href="zones.html#busking">
-          <span class="zonemap__dot" aria-hidden="true"></span>
-          <span class="zonemap__txt"><b>골목어게인</b><small>버스킹 · DJ 음악다방</small></span>
+          <span class="zc">
+            <span class="zc__disc">
+              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/></svg>
+              <b>골목어게인</b>
+              <small>버스킹 · DJ 음악다방</small>
+            </span>
+          </span>
         </a></li>
         <li style="--z:var(--z-play)"><a href="zones.html#play">
-          <span class="zonemap__dot" aria-hidden="true"></span>
-          <span class="zonemap__txt"><b>놀아존</b><small>체험 · 게임 · 외국인 체험</small></span>
+          <span class="zc">
+            <span class="zc__disc">
+              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 1 9-9c0 2-1.6 3-3 3h-1.4a1.6 1.6 0 0 0-1.1 2.7c.4.4.5 1 .2 1.5A2 2 0 0 1 12 21Z"/><circle cx="8" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r="1.1" fill="currentColor" stroke="none"/></svg>
+              <b>놀아존</b>
+              <small>체험 · 게임 · 외국인 체험</small>
+            </span>
+          </span>
         </a></li>
         <li style="--z:var(--z-startup)"><a href="zones.html#startup">
-          <span class="zonemap__dot" aria-hidden="true"></span>
-          <span class="zonemap__txt"><b>한번봐존</b><small>프리마켓 로컬 수공예 셀러</small></span>
+          <span class="zc">
+            <span class="zc__disc">
+              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.1 11.1A2 2 0 0 1 15.9 21H8.1a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+              <b>한번봐존</b>
+              <small>프리마켓 로컬 수공예 셀러</small>
+            </span>
+          </span>
         </a></li>
       </ol>
     </figure>
@@ -503,13 +524,13 @@
 <div id="site-footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/js/config.js?v=20261005d"></script>
-<script src="assets/js/layout.js?v=20261005d"></script>
-<script src="assets/js/i18n.js?v=20261005d"></script>
-<script src="assets/js/auth.js?v=20261005d"></script>
-<script src="assets/js/main.js?v=20261005d"></script>
-<script src="assets/js/comic.js?v=20261005d"></script>
-<script src="assets/js/events.js?v=20261005d"></script>
-<script src="assets/js/calendar.js?v=20261005d"></script>
+<script src="assets/js/config.js?v=20261005e"></script>
+<script src="assets/js/layout.js?v=20261005e"></script>
+<script src="assets/js/i18n.js?v=20261005e"></script>
+<script src="assets/js/auth.js?v=20261005e"></script>
+<script src="assets/js/main.js?v=20261005e"></script>
+<script src="assets/js/comic.js?v=20261005e"></script>
+<script src="assets/js/events.js?v=20261005e"></script>
+<script src="assets/js/calendar.js?v=20261005e"></script>
 </body>
 </html>
