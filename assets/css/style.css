@@ -729,8 +729,19 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .cal-legend i.dh { background: #6D28D9; }
 .cal-legend i.sp { background: var(--amber-700); }
 
-.cal-banner { margin: 0 0 clamp(18px, 3vw, 28px); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+/* 맛집대축제 현수막 — 테두리 대신 현수막 전구색(금빛)·밤하늘색(파랑) 네온. 호버하면 앞으로 커진다. */
+.cal-banner { position: relative; margin: 6px 0 clamp(22px, 3.4vw, 34px); border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255, 214, 102, .85), 0 0 10px 1px rgba(255, 196, 61, .6), 0 0 26px 4px rgba(64, 120, 255, .38);
+  animation: banner-neon 3.2s ease-in-out infinite;
+  transition: opacity .6s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease); }  /* opacity 는 .reveal 등장 효과용 */
 .cal-banner img { display: block; width: 100%; height: auto; }
+.cal-banner:hover { z-index: 3; transform: scale(1.06); animation: none;
+  box-shadow: 0 0 0 2px rgba(255, 224, 130, .95), 0 0 18px 3px rgba(255, 196, 61, .8), 0 0 48px 10px rgba(64, 120, 255, .5), 0 18px 40px rgba(0, 0, 0, .25); }
+@keyframes banner-neon {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 214, 102, .85), 0 0 10px 1px rgba(255, 196, 61, .6), 0 0 26px 4px rgba(64, 120, 255, .38); }
+  50%      { box-shadow: 0 0 0 1px rgba(255, 228, 140, .95), 0 0 16px 2px rgba(255, 196, 61, .78), 0 0 38px 8px rgba(64, 120, 255, .5); }
+}
+@media (prefers-reduced-motion: reduce) { .cal-banner { animation: none; transition: none; } .cal-banner:hover { transform: none; } }
 .cal-months { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(14px, 2vw, 22px); }
 
 .cal-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: clamp(16px, 2vw, 22px); }
