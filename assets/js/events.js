@@ -20,8 +20,8 @@
 
   var EVENTS = {};
 
-  /* 정규행사 — 10/16(금)·17(토)부터 11/28(토)까지 매주 금·토 */
-  var d = new Date(2026, 9, 16), end = new Date(2026, 10, 28);
+  /* 정규행사 — 10/9(금)·10(토)부터 11/14(토)까지 매주 금·토 (맛집대축제 현수막 기준) */
+  var d = new Date(2026, 9, 9), end = new Date(2026, 10, 14);
   for (; d <= end; d.setDate(d.getDate() + 1)) {
     var w = d.getDay();                                    // 5=금, 6=토
     if (w !== 5 && w !== 6) continue;
@@ -31,7 +31,6 @@
   // 10/30·31 은 중기부 동행축제 연계 — 정규행사보다 크게 치르고, 버스킹도 함께 연다
   EVENTS["2026-10-30"] = { kind: "dh", name: "동행축제", sub: "동행축제", sub2: "버스킹" };
   EVENTS["2026-10-31"] = { kind: "dh", name: "동행축제", sub: "동행축제", sub2: "버스킹" };
-  EVENTS["2026-12-25"] = { kind: "sp", name: "특별행사", sub: "크리스마스" };
 
   /* 날짜 순 배열로도 만들어 둔다 — 신청 화면의 희망 참여일 목록이 이걸 쓴다 */
   var DAYS = Object.keys(EVENTS).sort().map(function (k) {
