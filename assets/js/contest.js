@@ -53,10 +53,10 @@
      ====================================================================== */
   const CAT = { photo: "사진", short: "동영상" };
   let entries = [];
-  let cat = /#short/.test(location.hash) ? "short" : "photo";   // 지금 보는 부문
+  let cat = /#short/.test(location.hash) ? "short" : /#photo/.test(location.hash) ? "photo" : "all";   // 지금 보는 탭(전체·사진·동영상)
   let sort = "new";
   let myVotes = new Set();     // 오늘 내가 투표한 작품 id
-  let limitHit = {};           // 서버가 LIMIT 라고 알려 준 부문(화면 표시용)
+  let limitHit = false;        // 서버가 LIMIT(오늘 3표 다 씀) 라고 알려 줬는지
   let user = null;
   let open = true;             // 응모·투표 기간 안인지
   let failed = false;          // 목록을 못 불러왔으면 안내 문구를 그대로 둔다
@@ -96,16 +96,16 @@
     entries = data || [];
   }
 
-  const leftOf = (k) => limitHit[k] ? 0
-    : Math.max(DAILY - entries.filter((e) => e.category === k && myVotes.has(e.id)).length, 0);
+  // 오늘 남은 표 — 사진·동영상 합산 하루 3표
+  const leftOf = () => limitHit ? 0 : Math.max(DAILY - myVotes.size, 0);
 
   function draw() {
     document.querySelectorAll(".ct-cat button").forEach((b) => {
-      const k = b.dataset.cat, n = entries.filter((e) => e.category === k).length;
+      const k = b.dataset.cat, n = k === "all" ? entries.length : entries.filter((e) => e.category === k).length;
       b.classList.toggle("active", k === cat);
       b.querySelector("small").textContent = n ? n : "";
     });
-    const list = failed ? [] : entries.filter((e) => e.category === cat).sort((a, b) =>
+    const list = failed ? [] : entries.filter((e) => cat === "all" || e.category === cat).sort((a, b) =>
       sort === "vote" ? (b.vote_count - a.vote_count) || (b.id - a.id) : b.id - a.id);
     const total = list.length;
     // 게시판 머리줄 (번호 · 작품 · 득표 · 투표)
@@ -114,8 +114,8 @@
     const isNew = (s) => Date.now() - new Date(s).getTime() < 24 * 3600e3;
 
     if (!list.length) {                       // 응모작이 없으면 '예시' 줄로 채운다 (contest-samples.js)
-      const ex = (window.CONTEST_SAMPLES || []).filter((s) => s.category === cat);
-      grid.innerHTML = `<p class="ct-empty ct-empty--ex">아직 게시된 ${CAT[cat]} 부문 응모작이 없어요. 아래는 <b>예시</b>입니다 — 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>` +
+      const ex = (window.CONTEST_SAMPLES || []).filter((s) => cat === "all" || s.category === cat);
+      grid.innerHTML = `<p class="ct-empty ct-empty--ex">아직 게시된 ${cat === "all" ? "" : CAT[cat] + " "}응모작이 없어요. 아래는 <b>예시</b>입니다 — 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>` +
         `<div class="ct-list">${head}` +
         ex.map((s, i) => `<div class="ct-row ct-row--sample">
           <span class="ct-row__no">예시</span>
@@ -126,7 +126,7 @@
         </div>`).join("") + `</div>`;
       return;
     }
-    const left = leftOf(cat);
+    const left = leftOf();
     grid.innerHTML = `<div class="ct-list">${head}` + list.map((e, i) => {
       const voted = myVotes.has(e.id), short = e.category === "short";
       const off = voted || !open || (user && left === 0);
@@ -152,7 +152,7 @@
 
   /* ---------- 로그인·남은 표 표시 ---------- */
   async function loadMyVotes() {
-    myVotes = new Set(); limitHit = {};
+    myVotes = new Set(); limitHit = false;
     if (!user) return;
     const { data } = await sb().from("contest_votes").select("entry_id").eq("user_id", user.id).eq("vote_day", kstToday());
     (data || []).forEach((r) => myVotes.add(r.entry_id));
@@ -165,7 +165,7 @@
       return;
     }
     if (!user) {
-      bar.innerHTML = `<p><b>투표하려면 로그인해 주세요.</b> 로그인하면 부문마다 하루 ${DAILY}표씩 쓸 수 있어요.</p>
+      bar.innerHTML = `<p><b>투표하려면 로그인해 주세요.</b> 로그인하면 하루 ${DAILY}표를 쓸 수 있어요.</p>
         <div class="btn-row">
           <button type="button" class="btn btn--sm ct-kakao" data-login="kakao">카카오로 시작</button>
           <button type="button" class="btn btn--sm btn--ghost" data-login="google">구글로 시작</button>
@@ -173,7 +173,7 @@
         </div>`;
       return;
     }
-    bar.innerHTML = `<p>오늘 남은 투표 &nbsp;사진 <b class="ct-left">${leftOf("photo")}</b> / ${DAILY}표 &nbsp;·&nbsp; 동영상 <b class="ct-left">${leftOf("short")}</b> / ${DAILY}표
+    bar.innerHTML = `<p>오늘 남은 투표 <b class="ct-left">${leftOf()}</b> / ${DAILY}표 <span class="muted tiny">(사진·동영상 합산)</span>
       <span class="muted tiny">· 매일 0시(한국 시간)에 다시 채워져요</span></p>`;
   }
 
@@ -183,7 +183,7 @@
     CLOSED: "지금은 투표 기간이 아닙니다.",
     NOENTRY: "투표할 수 없는 작품입니다. 새로고침해 주세요.",
     DUP: "이 작품에는 오늘 이미 투표했어요. 내일 다시 투표할 수 있어요.",
-    LIMIT: `이 부문의 오늘 ${DAILY}표를 모두 쓰셨어요. 다른 부문에 투표하거나 내일 다시 와 주세요!`,
+    LIMIT: `오늘 ${DAILY}표를 모두 쓰셨어요. 내일 다시 투표해 주세요!`,
   };
 
   async function vote(id, btn) {
@@ -195,8 +195,8 @@
     const e = entries.find((x) => x.id === id);
     if (e && r.entry_votes != null) e.vote_count = r.entry_votes;
     if (r.result === "OK" || r.result === "DUP") myVotes.add(id);
-    if (r.result === "LIMIT" && e) limitHit[e.category] = true;
-    if (r.result === "OK") msg(boardMsg, "ok", `투표했어요! 오늘 ${CAT[e.category]} 부문 남은 투표 ${r.votes_left}표`);
+    if (r.result === "LIMIT") limitHit = true;
+    if (r.result === "OK") msg(boardMsg, "ok", `투표했어요! 오늘 남은 투표 ${r.votes_left}표`);
     else msg(boardMsg, r.result === "DUP" ? "warn" : "err", VOTE_TEXT[r.result] || "투표하지 못했습니다.");
     draw(); drawVotebar();
   }

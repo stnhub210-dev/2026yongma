@@ -5,7 +5,7 @@
 --
 --  · 부문: 사진(photo) / 숏폼 영상(short). 영상은 파일 대신 SNS 링크 + 대표 화면 캡처로 받는다.
 --  · 응모: 로그인 없이 누구나. 관리자가 '승인' 해야 게시판에 보입니다.
---  · 투표: 로그인한 사람만, 부문별 하루(한국 시간) 3표, 같은 작품엔 하루 1표.
+--  · 투표: 로그인한 사람만, 하루(한국 시간) 3표(사진·동영상 통합), 같은 작품엔 하루 1표.
 --  · 기간: 응모·투표 모두 2026-10-09 ~ 2026-12-30 (한국 시간). 발표 12-31 14:00.
 --  · 시상 점수 = 심사 30% + 시민투표 70% (계산은 관리자 화면 admin/contest.html)
 -- ---------------------------------------------------------------------------
@@ -154,8 +154,8 @@ create policy "내 투표만 보기" on public.contest_votes
   for select using (user_id = auth.uid() or public.is_staff());
 
 -- 투표하기: 결과를 글자로 돌려준다
---   OK / LOGIN(로그인 필요) / CLOSED(기간 아님) / NOENTRY(없는·미승인 작품) / DUP(오늘 이미 투표) / LIMIT(이 부문 오늘 3표 다 씀)
---   votes_left 는 그 작품이 속한 부문의 오늘 남은 표
+--   OK / LOGIN(로그인 필요) / CLOSED(기간 아님) / NOENTRY(없는·미승인 작품) / DUP(오늘 이미 투표) / LIMIT(오늘 3표 다 씀)
+--   votes_left 는 오늘 남은 표
 create or replace function public.contest_vote(p_entry bigint)
 returns table (result text, votes_left int, entry_votes int)
 language plpgsql security definer set search_path = public as $$
@@ -179,10 +179,10 @@ begin
 
   perform pg_advisory_xact_lock(hashtext(uid::text));          -- 같은 사람이 동시에 눌러도 3표를 넘지 않게
 
-  -- 같은 부문에서 오늘 쓴 표
+  -- 오늘 쓴 표 (사진·동영상 통합 시상이므로 부문 구분 없이 하루 3표)
   select count(*) into used
-    from contest_votes v join contest_entries e on e.id = v.entry_id
-   where v.user_id = uid and v.vote_day = today and e.category = cat;
+    from contest_votes v
+   where v.user_id = uid and v.vote_day = today;
   if exists (select 1 from contest_votes where user_id = uid and vote_day = today and entry_id = p_entry) then
     select vote_count into cnt from contest_entries where id = p_entry;
     return query select 'DUP'::text, greatest(3 - used, 0), cnt; return;

@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009r">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009s">
 </head>
 <body>
 <div id="site-header"></div>
@@ -24,14 +24,14 @@
   <div class="wrap">
     <span class="eyebrow">Photo Contest</span>
     <h1>용마미식거리 사진전</h1>
-    <p class="ct-hero-sub">📷 사진 부문 · 🎬 동영상 부문</p>
+    <p class="ct-hero-sub">📷 사진 · 🎬 동영상 자율 참가</p>
     <p class="ct-slogan">먹고, 찍고, 올리면 — <strong>오늘 밤 한 컷이 상금이 됩니다!</strong></p>
     <p class="lead mt-2" style="max-width:62ch">
       폰 하나면 충분해요. 내 SNS에 올린 그 순간이 그대로 응모작이 되고,
       시민 투표로 주인공이 정해집니다. 사진도, 쇼츠도 환영!
     </p>
     <div class="chip-row mt-3">
-      <span class="chip chip--amber">총상금 50만원 (부문별 25만원)</span>
+      <span class="chip chip--amber">총상금 50만원 (사진·동영상 통합)</span>
       <span class="chip">응모·투표 ~ 12. 30.(수)</span>
       <span class="chip">발표 12. 31.(목) 14:00</span>
       <span class="chip">시민투표 70% + 심사 30%</span>
@@ -46,7 +46,7 @@
       <li><span>1</span><b>찍기</b><p>용마미식거리에서 사진 또는 동영상을 찍어요.</p></li>
       <li><span>2</span><b>내 SNS에 올리기</b><p>본인 계정에 <em>전체 공개</em>로, <em>#용마미식거리사진전</em> 해시태그를 달아요.</p></li>
       <li><span>3</span><b>여기에 응모</b><p>부문을 고르고 사진(영상은 대표 화면)과 SNS 인증샷을 올려요. 확인 후 게시돼요.</p></li>
-      <li><span>4</span><b>시민투표</b><p>로그인하면 부문마다 하루 3표! 마음에 드는 작품에 투표해 주세요.</p></li>
+      <li><span>4</span><b>시민투표</b><p>로그인하면 하루 3표! 마음에 드는 작품에 투표해 주세요.</p></li>
     </ol>
   </div>
 </section>
@@ -61,8 +61,9 @@
       </div>
       <div class="ct-tools">
         <div class="ct-cat" role="group" aria-label="부문">
-          <button type="button" data-cat="photo" class="active">📷 사진 부문 <small></small></button>
-          <button type="button" data-cat="short">🎬 동영상 부문 <small></small></button>
+          <button type="button" data-cat="all" class="active">전체 <small></small></button>
+          <button type="button" data-cat="photo">📷 사진 <small></small></button>
+          <button type="button" data-cat="short">🎬 동영상 <small></small></button>
         </div>
         <div class="ct-sort" role="group" aria-label="정렬">
           <button type="button" data-sort="new" class="active">최신순</button>
@@ -183,9 +184,9 @@
     <div class="ct-rules">
       <h3>시상 · 심사 안내</h3>
       <ul>
-        <li><b>시상</b> 부문별(사진·동영상 각각) 대상 10만원(1명) · 우수상 5만원(2명) · 참가상 1만원(5명, 추첨) — 부문별 25만원, 총 50만원</li>
-        <li><b>점수</b> 부문별로 시민투표 70% + 심사위원(상인회·주관사) 30%. 투표 점수는 그 부문 최다 득표작을 100점으로 환산합니다.</li>
-        <li><b>투표</b> 로그인한 분만, 부문마다 하루 3표(같은 작품엔 하루 1표). 자동 프로그램·대리 투표 등 부정이 확인되면 해당 표와 응모를 무효로 합니다.</li>
+        <li><b>시상</b> 사진·동영상 통합 — 대상 20만원(1명) · 최우수상 10만원(1명) · 우수상 5만원(2명) · 참가상 1만원(10명, 추첨), 총 50만원</li>
+        <li><b>점수</b> 시민투표 70% + 심사위원(상인회·주관사) 30%. 투표 점수는 최다 득표작을 100점으로 환산합니다.</li>
+        <li><b>투표</b> 로그인한 분만, 하루 3표(사진·동영상 합산, 같은 작품엔 하루 1표). 자동 프로그램·대리 투표 등 부정이 확인되면 해당 표와 응모를 무효로 합니다.</li>
         <li><b>동영상</b> 쇼츠·릴스처럼 짧은 영상을 권장합니다. 영상 파일 대신 SNS 게시물 주소와 대표 화면 캡처로 응모합니다.</li>
         <li><b>발표</b> 2026. 12. 31.(목) 14:00 홈페이지 소식 · 당첨자에게는 응모한 SNS 계정 메시지로 개별 연락</li>
         <li>SNS 게시물이 비공개·삭제되면 심사에서 빠집니다. 발표 때까지 공개로 남겨 주세요.</li>
@@ -215,6 +216,6 @@
 <script src="assets/js/auth.js?v=20261006f"></script>
 <script src="assets/js/main.js?v=20261009e"></script>
 <script src="assets/js/contest-samples.js?v=20261009"></script>
-<script src="assets/js/contest.js?v=20261009f"></script>
+<script src="assets/js/contest.js?v=20261009g"></script>
 </body>
 </html>
