@@ -1337,3 +1337,38 @@ img, video, iframe, table { max-width: 100%; }
 .ct-slogan { margin-top: 14px; font-size: clamp(1.125rem, .95rem + .9vw, 1.5rem); font-weight: 700; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
 .ct-slogan strong { color: #FFD166; font-weight: 900; }
 .contest__steps em { white-space: nowrap; }   /* 해시태그가 # 에서 끊기지 않게 */
+
+/* ---------- 사진전 예시 — 예시 작품 카드 · 응모 방법 휴대폰 예시 그림 ---------- */
+.ct-empty--ex { padding: 16px; }
+.ct-card--sample { opacity: .92; }
+.ct-card--sample .ct-card__img { cursor: default; }
+.ct-ex, .cl-ex { position: absolute; right: 10px; top: 10px; padding: 3px 10px; border-radius: 999px; background: #FFD166; color: #2A1500; font-style: normal; font-size: .75rem; font-weight: 900; letter-spacing: .02em; }
+.cl-ex { right: 8px; top: 8px; font-size: .6875rem; padding: 2px 8px; }
+
+.ct-howto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 24px; }
+.ct-phone { margin: 0; text-align: center; }
+.ct-phone__screen { position: relative; width: min(100%, 210px); aspect-ratio: 9 / 17; margin: 0 auto; padding: 22px 8px 10px; border-radius: 28px; background: #fff;
+  border: 6px solid #1c1917; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.ct-phone__screen::before { content: ""; position: absolute; left: 50%; top: 7px; width: 54px; height: 6px; border-radius: 6px; background: #1c1917; transform: translateX(-50%); }
+.ct-phone__screen img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; }
+.ct-ig__top { display: flex; align-items: center; gap: 6px; font-size: .6875rem; }
+.ct-ig__top i { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #F58529, #DD2A7B, #8134AF); }
+.ct-ig__top span { margin-left: auto; color: var(--ink-500); }
+.ct-ig__bar { font-size: .8125rem; letter-spacing: 4px; }
+.ct-ig__cap { font-size: .6875rem; line-height: 1.5; color: var(--ink-800); }
+.ct-ig__cap mark { background: #FFE58A; color: #1F3B8C; font-weight: 800; padding: 0 2px; border-radius: 3px; }
+.ct-phone__screen--photo, .ct-phone__screen--video { padding: 0; background: #000; justify-content: center; }
+.ct-phone__screen--photo img, .ct-phone__screen--video img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; border-radius: 0; }
+.ct-tag { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); white-space: nowrap; padding: 4px 12px; border-radius: 999px; background: rgba(0,0,0,.65); color: #fff; font-size: .75rem; font-weight: 700; }
+.ct-phone figcaption { margin-top: 12px; display: grid; justify-items: center; gap: 2px; font-size: .8125rem; color: var(--ink-500); line-height: 1.5; }
+.ct-phone figcaption span { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #0E1F4D; color: #FFD166; font-weight: 900; font-size: .8125rem; }
+.ct-phone figcaption b { font-size: .9375rem; color: var(--ink-900); }
+@media (max-width: 640px) {
+  .ct-howto { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .ct-phone__screen { border-width: 4px; border-radius: 18px; }
+  .ct-ig__cap { font-size: .5625rem; }
+  .ct-phone figcaption { font-size: .6875rem; }
+}
+.ct-ig__cap mark { white-space: nowrap; }
+.contest .cl-ex { color: #2A1500; }   /* .contest em(노랑) 이 덮지 않게 */
+.contest .cl-cat { color: #fff; }

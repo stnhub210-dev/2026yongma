@@ -99,11 +99,19 @@
       b.classList.toggle("active", k === cat);
       b.querySelector("small").textContent = n ? n : "";
     });
-    if (failed) return;
-    const list = entries.filter((e) => e.category === cat).sort((a, b) =>
+    const list = failed ? [] : entries.filter((e) => e.category === cat).sort((a, b) =>
       sort === "vote" ? (b.vote_count - a.vote_count) || (b.id - a.id) : b.id - a.id);
-    if (!list.length) {
-      grid.innerHTML = `<p class="ct-empty">아직 게시된 ${CAT[cat]} 부문 응모작이 없어요. 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>`;
+    if (!list.length) {                       // 응모작이 없으면 '예시' 카드로 채운다 (contest-samples.js)
+      const ex = (window.CONTEST_SAMPLES || []).filter((s) => s.category === cat);
+      grid.innerHTML = `<p class="ct-empty ct-empty--ex">아직 게시된 ${CAT[cat]} 부문 응모작이 없어요. 아래는 <b>예시</b>입니다 — 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>` +
+        ex.map((s) => `<article class="ct-card ct-card--sample${s.category === "short" ? " ct-card--short" : ""}">
+          <div class="ct-card__img"><img src="assets/img/gallery/${s.img}_t.webp" alt="" loading="lazy">
+            ${s.category === "short" ? '<span class="ct-play" aria-hidden="true">▶</span>' : ""}<span class="ct-ex">예시</span></div>
+          <div class="ct-card__body"><h3>${esc(s.title)}</h3><p class="ct-card__by">by ${esc(s.nickname)}</p>
+            ${s.story ? `<p class="ct-card__story">${esc(s.story)}</p>` : ""}</div>
+          <div class="ct-card__vote"><span class="ct-card__count"><b>${s.votes}</b>표</span>
+            <button type="button" class="btn btn--sm btn--ghost" disabled>예시 작품</button></div>
+        </article>`).join("");
       return;
     }
     const left = leftOf(cat);
