@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009e">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009f">
 </head>
 <body>
 
@@ -426,40 +426,54 @@
 </section>
 
 <!-- ================= MEDIA ================= -->
-<section class="section section--warm">
+<!-- 방문객용 — 숫자 대신 실제 행사 사진(9/18 개막 현장)으로 "가 보고 싶게".
+     사진은 assets/img/gallery/ 의 실제 촬영본. 큰 사진 1장 + 작은 사진 3장 모자이크. -->
+<section class="section section--warm" id="night">
   <div class="wrap">
     <div class="sec-head sec-head--center reveal">
-      <span class="eyebrow">Media</span>
-      <h2 data-i18n="home.media.title">골목이 곧 미디어가 됩니다</h2>
-      <p>상권기획자가 미디어 법인입니다. 방송·영상 인프라를 상권 홍보에 직접 투입합니다.</p>
+      <span class="eyebrow">Tonight</span>
+      <h2 data-i18n="home.media.title">불이 켜지면, 골목이 잔치가 됩니다</h2>
+      <p>오후 5시, 차가 빠진 골목에 주황 천막이 하나둘 불을 밝힙니다.<br class="br-pc">
+        맛집 한 접시, 노래 한 곡, 옆 테이블의 웃음소리까지 — 강릉의 밤은 여기서 시작됩니다.</p>
     </div>
-    <div class="grid grid-4">
-      <div class="tile tile--soft reveal">
-        <dt>KTX·SRT 전객차 영상</dt>
-        <dd><b data-count="1200">1,200</b><small>만명 / 연</small></dd>
-        <span class="delta">'강릉에오면' 하이라이트</span>
-      </div>
-      <div class="tile tile--soft reveal">
-        <dt>IPTV 채널</dt>
-        <dd>ch.<b data-count="131">131</b></dd>
-        <span class="delta">24시간 전국 방송</span>
-      </div>
-      <div class="tile tile--soft reveal">
-        <dt>인플루언서 콘텐츠</dt>
-        <dd><b data-count="56">56</b><small>편</small></dd>
-        <span class="delta">롱폼 6편 · 숏폼 50편</span>
-      </div>
-      <div class="tile tile--soft reveal">
-        <dt>목표 조회수</dt>
-        <dd><b data-count="1000">1,000</b><small>만회</small></dd>
-        <span class="delta">유튜브 · SNS 합산</span>
-      </div>
+
+    <div class="night-mosaic reveal">
+      <figure class="night-mosaic__big">
+        <img src="assets/img/gallery/20260918_185900.webp" alt="불 켜진 주황 천막 아래 테이블마다 사람들이 모인 용마미식거리의 밤" loading="lazy">
+        <figcaption><b>밤 10시까지, 골목 전체가 식탁</b>천막 아래 아무 자리에나 앉아 맛집 메뉴를 펼쳐 보세요</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/gallery/20260918_201800.webp" alt="테이블에 둘러앉아 음식을 나누는 방문객들" loading="lazy">
+        <figcaption><b>40년 노포의 한 접시</b></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/gallery/20260918_201709.webp" alt="대형 화면 앞 무대에서 노래하는 가수" loading="lazy">
+        <figcaption><b>골목 한가운데 무대</b></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/gallery/20260918_210840.webp" alt="밤에 불 밝힌 용마미식거리 맛집대축제 입구 아치" loading="lazy">
+        <figcaption><b>아치 앞 인증샷은 필수</b></figcaption>
+      </figure>
     </div>
-    <div class="grid grid-3 mt-4">
-      <figure class="figure reveal"><img src="assets/img/media-tour.webp" alt="미식거리 투어 촬영" loading="lazy"><figcaption>용마미식거리 투어 — 상인 출연 예능 포맷</figcaption></figure>
-      <figure class="figure reveal"><img src="assets/img/media-travel.webp" alt="여행 인플루언서 동행" loading="lazy"><figcaption>여행 인플루언서 동행 — 강릉 하루 코스</figcaption></figure>
-      <figure class="figure reveal"><img src="assets/img/media-shoot.webp" alt="현장 촬영" loading="lazy"><figcaption>현장 생중계 — 자체 중계팀 투입</figcaption></figure>
-    </div>
+
+    <ul class="night-tips">
+      <li class="reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.4 1-1.9 1-3"/><path d="M12 7c0-1.4 1-1.9 1-3"/><path d="M16 7c0-1.4 1-1.9 1-3"/></svg>
+        <b>빈손으로 오세요</b>
+        <p>강릉역에서 걸어서 10분. 매주 금·토 오후 5시부터 밤 10시까지 차 없는 거리로 열립니다.</p>
+      </li>
+      <li class="reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <b>찍고, 자랑하세요</b>
+        <p>오늘의 한 장에 <em>#용마미식거리</em> 를 달아 주세요. 갤러리에 직접 올릴 수도 있어요.</p>
+        <a href="gallery.html">사진 갤러리 →</a>
+      </li>
+      <li class="reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <b>TV에 나올지도 몰라요</b>
+        <p>골목의 밤은 STN 방송팀이 담아 KT 지니TV ch.131 과 KTX·SRT 객차 영상으로 전국에 소개합니다.</p>
+      </li>
+    </ul>
   </div>
 </section>
 
