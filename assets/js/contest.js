@@ -107,44 +107,47 @@
     });
     const list = failed ? [] : entries.filter((e) => e.category === cat).sort((a, b) =>
       sort === "vote" ? (b.vote_count - a.vote_count) || (b.id - a.id) : b.id - a.id);
-    if (!list.length) {                       // 응모작이 없으면 '예시' 카드로 채운다 (contest-samples.js)
+    const total = list.length;
+    // 게시판 머리줄 (번호 · 작품 · 득표 · 투표)
+    const head = `<div class="ct-row ct-row--head" aria-hidden="true"><span>번호</span><span></span><span>작품</span><span>득표</span><span></span></div>`;
+    const ymd = (s) => { const d = new Date(new Date(s).getTime() + 9 * 3600e3); return `${d.getUTCMonth() + 1}. ${d.getUTCDate()}.`; };
+    const isNew = (s) => Date.now() - new Date(s).getTime() < 24 * 3600e3;
+
+    if (!list.length) {                       // 응모작이 없으면 '예시' 줄로 채운다 (contest-samples.js)
       const ex = (window.CONTEST_SAMPLES || []).filter((s) => s.category === cat);
       grid.innerHTML = `<p class="ct-empty ct-empty--ex">아직 게시된 ${CAT[cat]} 부문 응모작이 없어요. 아래는 <b>예시</b>입니다 — 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>` +
-        ex.map((s) => `<article class="ct-card ct-card--sample${s.category === "short" ? " ct-card--short" : ""}">
-          <div class="ct-card__img"><img src="assets/img/gallery/${s.img}_t.webp" alt="" loading="lazy">
-            ${s.category === "short" ? '<span class="ct-play" aria-hidden="true">▶</span>' : ""}<span class="ct-ex">예시</span></div>
-          <div class="ct-card__body"><h3>${esc(s.title)}</h3><p class="ct-card__by">by ${esc(s.nickname)}</p>
-            ${s.story ? `<p class="ct-card__story">${esc(s.story)}</p>` : ""}</div>
-          <div class="ct-card__vote"><span class="ct-card__count"><b>${s.votes}</b>표</span>
-            <button type="button" class="btn btn--sm btn--ghost" disabled>예시 작품</button></div>
-        </article>`).join("");
+        `<div class="ct-list">${head}` +
+        ex.map((s, i) => `<div class="ct-row ct-row--sample">
+          <span class="ct-row__no">예시</span>
+          <span class="ct-row__img"><img src="assets/img/gallery/${s.img}_t.webp" alt="" loading="lazy">${s.category === "short" ? '<i class="ct-play" aria-hidden="true">▶</i>' : ""}</span>
+          <span class="ct-row__main"><b>${esc(s.title)}</b><small>by ${esc(s.nickname)}</small>${s.story ? `<em>${esc(s.story)}</em>` : ""}</span>
+          <span class="ct-row__count"><b>${s.votes}</b>표</span>
+          <span class="ct-row__act"><button type="button" class="btn btn--sm btn--ghost" disabled>예시</button></span>
+        </div>`).join("") + `</div>`;
       return;
     }
     const left = leftOf(cat);
-    grid.innerHTML = list.map((e) => {
+    grid.innerHTML = `<div class="ct-list">${head}` + list.map((e, i) => {
       const voted = myVotes.has(e.id), short = e.category === "short";
       const off = voted || !open || (user && left === 0);
-      return `<article class="ct-card${short ? " ct-card--short" : ""}" data-id="${e.id}">
-        <button type="button" class="ct-card__img" data-view="photo" aria-label="${esc(e.title)} ${short ? "영상 보기" : "크게 보기"}">
-          <img src="${pub(e.photo_thumb)}" alt="${esc(e.title)}" loading="lazy">
-          ${short ? '<span class="ct-play" aria-hidden="true">▶</span>' : ""}
+      const no = sort === "vote" ? `${i + 1}위` : total - i;            // 최신순은 글 번호, 득표순은 순위
+      return `<div class="ct-row" data-id="${e.id}">
+        <span class="ct-row__no">${no}</span>
+        <button type="button" class="ct-row__img" data-view="photo" aria-label="${esc(e.title)} ${short ? "영상 보기" : "크게 보기"}">
+          <img src="${pub(e.photo_thumb)}" alt="" loading="lazy">${short ? '<i class="ct-play" aria-hidden="true">▶</i>' : ""}
         </button>
-        <div class="ct-card__body">
-          <h3>${esc(e.title)}</h3>
-          <p class="ct-card__by">by ${esc(e.nickname)}</p>
-          ${e.story ? `<p class="ct-card__story">${esc(e.story)}</p>` : ""}
-          <div class="ct-card__links">
-            <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">${short ? "영상 원문" : "SNS 원문"} ↗</a>
-            <button type="button" data-view="proof">인증샷</button>
-          </div>
-        </div>
-        <div class="ct-card__vote">
-          <span class="ct-card__count"><b>${e.vote_count.toLocaleString("ko-KR")}</b>표</span>
-          <button type="button" class="btn btn--sm ${voted ? "btn--ghost" : "btn--primary"}" data-vote ${off ? "disabled" : ""}>
-            ${voted ? "오늘 투표함 ✓" : !open ? "투표 마감" : user && left === 0 ? "오늘 표 소진" : "♥ 투표"}</button>
-        </div>
-      </article>`;
-    }).join("");
+        <span class="ct-row__main">
+          <b>${isNew(e.created_at) ? '<i class="ct-new">N</i>' : ""}${esc(e.title)}</b>
+          <small>by ${esc(e.nickname)} · ${ymd(e.created_at)}
+            · <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">${short ? "영상 원문" : "SNS 원문"} ↗</a>
+            · <button type="button" data-view="proof">인증샷</button></small>
+          ${e.story ? `<em>${esc(e.story)}</em>` : ""}
+        </span>
+        <span class="ct-row__count"><b>${e.vote_count.toLocaleString("ko-KR")}</b>표</span>
+        <span class="ct-row__act"><button type="button" class="btn btn--sm ${voted ? "btn--ghost" : "btn--primary"}" data-vote ${off ? "disabled" : ""}>
+          ${voted ? "투표함 ✓" : !open ? "마감" : user && left === 0 ? "표 소진" : "♥ 투표"}</button></span>
+      </div>`;
+    }).join("") + `</div>`;
   }
 
   /* ---------- 로그인·남은 표 표시 ---------- */
@@ -226,7 +229,7 @@
   lb.addEventListener("close", () => (lbVid.innerHTML = ""));
 
   grid.addEventListener("click", (ev) => {
-    const card = ev.target.closest(".ct-card");
+    const card = ev.target.closest(".ct-row[data-id]");
     if (!card) return;
     const e = entries.find((x) => String(x.id) === card.dataset.id);
     if (!e) return;

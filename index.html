@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009q">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009r">
 </head>
 <body>
 
@@ -265,23 +265,14 @@
     </ol>
 
     <h3 class="contest__sub reveal">시상 내역 <small class="contest__subnote">부문별 25만원 · 총 50만원</small></h3>
-    <div class="contest__tracks">
-      <div class="reveal">
-        <p class="contest__track">📷 사진 부문</p>
-        <ul class="contest__prizes">
-          <li class="is-top"><b>대상</b><strong>10만원</strong><small>1명</small></li>
-          <li><b>우수상</b><strong>5만원</strong><small>2명</small></li>
-          <li><b>참가상</b><strong>1만원</strong><small>5명 · 추첨</small></li>
-        </ul>
-      </div>
-      <div class="reveal">
-        <p class="contest__track">🎬 동영상 부문 <small>쇼츠·릴스 등 SNS 영상</small></p>
-        <ul class="contest__prizes">
-          <li class="is-top"><b>대상</b><strong>10만원</strong><small>1명</small></li>
-          <li><b>우수상</b><strong>5만원</strong><small>2명</small></li>
-          <li><b>참가상</b><strong>1만원</strong><small>5명 · 추첨</small></li>
-        </ul>
-      </div>
+    <!-- 두 부문 시상이 같아 한 줄로 — '부문별 각각' -->
+    <div class="contest__tracks contest__tracks--one reveal">
+      <p class="contest__track">📷 사진 · 🎬 동영상 <span class="contest__each">부문별 각각</span></p>
+      <ul class="contest__prizes">
+        <li class="is-top"><b>대상</b><strong>10만원</strong><small>부문별 1명</small></li>
+        <li><b>우수상</b><strong>5만원</strong><small>부문별 2명</small></li>
+        <li><b>참가상</b><strong>1만원</strong><small>부문별 5명 · 추첨</small></li>
+      </ul>
     </div>
 
     <!-- 지금 올라온 응모작 — 승인된 응모작이 실시간으로 나타난다 (assets/js/contest-live.js).

@@ -1424,3 +1424,45 @@ img, video, iframe, table { max-width: 100%; }
   .jflow { grid-template-columns: 1fr 1fr; row-gap: 26px; }
   .jflow li:nth-child(3)::before, .jflow li:nth-child(3)::after { display: none; }   /* 줄바꿈된 첫 칸엔 화살표 없음 */
 }
+
+/* 사진전 응모작 — 게시판 형식 (번호 · 썸네일 · 제목/작성자 · 득표 · 투표) */
+#ct-grid { display: block; }
+#ct-grid .ct-empty { margin-bottom: 12px; }
+.ct-list { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.ct-row { display: grid; grid-template-columns: 64px 112px 1fr 90px 120px; align-items: center; gap: 16px; padding: 12px 18px; border-top: 1px solid var(--line); }
+.ct-row:first-child { border-top: 0; }
+.ct-row--head { padding: 10px 18px; background: var(--bg-soft); font-size: .8125rem; font-weight: 700; color: var(--ink-500); }
+.ct-row--head span:nth-child(4) { text-align: right; }
+.ct-row:not(.ct-row--head):hover { background: #FFFBF4; }
+.ct-row__no { text-align: center; font-weight: 800; color: var(--ink-500); font-variant-numeric: tabular-nums; }
+.ct-row__img { position: relative; display: block; width: 112px; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: var(--ink-900); cursor: zoom-in; }
+.ct-row__img img { width: 100%; height: 100%; object-fit: cover; }
+.ct-row__img .ct-play { width: 34px; height: 34px; font-size: .8125rem; padding-left: 3px; }
+.ct-row__main { display: grid; gap: 3px; min-width: 0; }
+.ct-row__main b { font-size: 1.0625rem; color: var(--ink-900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-row__main small { font-size: .8125rem; color: var(--ink-500); }
+.ct-row__main small a, .ct-row__main small button { color: var(--amber-700); font-weight: 700; background: none; border: 0; padding: 0; font: inherit; font-weight: 700; cursor: pointer; }
+.ct-row__main em { font-style: normal; font-size: .875rem; color: var(--ink-700); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-new { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 6px; border-radius: 4px; background: #FF4D4F; color: #fff; font-style: normal; font-size: .6875rem; font-weight: 900; vertical-align: 2px; }
+.ct-row__count { text-align: right; font-size: .875rem; color: var(--ink-500); white-space: nowrap; }
+.ct-row__count b { font-size: 1.25rem; color: var(--ink-900); margin-right: 2px; }
+.ct-row__act { text-align: right; }
+.ct-row__act .btn { min-width: 96px; }
+.ct-row--sample { opacity: .85; }
+.ct-row--sample .ct-row__no { font-size: .75rem; color: var(--amber-700); }
+.ct-row--sample .ct-row__img { cursor: default; }
+@media (max-width: 720px) {
+  .ct-row { grid-template-columns: 34px 84px 1fr auto; gap: 10px; padding: 10px 12px; }
+  .ct-row--head { display: none; }
+  .ct-row__img { width: 84px; }
+  .ct-row__count { grid-column: 3; grid-row: 2; text-align: left; margin-top: -4px; }
+  .ct-row__act { grid-column: 4; grid-row: 1 / span 2; }
+  .ct-row__act .btn { min-width: 0; padding: 8px 12px; }
+  .ct-row__no, .ct-row__img { grid-row: 1 / span 2; }
+  .ct-row__main b { font-size: .9375rem; }
+}
+
+/* 시상 내역 한 줄(부문별 각각) */
+.contest__tracks--one { display: block; max-width: 760px; }
+.contest__tracks--one .contest__prizes { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.contest__each { margin-left: 8px; padding: 3px 10px; border-radius: 999px; background: #FFD166; color: #2A1500; font-size: .8125rem; font-weight: 900; vertical-align: 2px; }
