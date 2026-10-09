@@ -1132,3 +1132,15 @@ img, video, iframe, table { max-width: 100%; }
 .night-tips a { display: inline-block; margin-top: 10px; font-size: .875rem; font-weight: 700; color: var(--amber-700); }
 @media (min-width: 900px) { .br-pc { display: inline; } }
 @media (max-width: 899px) { .br-pc { display: none; } }
+
+/* ---------- 개막 안내 왼쪽 아래 — 인사하는 캐릭터 용지 & 마루 ---------- */
+.greet { position: relative; margin: clamp(28px, 4vw, 44px) 0 0; max-width: 420px; text-align: center; }
+.greet img { display: block; width: 100%; height: auto; filter: drop-shadow(0 14px 22px rgba(120, 60, 10, .18)); animation: greet-bob 3.6s ease-in-out infinite; }
+.greet__bubble { position: relative; display: inline-block; margin: 0 0 6px; padding: 10px 18px; border-radius: 999px; background: #fff; border: 2px solid var(--amber-500);
+  color: var(--ink-900); font-size: .9375rem; font-weight: 700; box-shadow: var(--shadow-sm); }
+.greet__bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; width: 14px; height: 14px; background: #fff; border-right: 2px solid var(--amber-500); border-bottom: 2px solid var(--amber-500); transform: translateX(-50%) rotate(45deg); }
+.greet figcaption { margin-top: 6px; font-size: .875rem; color: var(--ink-500); }
+.greet figcaption b { color: var(--amber-700); font-weight: 800; }
+@keyframes greet-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .greet img { animation: none; } }
+@media (max-width: 899px) { .greet { margin-inline: auto; } }
