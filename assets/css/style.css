@@ -1372,3 +1372,16 @@ img, video, iframe, table { max-width: 100%; }
 .ct-ig__cap mark { white-space: nowrap; }
 .contest .cl-ex { color: #2A1500; }   /* .contest em(노랑) 이 덮지 않게 */
 .contest .cl-cat { color: #fff; }
+
+/* 사진전 안내 상자 — 짧게, 한눈에 */
+.contest__box { padding: 20px 22px; }
+.contest__box h3 { margin-bottom: 12px; }
+.contest__themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.contest__themes span { display: grid; gap: 2px; padding: 12px 8px; border-radius: 12px; background: var(--amber-50); text-align: center; font-size: .8125rem; color: var(--ink-600, #57534E); }
+.contest__themes b { font-size: 1.25rem; font-weight: 900; color: var(--amber-700); }
+.contest__score { margin-top: 12px; font-size: .9375rem; color: var(--ink-700); text-align: center; }
+.contest__score b { color: var(--amber-700); }
+.contest__box ul { gap: 6px; }
+.contest__box li b { color: var(--ink-900); }
+.contest__tracks .contest__prizes li { padding: 14px 8px; }
+.contest__tracks .contest__prizes strong { font-size: clamp(1.25rem, 1.05rem + .8vw, 1.625rem); }
