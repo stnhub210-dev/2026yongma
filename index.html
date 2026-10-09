@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009p">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009q">
 </head>
 <body>
 
@@ -232,11 +232,36 @@
     </div>
 
     <h3 class="contest__sub reveal">참여 방법</h3>
-    <ol class="contest__steps">
-      <li class="reveal"><span>1</span><b>찍기</b><p>용마미식거리에서 사진 또는 동영상을 찍어요. 운영일(11. 14.까지 매주 금·토 17:00~22:00)이면 더 좋아요.</p></li>
-      <li class="reveal"><span>2</span><b>내 SNS에 올리기</b><p>본인 계정에 <em>전체 공개</em>로, <em>#용마미식거리사진전</em> <em>#용마미식거리</em> 해시태그를 달아요.</p></li>
-      <li class="reveal"><span>3</span><b>홈페이지에 응모</b><p>사진전 게시판에서 부문을 고르고 사진(영상은 대표 화면)과 SNS 인증샷을 올려요.</p></li>
-      <li class="reveal"><span>4</span><b>시민투표</b><p>로그인하면 부문마다 하루 3표! 마음에 드는 작품에 투표하고 친구에게도 부탁해요.</p></li>
+    <!-- 참여 방법 — 밝은 원 4개를 화살표로 잇는 흐름도. 원 색은 단계마다 다르게(--c) -->
+    <ol class="jflow reveal">
+      <li style="--c:#FFD166">
+        <div class="jflow__dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <i>1</i>
+        </div>
+        <b>찍기</b><p>사진 또는 동영상</p>
+      </li>
+      <li style="--c:#FFB37A">
+        <div class="jflow__dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 14v5h14v-5"/></svg>
+          <i>2</i>
+        </div>
+        <b>내 SNS에 올리기</b><p>전체 공개 + <em>#용마미식거리사진전</em></p>
+      </li>
+      <li style="--c:#9FD8FF">
+        <div class="jflow__dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          <i>3</i>
+        </div>
+        <b>홈페이지 응모</b><p>원본 + 인증샷 올리기</p>
+      </li>
+      <li style="--c:#B8F0B0">
+        <div class="jflow__dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
+          <i>4</i>
+        </div>
+        <b>시민투표</b><p>부문별 하루 3표</p>
+      </li>
     </ol>
 
     <h3 class="contest__sub reveal">시상 내역 <small class="contest__subnote">부문별 25만원 · 총 50만원</small></h3>

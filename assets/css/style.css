@@ -1402,3 +1402,25 @@ img, video, iframe, table { max-width: 100%; }
 .ct-video[data-kind="ig"] { aspect-ratio: 9 / 18; background: #fff; border-radius: 12px; }
 .ct-video[data-kind="ig"] iframe { background: #fff; }
 .ct-video__orig { color: #FFD166; font-size: .875rem; font-weight: 700; }
+
+/* 메인 사진전 '참여 방법' — 밝은 원 흐름도 (원 → 점선 화살표 → 원) */
+.jflow { list-style: none; margin: 0; padding: 6px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; }
+.jflow li { position: relative; display: flex; flex-direction: column; align-items: center; }
+.jflow li + li::before { content: ""; position: absolute; top: calc(clamp(96px, 11vw, 132px) / 2); right: calc(50% + clamp(96px, 11vw, 132px) / 2 + 10px);
+  width: calc(100% - clamp(96px, 11vw, 132px) - 8px); border-top: 3px dashed rgba(255,255,255,.45); }
+.jflow li + li::after { content: ""; position: absolute; top: calc(clamp(96px, 11vw, 132px) / 2 - 7px); right: calc(50% + clamp(96px, 11vw, 132px) / 2 + 4px);
+  border: 7px solid transparent; border-left: 10px solid rgba(255,255,255,.75); }
+.jflow__dot { position: relative; width: clamp(96px, 11vw, 132px); aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #fff 0%, var(--c) 70%); color: #0E1F4D;
+  box-shadow: 0 0 0 6px rgba(255,255,255,.12), 0 12px 30px rgba(0,0,0,.35); transition: transform .3s var(--ease); }
+.jflow li:hover .jflow__dot { transform: translateY(-4px) scale(1.05); }
+.jflow__dot svg { width: 44%; height: 44%; }
+.jflow__dot i { position: absolute; top: -4px; right: -4px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%;
+  background: #0E1F4D; color: #FFD166; border: 3px solid var(--c); font-style: normal; font-weight: 900; font-size: .9375rem; }
+.jflow b { margin-top: 14px; font-size: 1.125rem; font-weight: 800; color: #fff; }
+.jflow p { margin-top: 4px; font-size: .875rem; color: rgba(255,255,255,.75); }
+.jflow em { font-style: normal; font-weight: 700; color: #FFD166; white-space: nowrap; }
+@media (max-width: 640px) {
+  .jflow { grid-template-columns: 1fr 1fr; row-gap: 26px; }
+  .jflow li:nth-child(3)::before, .jflow li:nth-child(3)::after { display: none; }   /* 줄바꿈된 첫 칸엔 화살표 없음 */
+}
