@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>용마미식거리 사진전 — 응모·시민투표</title>
+<meta name="description" content="용마미식거리 사진전 — 총상금 50만원. 내 SNS에 올리고 홈페이지에 응모하면 시민투표로 수상작을 뽑습니다. 응모 2026.10.9~12.30, 발표 12.31 14:00.">
+<meta property="og:title" content="용마미식거리 사진전 — 총상금 50만원">
+<meta property="og:description" content="내 SNS에 올리고 홈페이지에 응모하세요. 시민투표 70% + 심사 30%로 수상작을 뽑습니다.">
+<meta property="og:image" content="https://2026yongma.com/assets/img/og-kakao.jpg?v=20261009">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0E1F4D">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009j">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="page-hero" style="background-image:linear-gradient(180deg,rgba(14,31,77,.78),rgba(14,31,77,.9)),url('assets/img/gallery/20260918_185900.webp')">
+  <div class="wrap">
+    <span class="eyebrow">Photo Contest</span>
+    <h1>용마미식거리 사진전</h1>
+    <p class="lead mt-2" style="max-width:62ch">
+      내 SNS에 올리고, 여기에 응모하고, 시민이 뽑습니다.
+      용마미식거리의 밤을 담은 한 장을 보여 주세요.
+    </p>
+    <div class="chip-row mt-3">
+      <span class="chip chip--amber">총상금 50만원</span>
+      <span class="chip">응모·투표 ~ 12. 30.(수)</span>
+      <span class="chip">발표 12. 31.(목) 14:00</span>
+      <span class="chip">시민투표 70% + 심사 30%</span>
+    </div>
+  </div>
+</section>
+
+<!-- 진행 방법 -->
+<section class="section" style="padding-bottom:clamp(24px,3vw,40px)">
+  <div class="wrap">
+    <ol class="ct-steps">
+      <li><span>1</span><b>찍기</b><p>용마미식거리에서 사진을 찍어요.</p></li>
+      <li><span>2</span><b>내 SNS에 올리기</b><p>본인 계정에 <em>전체 공개</em>로, <em>#용마미식거리사진전</em> 해시태그를 달아요.</p></li>
+      <li><span>3</span><b>여기에 응모</b><p>사진 원본과 SNS 게시 화면 캡처(인증샷)를 아래에 올려요. 확인 후 게시돼요.</p></li>
+      <li><span>4</span><b>시민투표</b><p>로그인하면 하루 3표! 마음에 드는 작품에 투표해 주세요.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 응모작 게시판 -->
+<section class="section section--warm" id="board" style="padding-top:clamp(32px,4vw,56px)">
+  <div class="wrap">
+    <div class="ct-board-head">
+      <div>
+        <span class="eyebrow">Entries</span>
+        <h2>응모작 <small id="ct-count"></small></h2>
+      </div>
+      <div class="ct-tools">
+        <div class="ct-sort" role="group" aria-label="정렬">
+          <button type="button" data-sort="new" class="active">최신순</button>
+          <button type="button" data-sort="vote">득표순</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 투표 상태(로그인 여부·오늘 남은 표) -->
+    <div class="ct-votebar" id="ct-votebar"></div>
+    <div id="ct-msg" class="alert"></div>
+
+    <div class="ct-grid" id="ct-grid"><p class="muted">응모작을 불러오는 중입니다…</p></div>
+  </div>
+</section>
+
+<!-- 응모하기 -->
+<section class="section" id="enter">
+  <div class="wrap" style="max-width:860px">
+    <div class="sec-head">
+      <span class="eyebrow">Enter</span>
+      <h2>응모하기</h2>
+      <p>로그인 없이 응모할 수 있어요. 담당자가 SNS 게시물을 확인한 뒤 게시판에 올립니다. (보통 1~2일)</p>
+    </div>
+
+    <div class="panel" style="border-radius:var(--radius-lg)">
+      <div id="ct-form-msg" class="alert"></div>
+      <form id="ct-form" novalidate>
+        <div class="grid grid-2" style="gap:0 20px">
+          <div class="field">
+            <label for="f-title">작품 제목</label>
+            <input class="input" id="f-title" maxlength="40" required placeholder="예) 천막 아래 첫 잔">
+          </div>
+          <div class="field">
+            <label for="f-nick">닉네임 <span class="muted" style="font-weight:500">(게시판에 표시)</span></label>
+            <input class="input" id="f-nick" maxlength="20" required placeholder="예) 강릉토박이">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-url">내 SNS 게시물 주소</label>
+          <input class="input" id="f-url" type="url" maxlength="300" required placeholder="https://www.instagram.com/p/...">
+          <p class="hint">게시물 오른쪽 위 ⋯ → '링크 복사' 후 붙여 넣으세요. 당첨 연락은 이 계정으로 드립니다.</p>
+        </div>
+        <div class="field">
+          <label for="f-story">한마디 <span class="muted" style="font-weight:500">(선택)</span></label>
+          <input class="input" id="f-story" maxlength="300" placeholder="이 사진을 찍은 순간을 짧게 적어 주세요">
+        </div>
+
+        <div class="grid grid-2" style="gap:0 20px">
+          <div class="field">
+            <label>응모 사진</label>
+            <label class="ct-drop" id="drop-photo">
+              <input type="file" id="f-photo" accept="image/*" required hidden>
+              <img alt="" hidden><span>사진 고르기</span><small>JPG·PNG 사진, 30MB 이하</small>
+            </label>
+          </div>
+          <div class="field">
+            <label>SNS 게시 인증샷 <span class="muted" style="font-weight:500">(화면 캡처)</span></label>
+            <label class="ct-drop" id="drop-proof">
+              <input type="file" id="f-proof" accept="image/*" required hidden>
+              <img alt="" hidden><span>캡처 고르기</span><small>해시태그가 보이게 캡처해 주세요</small>
+            </label>
+          </div>
+        </div>
+
+        <div class="field ct-agree">
+          <label class="checkbox"><input type="checkbox" id="f-a1" required><span>[필수] 제가 직접 찍은 사진이며, 크게 나온 다른 사람에게는 동의를 받았습니다.</span></label>
+          <label class="checkbox"><input type="checkbox" id="f-a2" required><span>[필수] 수상작은 용마미식거리 홍보(홈페이지·SNS·인쇄물)에 닉네임과 함께 쓰일 수 있음에 동의합니다.</span></label>
+        </div>
+
+        <!-- 자동 등록기 차단용 빈칸 (사람에게는 보이지 않음) -->
+        <input type="text" id="f-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
+
+        <button class="btn btn--primary btn--block" type="submit" id="f-submit">응모하기</button>
+        <p class="hint center mt-2">응모 마감 2026. 12. 30.(수) 23:59 · 1인 여러 작품 응모 가능 · 시상은 1인 1회</p>
+      </form>
+    </div>
+
+    <!-- 이 브라우저에서 응모한 작품 (승인 전에도 보이고 직접 지울 수 있다) -->
+    <div id="ct-mine"></div>
+
+    <div class="ct-rules">
+      <h3>시상 · 심사 안내</h3>
+      <ul>
+        <li><b>시상</b> 대상 20만원(1명) · 최우수상 10만원(1명) · 우수상 5만원(2명) · 참가상 1만원(10명, 추첨) — 총 50만원</li>
+        <li><b>점수</b> 시민투표 70% + 심사위원(상인회·주관사) 30%. 투표 점수는 최다 득표작을 100점으로 환산합니다.</li>
+        <li><b>투표</b> 로그인한 분만, 하루 3표(같은 작품엔 하루 1표). 자동 프로그램·대리 투표 등 부정이 확인되면 해당 표와 응모를 무효로 합니다.</li>
+        <li><b>발표</b> 2026. 12. 31.(목) 14:00 홈페이지 소식 · 당첨자에게는 응모한 SNS 계정 메시지로 개별 연락</li>
+        <li>SNS 게시물이 비공개·삭제되면 심사에서 빠집니다. 발표 때까지 공개로 남겨 주세요.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- 크게 보기 — 응모 사진 / 인증샷 -->
+<dialog class="lightbox" id="ct-lb" aria-label="응모작 크게 보기">
+  <figure class="lightbox__fig">
+    <img id="ct-lb-img" alt="">
+    <figcaption><span id="ct-lb-cap"></span><span class="lightbox__meta" id="ct-lb-meta"></span></figcaption>
+  </figure>
+  <button class="lightbox__btn lightbox__close" id="ct-lb-close" aria-label="닫기">×</button>
+</dialog>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js?v=20261006f"></script>
+<script src="assets/js/layout.js?v=20261006f"></script>
+<script src="assets/js/i18n.js?v=20261006f"></script>
+<script src="assets/js/auth.js?v=20261006f"></script>
+<script src="assets/js/main.js?v=20261009e"></script>
+<script src="assets/js/contest.js?v=20261009"></script>
+</body>
+</html>

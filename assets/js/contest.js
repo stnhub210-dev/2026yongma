@@ -1,0 +1,322 @@
+/* ==========================================================================
+   용마미식거리 사진전 — 응모작 게시판 · 응모 · 시민투표 (contest.html)
+   · 서버 쪽 표·규칙은 supabase/contest.sql (먼저 SQL Editor 에서 실행해야 동작)
+   · 응모: 로그인 없이. 사진은 브라우저에서 줄여서 'contest' 저장소에 올린다.
+           올린 사람 브라우저에 지우기 열쇠를 남겨 승인 전에도 직접 지울 수 있다.
+   · 투표: 로그인한 사람만, 하루 3표. 실제 제한은 서버 함수 contest_vote 가 지킨다.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  const BUCKET = "contest";
+  const BIG = 1600, THUMB = 560, PROOF = 1400;      // 긴 변 길이(px)
+  const MAX_SRC = 30 * 1024 * 1024;
+  const DAILY = 3;
+  const MINE_KEY = "yongma_contest_mine";
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const sb = () => (window.Auth && Auth.ready() ? Auth.client() : null);
+  const pub = (path) => sb().storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+
+  /* 한국 시간 기준 오늘 "YYYY-MM-DD" — 서버도 같은 기준으로 하루를 센다 */
+  const kstToday = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+
+  const msg = (el, type, text) => { el.className = `alert alert--${type} show`; el.textContent = text; };
+  const clear = (el) => { el.className = "alert"; el.textContent = ""; };
+
+  /* ---------- 이 브라우저에서 응모한 작품 ---------- */
+  const mine = () => { try { return JSON.parse(localStorage.getItem(MINE_KEY)) || {}; } catch (e) { return {}; } };
+  const saveMine = (m) => { try { localStorage.setItem(MINE_KEY, JSON.stringify(m)); } catch (e) { /* 저장 못 해도 응모는 됨 */ } };
+  const newKey = () => {
+    const a = new Uint8Array(16);
+    crypto.getRandomValues(a);
+    return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
+  };
+
+  /* ---------- 사진 줄이기 (사진 방향 반영 → webp) ---------- */
+  async function shrink(file, max, quality) {
+    const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+    const cv = document.createElement("canvas");
+    cv.width = w; cv.height = h;
+    cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
+    bmp.close && bmp.close();
+    const blob = await new Promise((ok) => cv.toBlob(ok, "image/webp", quality));
+    if (!blob) throw new Error("사진을 변환하지 못했습니다. 다른 사진으로 시도해 주세요.");
+    return { blob, w, h };
+  }
+
+  /* ======================================================================
+     게시판
+     ====================================================================== */
+  let entries = [];
+  let sort = "new";
+  let myVotes = new Set();     // 오늘 내가 투표한 작품 id
+  let user = null;
+  let open = true;             // 응모·투표 기간 안인지
+  let failed = false;          // 목록을 못 불러왔으면 안내 문구를 그대로 둔다
+
+  const grid = $("#ct-grid"), boardMsg = $("#ct-msg");
+
+  function period() {
+    const t = kstToday();
+    open = t >= "2026-10-09" && t <= "2026-12-30";
+  }
+
+  async function loadEntries() {
+    const c = sb();
+    if (!c) { grid.innerHTML = '<p class="muted">사진전 게시판을 준비하고 있습니다.</p>'; return; }
+    const { data, error } = await c.from("contest_entries")
+      .select("id,title,nickname,sns_url,story,photo_path,photo_thumb,proof_path,w,h,vote_count,created_at")
+      .eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
+    if (error) {
+      failed = true;
+      grid.innerHTML = /relation|does not exist|schema cache/i.test(error.message)
+        ? '<p class="ct-empty">사진전 게시판을 준비하고 있습니다. 곧 열립니다.</p>'
+        : `<p class="ct-empty">응모작을 불러오지 못했습니다. (${esc(error.message)})</p>`;
+      return;
+    }
+    entries = data || [];
+    draw();
+  }
+
+  function draw() {
+    if (failed) return;
+    $("#ct-count").textContent = entries.length ? `${entries.length}점` : "";
+    const list = entries.slice().sort((a, b) =>
+      sort === "vote" ? (b.vote_count - a.vote_count) || (b.id - a.id) : b.id - a.id);
+    if (!list.length) {
+      grid.innerHTML = '<p class="ct-empty">아직 게시된 응모작이 없어요. 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>';
+      return;
+    }
+    grid.innerHTML = list.map((e) => {
+      const voted = myVotes.has(e.id);
+      return `<article class="ct-card" data-id="${e.id}">
+        <button type="button" class="ct-card__img" data-view="photo" aria-label="${esc(e.title)} 크게 보기">
+          <img src="${pub(e.photo_thumb)}" alt="${esc(e.title)}" loading="lazy">
+        </button>
+        <div class="ct-card__body">
+          <h3>${esc(e.title)}</h3>
+          <p class="ct-card__by">by ${esc(e.nickname)}</p>
+          ${e.story ? `<p class="ct-card__story">${esc(e.story)}</p>` : ""}
+          <div class="ct-card__links">
+            <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">SNS 원문 ↗</a>
+            <button type="button" data-view="proof">인증샷</button>
+          </div>
+        </div>
+        <div class="ct-card__vote">
+          <span class="ct-card__count"><b>${e.vote_count.toLocaleString("ko-KR")}</b>표</span>
+          <button type="button" class="btn btn--sm ${voted ? "btn--ghost" : "btn--primary"}" data-vote ${voted || !open ? "disabled" : ""}>
+            ${voted ? "오늘 투표함 ✓" : open ? "♥ 투표" : "투표 마감"}</button>
+        </div>
+      </article>`;
+    }).join("");
+  }
+
+  /* ---------- 로그인·남은 표 표시 ---------- */
+  async function loadMyVotes() {
+    myVotes = new Set();
+    if (!user) return;
+    const { data } = await sb().from("contest_votes").select("entry_id").eq("user_id", user.id).eq("vote_day", kstToday());
+    (data || []).forEach((r) => myVotes.add(r.entry_id));
+  }
+
+  function drawVotebar() {
+    const bar = $("#ct-votebar");
+    if (!open) {
+      bar.innerHTML = `<p><b>투표 기간이 아닙니다.</b> 시민투표는 2026. 10. 9. ~ 12. 30. 에 열립니다. 발표 12. 31.(목) 14:00</p>`;
+      return;
+    }
+    if (!user) {
+      bar.innerHTML = `<p><b>투표하려면 로그인해 주세요.</b> 로그인하면 하루 ${DAILY}표를 쓸 수 있어요.</p>
+        <div class="btn-row">
+          <button type="button" class="btn btn--sm ct-kakao" data-login="kakao">카카오로 시작</button>
+          <button type="button" class="btn btn--sm btn--ghost" data-login="google">구글로 시작</button>
+          <a class="btn btn--sm btn--ghost" href="login.html">이메일 로그인</a>
+        </div>`;
+      return;
+    }
+    const left = Math.max(DAILY - myVotes.size, 0);
+    bar.innerHTML = `<p>오늘 남은 투표 <b class="ct-left">${left}</b> / ${DAILY}표 <span class="muted tiny">· 매일 0시(한국 시간)에 다시 채워져요</span></p>`;
+  }
+
+  /* ---------- 투표 ---------- */
+  const VOTE_TEXT = {
+    LOGIN: "로그인 후 투표할 수 있어요.",
+    CLOSED: "지금은 투표 기간이 아닙니다.",
+    NOENTRY: "투표할 수 없는 작품입니다. 새로고침해 주세요.",
+    DUP: "이 작품에는 오늘 이미 투표했어요. 내일 다시 투표할 수 있어요.",
+    LIMIT: `오늘 ${DAILY}표를 모두 쓰셨어요. 내일 다시 투표해 주세요!`,
+  };
+
+  async function vote(id, btn) {
+    if (!user) { msg(boardMsg, "warn", VOTE_TEXT.LOGIN); $("#ct-votebar").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    btn.disabled = true;
+    const { data, error } = await sb().rpc("contest_vote", { p_entry: id });
+    if (error) { btn.disabled = false; msg(boardMsg, "err", "투표하지 못했습니다: " + error.message); return; }
+    const r = (data && data[0]) || {};
+    const e = entries.find((x) => x.id === id);
+    if (e && r.entry_votes != null) e.vote_count = r.entry_votes;
+    if (r.result === "OK" || r.result === "DUP") myVotes.add(id);
+    if (r.result === "LIMIT") { for (let i = myVotes.size; i < DAILY; i++) myVotes.add(-i - 1); }   // 남은 표 0 으로 보이게
+    if (r.result === "OK") msg(boardMsg, "ok", `투표했어요! 오늘 남은 투표 ${r.votes_left}표`);
+    else msg(boardMsg, r.result === "DUP" ? "warn" : "err", VOTE_TEXT[r.result] || "투표하지 못했습니다.");
+    draw(); drawVotebar();
+  }
+
+  /* ---------- 크게 보기 ---------- */
+  const lb = $("#ct-lb");
+  function view(e, which) {
+    const url = pub(which === "proof" ? e.proof_path : e.photo_path);
+    $("#ct-lb-img").src = url;
+    $("#ct-lb-img").alt = which === "proof" ? `${e.title} SNS 인증샷` : e.title;
+    $("#ct-lb-cap").textContent = which === "proof" ? `SNS 인증샷 — ${e.title}` : e.title;
+    $("#ct-lb-meta").textContent = `by ${e.nickname} · ${e.vote_count}표`;
+    lb.showModal();
+  }
+  $("#ct-lb-close").onclick = () => lb.close();
+  lb.addEventListener("click", (ev) => { if (ev.target === lb) lb.close(); });
+
+  grid.addEventListener("click", (ev) => {
+    const card = ev.target.closest(".ct-card");
+    if (!card) return;
+    const e = entries.find((x) => String(x.id) === card.dataset.id);
+    if (!e) return;
+    const v = ev.target.closest("[data-view]");
+    if (v) return view(e, v.dataset.view);
+    const b = ev.target.closest("[data-vote]");
+    if (b) vote(e.id, b);
+  });
+
+  document.querySelector(".ct-sort").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-sort]");
+    if (!b) return;
+    sort = b.dataset.sort;
+    document.querySelectorAll(".ct-sort button").forEach((x) => x.classList.toggle("active", x === b));
+    draw();
+  });
+
+  $("#ct-votebar").addEventListener("click", async (ev) => {
+    const b = ev.target.closest("[data-login]");
+    if (!b) return;
+    try { await Auth.signInWithProvider(b.dataset.login); }       // 로그인 후 이 페이지로 돌아온다
+    catch (err) {
+      msg(boardMsg, "err", err.message === "PROVIDER_OFF" ? "지금은 이 방법으로 로그인할 수 없습니다. 이메일 로그인을 이용해 주세요." : err.message);
+    }
+  });
+
+  /* ======================================================================
+     응모
+     ====================================================================== */
+  const form = $("#ct-form"), formMsg = $("#ct-form-msg");
+
+  // 고른 사진 미리 보기
+  ["photo", "proof"].forEach((k) => {
+    const input = $(`#f-${k}`), box = $(`#drop-${k}`);
+    input.addEventListener("change", () => {
+      const f = input.files[0];
+      const img = box.querySelector("img");
+      if (!f) { img.hidden = true; box.classList.remove("has"); return; }
+      img.src = URL.createObjectURL(f);
+      img.hidden = false;
+      box.classList.add("has");
+      box.querySelector("span").textContent = f.name;
+    });
+  });
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    clear(formMsg);
+    const c = sb();
+    if (!c) return msg(formMsg, "err", "지금은 응모를 받을 수 없습니다. 잠시 후 다시 시도해 주세요.");
+    if ($("#f-website").value) return;                                  // 자동 등록기
+
+    const title = $("#f-title").value.trim(), nick = $("#f-nick").value.trim();
+    const url = $("#f-url").value.trim(), story = $("#f-story").value.trim();
+    const photo = $("#f-photo").files[0], proof = $("#f-proof").files[0];
+    if (!open) return msg(formMsg, "err", "응모 기간(2026. 10. 9. ~ 12. 30.)이 아닙니다.");
+    if (!title || !nick) return msg(formMsg, "err", "작품 제목과 닉네임을 적어 주세요.");
+    if (!/^https?:\/\/\S+\.\S+/i.test(url)) return msg(formMsg, "err", "SNS 게시물 주소를 https:// 로 시작하는 링크로 붙여 넣어 주세요.");
+    if (!photo || !proof) return msg(formMsg, "err", "응모 사진과 SNS 인증샷을 모두 골라 주세요.");
+    if (![photo, proof].every((f) => /^image\//.test(f.type) && f.size <= MAX_SRC)) return msg(formMsg, "err", "사진 파일(30MB 이하)만 올릴 수 있어요.");
+    if (!$("#f-a1").checked || !$("#f-a2").checked) return msg(formMsg, "err", "필수 동의 두 가지에 체크해 주세요.");
+
+    const btn = $("#f-submit");
+    btn.disabled = true; btn.textContent = "사진 올리는 중…";
+    try {
+      const [big, thumb, prf] = await Promise.all([shrink(photo, BIG, .85), shrink(photo, THUMB, .8), shrink(proof, PROOF, .85)]);
+      const base = `entries/${kstToday().replace(/-/g, "")}/${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+      const paths = { photo_path: `${base}.webp`, photo_thumb: `${base}_t.webp`, proof_path: `${base}_proof.webp` };
+      const put = (p, b) => c.storage.from(BUCKET).upload(p, b, { contentType: "image/webp", cacheControl: "31536000", upsert: false });
+      const ups = await Promise.all([put(paths.photo_path, big.blob), put(paths.photo_thumb, thumb.blob), put(paths.proof_path, prf.blob)]);
+      const bad = ups.find((u) => u.error);
+      if (bad) throw bad.error;
+
+      const { data, error } = await c.from("contest_entries").insert({
+        title, nickname: nick, sns_url: url, story, ...paths, w: big.w, h: big.h,
+      }).select("id").single();
+      if (error) {
+        await c.storage.from(BUCKET).remove(Object.values(paths));         // 등록 실패 → 올린 파일 치우기
+        throw error;
+      }
+      const key = newKey();
+      await c.from("contest_entry_keys").insert({ entry_id: data.id, delete_key: key });
+      const m = mine();
+      m[data.id] = { key, title, thumb: paths.photo_thumb, at: kstToday() };
+      saveMine(m);
+
+      form.reset();
+      document.querySelectorAll(".ct-drop").forEach((b) => { b.classList.remove("has"); b.querySelector("img").hidden = true; });
+      $("#drop-photo span").textContent = "사진 고르기"; $("#drop-proof span").textContent = "캡처 고르기";
+      msg(formMsg, "ok", "응모가 접수되었습니다! 담당자 확인 후 게시판에 올라갑니다. 친구들에게 투표를 부탁해 보세요.");
+      drawMine();
+    } catch (err) {
+      msg(formMsg, "err", "응모하지 못했습니다: " + (err.message || err));
+    } finally {
+      btn.disabled = false; btn.textContent = "응모하기";
+    }
+  });
+
+  /* ---------- 내 응모작 (이 브라우저) ---------- */
+  function drawMine() {
+    const box = $("#ct-mine");
+    const m = mine(), ids = Object.keys(m);
+    if (!ids.length || !sb()) { box.innerHTML = ""; return; }
+    const shown = new Set(entries.map((e) => String(e.id)));
+    box.innerHTML = `<div class="ct-mine"><h3>내가 응모한 작품 <span class="muted tiny">(이 기기에서 응모한 것만 보여요)</span></h3>
+      <ul>${ids.map((id) => `<li>
+        <img src="${pub(m[id].thumb)}" alt="" loading="lazy">
+        <div><b>${esc(m[id].title)}</b><span class="tiny muted">${shown.has(id) ? "게시 중" : "확인 대기 중 (또는 반려)"} · ${esc(m[id].at)}</span></div>
+        <button type="button" class="btn btn--ghost btn--sm" data-del="${id}">응모 취소</button>
+      </li>`).join("")}</ul></div>`;
+  }
+
+  $("#ct-mine").addEventListener("click", async (ev) => {
+    const b = ev.target.closest("[data-del]");
+    if (!b || !confirm("이 응모를 취소할까요? 받은 투표도 함께 사라집니다.")) return;
+    const id = b.dataset.del, m = mine();
+    const { data, error } = await sb().rpc("contest_delete", { p_id: +id, p_key: m[id]?.key });
+    if (error) return alert("취소하지 못했습니다: " + error.message);
+    const r = data && data[0];
+    if (r) await sb().storage.from(BUCKET).remove([r.photo_path, r.photo_thumb, r.proof_path]);
+    delete m[id]; saveMine(m);
+    entries = entries.filter((e) => String(e.id) !== id);
+    draw(); drawMine();
+  });
+
+  /* ---------- 시작 ---------- */
+  (async () => {
+    period();
+    if (!sb()) { grid.innerHTML = '<p class="muted">사진전 게시판을 준비하고 있습니다.</p>'; return; }
+    user = await Auth.user();
+    await Promise.all([loadEntries(), loadMyVotes()]);
+    draw(); drawVotebar(); drawMine();
+    sb().auth.onAuthStateChange(async (_e, s) => {                   // 다른 탭에서 로그인·로그아웃
+      const u = s?.user || null;
+      if ((u && u.id) === (user && user.id)) return;
+      user = u; await loadMyVotes(); draw(); drawVotebar();
+    });
+  })();
+})();

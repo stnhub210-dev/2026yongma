@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사진전 심사 — 용마미식거리 관리자</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0E1F4D">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261009j">
+<style>
+  /* 이 화면 전용 — 응모작 썸네일과 점수 칸 */
+  .cta-thumb { width: 96px; height: 72px; object-fit: cover; border-radius: 8px; cursor: zoom-in; background: #eee; }
+  .cta-score { width: 76px; }
+  .cta-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .cta-tabs button { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
+  .cta-tabs button.active { background: var(--ink-900); color: #fff; border-color: var(--ink-900); }
+  .cta-rank { font-weight: 900; color: var(--amber-700); }
+  .cta-total { font-weight: 800; font-size: 1.0625rem; }
+</style>
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div><h1>사진전 심사</h1><p class="muted tiny" id="admin-who"></p></div>
+      <div class="btn-row">
+        <a class="btn btn--ghost btn--sm" href="../contest.html" target="_blank">공개 게시판 보기</a>
+        <button class="btn btn--ghost btn--sm" id="btn-csv">순위 CSV 받기</button>
+      </div>
+    </div>
+    <div id="admin-msg" class="alert"></div>
+
+    <div class="panel">
+      <p class="panel-sub">
+        <b>대기</b> 응모작의 SNS 원문·인증샷을 확인하고 <b>승인</b>하면 공개 게시판에 올라갑니다.
+        <b>최종 점수 = 심사 점수(0~100) × 30% + 투표 점수 × 70%</b>, 투표 점수는 최다 득표작을 100점으로 환산합니다.
+        심사 점수는 관리자만 볼 수 있습니다.
+      </p>
+      <div class="cta-tabs" id="tabs">
+        <button data-f="pending" class="active">대기</button>
+        <button data-f="approved">승인 · 순위</button>
+        <button data-f="rejected">반려</button>
+        <button data-f="all">전체</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr>
+            <th>순위</th><th>사진</th><th style="min-width:220px">작품 · 응모자</th><th>인증</th>
+            <th>투표</th><th>심사(0~100)</th><th>최종</th><th>상태</th><th></th>
+          </tr></thead>
+          <tbody id="rows"><tr><td colspan="9" class="center muted">불러오는 중…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<dialog class="lightbox" id="lb" aria-label="크게 보기">
+  <figure class="lightbox__fig"><img id="lb-img" alt=""><figcaption><span id="lb-cap"></span></figcaption></figure>
+  <button class="lightbox__btn lightbox__close" id="lb-close" aria-label="닫기">×</button>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js?v=20261006f"></script>
+<script src="../assets/js/auth.js?v=20261006f"></script>
+<script src="../assets/js/main.js?v=20261009e"></script>
+<script src="../assets/js/admin.js?v=20261009"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("contest.html"))) return;
+  const c = Admin.c, esc = Admin.esc;
+  const url = (p) => c.storage.from("contest").getPublicUrl(p).data.publicUrl;
+  const ST = { pending: ["대기", ""], approved: ["승인", "chip--green"], rejected: ["반려", "chip--red"] };
+  let rows = [], scores = {}, filter = "pending";
+
+  /* 최종 점수 — 승인작만 순위를 매긴다 */
+  const ranked = () => {
+    const ok = rows.filter((r) => r.status === "approved");
+    const top = Math.max(1, ...ok.map((r) => r.vote_count));
+    ok.forEach((r) => {
+      r._vote = r.vote_count / top * 100;
+      r._judge = scores[r.id]?.judge_score;
+      r._total = r._judge == null ? null : +(r._judge * 0.3 + r._vote * 0.7).toFixed(2);
+    });
+    ok.sort((a, b) => (b._total ?? -1) - (a._total ?? -1) || b.vote_count - a.vote_count);
+    ok.forEach((r, i) => (r._rank = r._total == null ? null : i + 1));
+    return ok;
+  };
+
+  const render = () => {
+    ranked();
+    let list = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+    if (filter === "approved") list = list.slice().sort((a, b) => (a._rank ?? 1e9) - (b._rank ?? 1e9));
+    document.getElementById("rows").innerHTML = list.map((r) => `
+      <tr data-id="${r.id}">
+        <td class="cta-rank">${r._rank ?? "-"}</td>
+        <td><img class="cta-thumb" src="${url(r.photo_thumb)}" data-big="${esc(r.photo_path)}" data-cap="${esc(r.title)}" alt=""></td>
+        <td><b>${esc(r.title)}</b><br><span class="tiny">by ${esc(r.nickname)} · ${UI.date(r.created_at)}</span>
+            ${r.story ? `<br><span class="tiny muted">${esc(r.story)}</span>` : ""}</td>
+        <td class="tiny" style="white-space:nowrap"><a href="${esc(r.sns_url)}" target="_blank" rel="noopener">SNS 원문 ↗</a><br>
+            <a href="#" data-big="${esc(r.proof_path)}" data-cap="인증샷 — ${esc(r.title)}">인증샷 보기</a></td>
+        <td><b>${r.vote_count}</b>${r._vote != null && r.status === "approved" ? `<br><span class="tiny muted">${r._vote.toFixed(1)}점</span>` : ""}</td>
+        <td><input class="input cta-score" type="number" min="0" max="100" step="0.5" value="${scores[r.id]?.judge_score ?? ""}" data-score></td>
+        <td class="cta-total">${r._total ?? "-"}</td>
+        <td><span class="chip ${ST[r.status][1]}">${ST[r.status][0]}</span></td>
+        <td style="white-space:nowrap">
+          ${r.status !== "approved" ? `<button class="btn btn--primary btn--sm" data-st="approved">승인</button>` : ""}
+          ${r.status !== "rejected" ? `<button class="btn btn--ghost btn--sm" data-st="rejected">반려</button>` : ""}
+          <button class="btn btn--ghost btn--sm" data-del>삭제</button></td>
+      </tr>`).join("") || '<tr><td colspan="9" class="center muted">해당하는 응모작이 없습니다.</td></tr>';
+  };
+
+  const reload = async () => {
+    rows = await Admin.load("contest_entries", { order: ["created_at", false] });
+    const s = await Admin.load("contest_scores");
+    scores = Object.fromEntries(s.map((x) => [x.entry_id, x]));
+    const n = (k) => rows.filter((r) => r.status === k).length;
+    document.querySelectorAll("#tabs button").forEach((b) => {
+      const k = b.dataset.f, lab = { pending: "대기", approved: "승인 · 순위", rejected: "반려", all: "전체" }[k];
+      b.textContent = `${lab} ${k === "all" ? rows.length : n(k)}`;
+    });
+    render();
+  };
+
+  document.getElementById("tabs").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    filter = b.dataset.f;
+    document.querySelectorAll("#tabs button").forEach((x) => x.classList.toggle("active", x === b));
+    render();
+  });
+
+  const tbody = document.getElementById("rows");
+  tbody.addEventListener("click", async (e) => {
+    const tr = e.target.closest("tr[data-id]"); if (!tr) return;
+    const id = +tr.dataset.id;
+    const big = e.target.closest("[data-big]");
+    if (big) {
+      e.preventDefault();
+      document.getElementById("lb-img").src = url(big.dataset.big);
+      document.getElementById("lb-cap").textContent = big.dataset.cap;
+      return document.getElementById("lb").showModal();
+    }
+    const st = e.target.closest("[data-st]");
+    if (st) {
+      const { error } = await c.from("contest_entries").update({ status: st.dataset.st }).eq("id", id);
+      if (error) return Admin.toast("err", error.message);
+      Admin.toast("ok", st.dataset.st === "approved" ? "승인했습니다. 공개 게시판에 올라갔습니다." : "반려했습니다.");
+      return reload();
+    }
+    if (e.target.closest("[data-del]") && confirm("이 응모작과 받은 투표를 모두 지웁니다. 계속할까요?")) {
+      const r = rows.find((x) => x.id === id);
+      const { error } = await c.from("contest_entries").delete().eq("id", id);
+      if (error) return Admin.toast("err", error.message);
+      await c.storage.from("contest").remove([r.photo_path, r.photo_thumb, r.proof_path]);
+      Admin.toast("ok", "삭제했습니다.");
+      reload();
+    }
+  });
+
+  // 심사 점수 — 칸에서 벗어나면 바로 저장
+  tbody.addEventListener("change", async (e) => {
+    const inp = e.target.closest("[data-score]"); if (!inp) return;
+    const id = +inp.closest("tr").dataset.id;
+    const v = inp.value === "" ? null : Math.max(0, Math.min(100, +inp.value));
+    const { error } = await c.from("contest_scores").upsert({ entry_id: id, judge_score: v, updated_at: new Date().toISOString() });
+    if (error) return Admin.toast("err", error.message);
+    scores[id] = { ...(scores[id] || {}), entry_id: id, judge_score: v };
+    render();
+  });
+
+  document.getElementById("lb-close").onclick = () => document.getElementById("lb").close();
+
+  // 순위표 CSV (엑셀에서 열림)
+  document.getElementById("btn-csv").onclick = () => {
+    const ok = ranked();
+    const head = ["순위", "작품", "닉네임", "SNS", "투표수", "투표점수", "심사점수", "최종점수"];
+    const lines = ok.map((r) => [r._rank ?? "", r.title, r.nickname, r.sns_url, r.vote_count, r._vote.toFixed(2), r._judge ?? "", r._total ?? ""]);
+    const csv = "﻿" + [head, ...lines].map((l) => l.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = `사진전_순위_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+  };
+
+  try { await reload(); }
+  catch (e) {
+    Admin.toast("err", /relation|does not exist|schema cache/i.test(e.message)
+      ? "사진전 표가 아직 없습니다. supabase/contest.sql 을 SQL Editor 에서 실행해 주세요." : e.message);
+  }
+})();
+</script>
+</body>
+</html>

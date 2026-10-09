@@ -1209,3 +1209,65 @@ img, video, iframe, table { max-width: 100%; }
   .contest__photos { height: 300px; max-width: 460px; width: 100%; margin-inline: auto; }
   .contest__prizes { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ---------- 사진전 페이지 (contest.html) — 진행 4단계 · 응모작 카드 · 응모 폼 ---------- */
+.ct-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.ct-steps li { position: relative; padding: 20px 20px 18px 68px; border-radius: 18px; background: var(--bg-soft); }
+.ct-steps span { position: absolute; left: 18px; top: 18px; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #0E1F4D; color: #FFD166; font-weight: 900; }
+.ct-steps b { font-size: 1.0625rem; }
+.ct-steps p { margin-top: 4px; font-size: .9375rem; color: var(--ink-600, #57534E); line-height: 1.6; }
+.ct-steps em, .ct-rules em { font-style: normal; font-weight: 700; color: var(--amber-700); }
+
+.ct-board-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+.ct-board-head h2 small { font-size: 1rem; color: var(--amber-700); font-weight: 800; margin-left: 6px; }
+.ct-sort { display: inline-flex; padding: 4px; border-radius: 999px; background: #fff; border: 1px solid var(--line); }
+.ct-sort button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; font: inherit; font-size: .875rem; font-weight: 700; color: var(--ink-500); cursor: pointer; }
+.ct-sort button.active { background: #0E1F4D; color: #fff; }
+
+.ct-votebar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 16px; padding: 14px 18px; border-radius: 16px; background: #fff; border: 1px solid var(--line); }
+.ct-votebar p { font-size: .9375rem; }
+.ct-votebar .ct-left { font-size: 1.25rem; color: var(--amber-700); }
+.ct-kakao { background: #FEE500; color: #191600; border: 0; }
+.ct-kakao:hover { background: #F5DC00; }
+
+.ct-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+.ct-empty { grid-column: 1 / -1; padding: 40px 16px; text-align: center; color: var(--ink-500); background: #fff; border-radius: 16px; border: 1px dashed var(--line); }
+.ct-empty a { color: var(--amber-700); font-weight: 700; }
+.ct-card { display: flex; flex-direction: column; background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.ct-card__img { display: block; padding: 0; border: 0; aspect-ratio: 4 / 3; overflow: hidden; background: var(--ink-900); cursor: zoom-in; }
+.ct-card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+.ct-card__img:hover img { transform: scale(1.05); }
+.ct-card__body { padding: 14px 16px 6px; flex: 1; }
+.ct-card__body h3 { font-size: 1.0625rem; }
+.ct-card__by { font-size: .8125rem; color: var(--ink-500); margin-top: 2px; }
+.ct-card__story { margin-top: 8px; font-size: .875rem; color: var(--ink-700); line-height: 1.55; }
+.ct-card__links { display: flex; gap: 14px; margin-top: 10px; font-size: .8125rem; font-weight: 700; }
+.ct-card__links a, .ct-card__links button { color: var(--amber-700); background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+.ct-card__vote { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px 16px; }
+.ct-card__count { font-size: .875rem; color: var(--ink-500); }
+.ct-card__count b { font-size: 1.25rem; color: var(--ink-900); margin-right: 2px; }
+.ct-card__vote .btn[disabled] { opacity: .7; cursor: default; }
+
+.field .ct-drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 160px; padding: 14px;
+  border: 2px dashed var(--line); border-radius: 16px; background: var(--bg-soft); text-align: center; cursor: pointer; overflow: hidden; }
+.ct-drop:hover { border-color: var(--amber-400); }
+.ct-drop span { font-weight: 700; color: var(--ink-800); word-break: break-all; }
+.ct-drop small { font-size: .75rem; color: var(--ink-500); }
+.ct-drop img { max-height: 180px; border-radius: 10px; object-fit: contain; }
+.ct-drop.has { border-style: solid; border-color: var(--amber-400); background: #fff; }
+.ct-agree { display: grid; gap: 10px; }
+.ct-agree .checkbox { display: flex; font-weight: 600; }   /* .field label 의 block 을 되돌림 */
+.ct-steps em { white-space: nowrap; }
+
+.ct-mine { margin-top: 24px; padding: 20px; border-radius: 18px; background: var(--bg-soft); }
+.ct-mine h3 { font-size: 1.0625rem; margin-bottom: 12px; }
+.ct-mine ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ct-mine li { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: #fff; }
+.ct-mine img { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; }
+.ct-mine li div { flex: 1; display: grid; }
+
+.ct-rules { margin-top: 28px; padding: 22px 24px; border-radius: 18px; border: 1px solid var(--line); }
+.ct-rules h3 { font-size: 1.0625rem; margin-bottom: 10px; }
+.ct-rules ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ct-rules li { font-size: .9375rem; line-height: 1.6; color: var(--ink-700); }
+.ct-rules li b { display: inline-block; min-width: 40px; color: var(--amber-700); }
