@@ -1271,3 +1271,69 @@ img, video, iframe, table { max-width: 100%; }
 .ct-rules ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .ct-rules li { font-size: .9375rem; line-height: 1.6; color: var(--ink-700); }
 .ct-rules li b { display: inline-block; min-width: 40px; color: var(--amber-700); }
+
+/* ---------- 사진전 부문(사진·숏폼) — 탭 · 부문 고르기 · 숏폼 카드 · 영상 재생 ---------- */
+.ct-hero-sub { margin-top: 8px; font-size: 1.125rem; font-weight: 800; color: #FFD166; }
+.ct-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.ct-cat { display: inline-flex; padding: 4px; border-radius: 999px; background: #fff; border: 1px solid var(--line); }
+.ct-cat button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; font: inherit; font-size: .9375rem; font-weight: 800; color: var(--ink-500); cursor: pointer; }
+.ct-cat button small { font-size: .75rem; margin-left: 2px; color: var(--amber-700); }
+.ct-cat button.active { background: var(--amber-500); color: #fff; }
+.ct-cat button.active small { color: #fff; }
+
+.ct-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field .ct-pick label { display: block; margin: 0; cursor: pointer; }
+.ct-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.ct-pick span { display: grid; gap: 2px; padding: 14px 16px; border-radius: 14px; border: 2px solid var(--line); background: #fff; transition: border-color .2s, background .2s; }
+.ct-pick b { font-size: 1rem; color: var(--ink-900); }
+.ct-pick small { font-size: .8125rem; color: var(--ink-500); font-weight: 600; }
+.ct-pick input:checked + span { border-color: var(--amber-500); background: var(--amber-50); }
+.ct-pick input:focus-visible + span { outline: 3px solid var(--amber-200); }
+
+.ct-card__img { position: relative; }
+.ct-card--short .ct-card__img { aspect-ratio: 4 / 5; }
+.ct-play { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; transform: translate(-50%, -50%); display: grid; place-items: center;
+  border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; font-size: 1.25rem; padding-left: 4px; border: 2px solid rgba(255,255,255,.85); pointer-events: none; }
+
+.ct-video { width: min(92vw, calc(78vh * 9 / 16)); aspect-ratio: 9 / 16; margin: 0 auto; }
+.ct-video iframe { width: 100%; height: 100%; border: 0; border-radius: 12px; background: #000; }
+
+/* 메인 사진전 섹션 — 부문 표기 · 부문별 시상 */
+.contest__cats { margin-top: 10px; font-size: 1.125rem; font-weight: 800; color: #FFD166; }
+.contest__subnote { margin-left: 8px; font-size: .875rem; font-weight: 700; color: rgba(255,255,255,.7); }
+.contest__tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.contest__track { margin-bottom: 10px; font-weight: 800; color: #fff; }
+.contest__track small { margin-left: 6px; font-weight: 600; font-size: .8125rem; color: rgba(255,255,255,.65); }
+.contest__tracks .contest__prizes { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.contest__tracks .contest__prizes li { padding: 18px 8px; }
+
+/* 메인 — 지금 올라온 응모작 (실시간) */
+.contest-live { margin-top: clamp(30px, 4vw, 44px); }
+.contest-live__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+.contest-live__head h3 { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; }
+.contest-live__head h3 small { font-size: .875rem; color: #FFD166; }
+.contest-live__head a { color: #FFD166; font-weight: 700; font-size: .9375rem; }
+.contest-live__dot { width: 10px; height: 10px; border-radius: 50%; background: #FF4D4F; box-shadow: 0 0 0 0 rgba(255,77,79,.7); animation: live-dot 1.6s infinite; }
+@keyframes live-dot { 70% { box-shadow: 0 0 0 10px rgba(255,77,79,0); } 100% { box-shadow: 0 0 0 0 rgba(255,77,79,0); } }
+.contest-live__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(170px, 210px); gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+.cl-card { scroll-snap-align: start; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  color: #fff; text-decoration: none; transition: transform .25s var(--ease), border-color .25s; }
+.cl-card:hover { transform: translateY(-4px); border-color: #FFD166; }
+.cl-card__img { position: relative; aspect-ratio: 4 / 3; background: #000; }
+.cl-card__img img { width: 100%; height: 100%; object-fit: cover; }
+.cl-cat { position: absolute; left: 8px; top: 8px; padding: 2px 8px; border-radius: 999px; background: rgba(0,0,0,.6); font-style: normal; font-size: .6875rem; font-weight: 700; }
+.cl-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%;
+  background: rgba(0,0,0,.55); font-style: normal; font-size: .875rem; padding-left: 3px; border: 2px solid rgba(255,255,255,.8); }
+.cl-card__txt { display: grid; gap: 2px; padding: 10px 12px 12px; }
+.cl-card__txt b { font-size: .9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-card__txt small { font-size: .75rem; color: rgba(255,255,255,.7); }
+.cl-card.is-new { animation: cl-new 1.2s var(--ease); border-color: #FFD166; }
+@keyframes cl-new { from { transform: scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .contest-live__dot, .cl-card.is-new { animation: none; } }
+
+/* 사진전 슬로건 */
+.contest__slogan { margin-top: 16px; font-size: clamp(1.25rem, 1rem + 1.1vw, 1.75rem); font-weight: 700; line-height: 1.4; color: rgba(255,255,255,.92); letter-spacing: -.02em; }
+.contest__slogan strong { color: #FFD166; font-weight: 900; }
+.ct-slogan { margin-top: 14px; font-size: clamp(1.125rem, .95rem + .9vw, 1.5rem); font-weight: 700; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+.ct-slogan strong { color: #FFD166; font-weight: 900; }
+.contest__steps em { white-space: nowrap; }   /* 해시태그가 # 에서 끊기지 않게 */

@@ -49,11 +49,14 @@
   }
 
   /* ======================================================================
-     게시판
+     게시판 — 부문(사진 photo / 숏폼 short) 탭으로 나눠 보여 준다
      ====================================================================== */
+  const CAT = { photo: "사진", short: "숏폼" };
   let entries = [];
+  let cat = /#short/.test(location.hash) ? "short" : "photo";   // 지금 보는 부문
   let sort = "new";
   let myVotes = new Set();     // 오늘 내가 투표한 작품 id
+  let limitHit = {};           // 서버가 LIMIT 라고 알려 준 부문(화면 표시용)
   let user = null;
   let open = true;             // 응모·투표 기간 안인지
   let failed = false;          // 목록을 못 불러왔으면 안내 문구를 그대로 둔다
@@ -65,51 +68,66 @@
     open = t >= "2026-10-09" && t <= "2026-12-30";
   }
 
+  /* 유튜브 주소면 영상 번호를 꺼낸다 (shorts / watch?v= / youtu.be) — 페이지 안에서 바로 재생용 */
+  function ytId(u) {
+    const m = String(u).match(/(?:youtube\.com\/(?:shorts\/|watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/i);
+    return m ? m[1] : null;
+  }
+
   async function loadEntries() {
     const c = sb();
-    if (!c) { grid.innerHTML = '<p class="muted">사진전 게시판을 준비하고 있습니다.</p>'; return; }
+    if (!c) { grid.innerHTML = '<p class="ct-empty">사진전 게시판을 준비하고 있습니다.</p>'; failed = true; return; }
     const { data, error } = await c.from("contest_entries")
-      .select("id,title,nickname,sns_url,story,photo_path,photo_thumb,proof_path,w,h,vote_count,created_at")
+      .select("id,category,title,nickname,sns_url,story,photo_path,photo_thumb,proof_path,w,h,vote_count,created_at")
       .eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
     if (error) {
       failed = true;
-      grid.innerHTML = /relation|does not exist|schema cache/i.test(error.message)
+      grid.innerHTML = /relation|does not exist|schema cache|column/i.test(error.message)
         ? '<p class="ct-empty">사진전 게시판을 준비하고 있습니다. 곧 열립니다.</p>'
         : `<p class="ct-empty">응모작을 불러오지 못했습니다. (${esc(error.message)})</p>`;
       return;
     }
     entries = data || [];
-    draw();
   }
 
+  const leftOf = (k) => limitHit[k] ? 0
+    : Math.max(DAILY - entries.filter((e) => e.category === k && myVotes.has(e.id)).length, 0);
+
   function draw() {
+    document.querySelectorAll(".ct-cat button").forEach((b) => {
+      const k = b.dataset.cat, n = entries.filter((e) => e.category === k).length;
+      b.classList.toggle("active", k === cat);
+      b.querySelector("small").textContent = n ? n : "";
+    });
     if (failed) return;
-    $("#ct-count").textContent = entries.length ? `${entries.length}점` : "";
-    const list = entries.slice().sort((a, b) =>
+    const list = entries.filter((e) => e.category === cat).sort((a, b) =>
       sort === "vote" ? (b.vote_count - a.vote_count) || (b.id - a.id) : b.id - a.id);
     if (!list.length) {
-      grid.innerHTML = '<p class="ct-empty">아직 게시된 응모작이 없어요. 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>';
+      grid.innerHTML = `<p class="ct-empty">아직 게시된 ${CAT[cat]} 부문 응모작이 없어요. 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>`;
       return;
     }
+    const left = leftOf(cat);
     grid.innerHTML = list.map((e) => {
-      const voted = myVotes.has(e.id);
-      return `<article class="ct-card" data-id="${e.id}">
-        <button type="button" class="ct-card__img" data-view="photo" aria-label="${esc(e.title)} 크게 보기">
+      const voted = myVotes.has(e.id), short = e.category === "short";
+      const off = voted || !open || (user && left === 0);
+      return `<article class="ct-card${short ? " ct-card--short" : ""}" data-id="${e.id}">
+        <button type="button" class="ct-card__img" data-view="photo" aria-label="${esc(e.title)} ${short ? "영상 보기" : "크게 보기"}">
           <img src="${pub(e.photo_thumb)}" alt="${esc(e.title)}" loading="lazy">
+          ${short ? '<span class="ct-play" aria-hidden="true">▶</span>' : ""}
         </button>
         <div class="ct-card__body">
           <h3>${esc(e.title)}</h3>
           <p class="ct-card__by">by ${esc(e.nickname)}</p>
           ${e.story ? `<p class="ct-card__story">${esc(e.story)}</p>` : ""}
           <div class="ct-card__links">
-            <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">SNS 원문 ↗</a>
+            <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">${short ? "영상 원문" : "SNS 원문"} ↗</a>
             <button type="button" data-view="proof">인증샷</button>
           </div>
         </div>
         <div class="ct-card__vote">
           <span class="ct-card__count"><b>${e.vote_count.toLocaleString("ko-KR")}</b>표</span>
-          <button type="button" class="btn btn--sm ${voted ? "btn--ghost" : "btn--primary"}" data-vote ${voted || !open ? "disabled" : ""}>
-            ${voted ? "오늘 투표함 ✓" : open ? "♥ 투표" : "투표 마감"}</button>
+          <button type="button" class="btn btn--sm ${voted ? "btn--ghost" : "btn--primary"}" data-vote ${off ? "disabled" : ""}>
+            ${voted ? "오늘 투표함 ✓" : !open ? "투표 마감" : user && left === 0 ? "오늘 표 소진" : "♥ 투표"}</button>
         </div>
       </article>`;
     }).join("");
@@ -117,7 +135,7 @@
 
   /* ---------- 로그인·남은 표 표시 ---------- */
   async function loadMyVotes() {
-    myVotes = new Set();
+    myVotes = new Set(); limitHit = {};
     if (!user) return;
     const { data } = await sb().from("contest_votes").select("entry_id").eq("user_id", user.id).eq("vote_day", kstToday());
     (data || []).forEach((r) => myVotes.add(r.entry_id));
@@ -130,7 +148,7 @@
       return;
     }
     if (!user) {
-      bar.innerHTML = `<p><b>투표하려면 로그인해 주세요.</b> 로그인하면 하루 ${DAILY}표를 쓸 수 있어요.</p>
+      bar.innerHTML = `<p><b>투표하려면 로그인해 주세요.</b> 로그인하면 부문마다 하루 ${DAILY}표씩 쓸 수 있어요.</p>
         <div class="btn-row">
           <button type="button" class="btn btn--sm ct-kakao" data-login="kakao">카카오로 시작</button>
           <button type="button" class="btn btn--sm btn--ghost" data-login="google">구글로 시작</button>
@@ -138,8 +156,8 @@
         </div>`;
       return;
     }
-    const left = Math.max(DAILY - myVotes.size, 0);
-    bar.innerHTML = `<p>오늘 남은 투표 <b class="ct-left">${left}</b> / ${DAILY}표 <span class="muted tiny">· 매일 0시(한국 시간)에 다시 채워져요</span></p>`;
+    bar.innerHTML = `<p>오늘 남은 투표 &nbsp;사진 <b class="ct-left">${leftOf("photo")}</b> / ${DAILY}표 &nbsp;·&nbsp; 숏폼 <b class="ct-left">${leftOf("short")}</b> / ${DAILY}표
+      <span class="muted tiny">· 매일 0시(한국 시간)에 다시 채워져요</span></p>`;
   }
 
   /* ---------- 투표 ---------- */
@@ -148,7 +166,7 @@
     CLOSED: "지금은 투표 기간이 아닙니다.",
     NOENTRY: "투표할 수 없는 작품입니다. 새로고침해 주세요.",
     DUP: "이 작품에는 오늘 이미 투표했어요. 내일 다시 투표할 수 있어요.",
-    LIMIT: `오늘 ${DAILY}표를 모두 쓰셨어요. 내일 다시 투표해 주세요!`,
+    LIMIT: `이 부문의 오늘 ${DAILY}표를 모두 쓰셨어요. 다른 부문에 투표하거나 내일 다시 와 주세요!`,
   };
 
   async function vote(id, btn) {
@@ -160,24 +178,36 @@
     const e = entries.find((x) => x.id === id);
     if (e && r.entry_votes != null) e.vote_count = r.entry_votes;
     if (r.result === "OK" || r.result === "DUP") myVotes.add(id);
-    if (r.result === "LIMIT") { for (let i = myVotes.size; i < DAILY; i++) myVotes.add(-i - 1); }   // 남은 표 0 으로 보이게
-    if (r.result === "OK") msg(boardMsg, "ok", `투표했어요! 오늘 남은 투표 ${r.votes_left}표`);
+    if (r.result === "LIMIT" && e) limitHit[e.category] = true;
+    if (r.result === "OK") msg(boardMsg, "ok", `투표했어요! 오늘 ${CAT[e.category]} 부문 남은 투표 ${r.votes_left}표`);
     else msg(boardMsg, r.result === "DUP" ? "warn" : "err", VOTE_TEXT[r.result] || "투표하지 못했습니다.");
     draw(); drawVotebar();
   }
 
-  /* ---------- 크게 보기 ---------- */
-  const lb = $("#ct-lb");
+  /* ---------- 크게 보기 / 영상 재생 ---------- */
+  const lb = $("#ct-lb"), lbImg = $("#ct-lb-img"), lbVid = $("#ct-lb-video");
   function view(e, which) {
-    const url = pub(which === "proof" ? e.proof_path : e.photo_path);
-    $("#ct-lb-img").src = url;
-    $("#ct-lb-img").alt = which === "proof" ? `${e.title} SNS 인증샷` : e.title;
+    const yt = which === "photo" && e.category === "short" && ytId(e.sns_url);
+    if (which === "photo" && e.category === "short" && !yt) {     // 인스타·틱톡 등은 원문에서 재생
+      window.open(e.sns_url, "_blank", "noopener");
+      return;
+    }
+    lbVid.innerHTML = yt
+      ? `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&rel=0" title="${esc(e.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`
+      : "";
+    lbVid.hidden = !yt; lbImg.hidden = !!yt;
+    if (!yt) {
+      lbImg.src = pub(which === "proof" ? e.proof_path : e.photo_path);
+      lbImg.alt = which === "proof" ? `${e.title} SNS 인증샷` : e.title;
+    }
     $("#ct-lb-cap").textContent = which === "proof" ? `SNS 인증샷 — ${e.title}` : e.title;
-    $("#ct-lb-meta").textContent = `by ${e.nickname} · ${e.vote_count}표`;
+    $("#ct-lb-meta").textContent = `${CAT[e.category]} 부문 · by ${e.nickname} · ${e.vote_count}표`;
     lb.showModal();
   }
-  $("#ct-lb-close").onclick = () => lb.close();
-  lb.addEventListener("click", (ev) => { if (ev.target === lb) lb.close(); });
+  const closeLb = () => { lb.close(); lbVid.innerHTML = ""; };     // 닫으면 영상도 멈춘다
+  $("#ct-lb-close").onclick = closeLb;
+  lb.addEventListener("click", (ev) => { if (ev.target === lb) closeLb(); });
+  lb.addEventListener("close", () => (lbVid.innerHTML = ""));
 
   grid.addEventListener("click", (ev) => {
     const card = ev.target.closest(".ct-card");
@@ -198,6 +228,14 @@
     draw();
   });
 
+  document.querySelector(".ct-cat").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-cat]");
+    if (!b) return;
+    cat = b.dataset.cat;
+    clear(boardMsg);
+    draw();
+  });
+
   $("#ct-votebar").addEventListener("click", async (ev) => {
     const b = ev.target.closest("[data-login]");
     if (!b) return;
@@ -211,6 +249,25 @@
      응모
      ====================================================================== */
   const form = $("#ct-form"), formMsg = $("#ct-form-msg");
+
+  // 부문을 고르면 칸 이름·안내가 바뀐다 (숏폼은 영상 파일 대신 링크 + 대표 화면 캡처)
+  const FORM_TEXT = {
+    photo: { url: "내 SNS 게시물 주소", ph: "https://www.instagram.com/p/...", pic: "응모 사진", pick: "사진 고르기", note: "JPG·PNG 사진, 30MB 이하" },
+    short: { url: "내 숏폼 영상 주소 (유튜브 쇼츠·인스타 릴스·틱톡)", ph: "https://youtube.com/shorts/...", pic: "영상 대표 화면 (캡처)", pick: "대표 화면 고르기", note: "게시판에 보일 장면을 캡처해 주세요" },
+  };
+  const formCat = () => (form.querySelector("input[name=f-cat]:checked") || {}).value || "photo";
+  function paintFormCat() {
+    const t = FORM_TEXT[formCat()];
+    $("#f-url-label").textContent = t.url;
+    $("#f-url").placeholder = t.ph;
+    $("#f-photo-label").textContent = t.pic;
+    if (!$("#drop-photo").classList.contains("has")) $("#drop-photo span").textContent = t.pick;
+    $("#drop-photo small").textContent = t.note;
+    $("#f-short-note").hidden = formCat() !== "short";
+  }
+  form.addEventListener("change", (ev) => { if (ev.target.name === "f-cat") paintFormCat(); });
+  if (/#enter-short/.test(location.hash)) { form.querySelector("input[value=short]").checked = true; }
+  paintFormCat();
 
   // 고른 사진 미리 보기
   ["photo", "proof"].forEach((k) => {
@@ -239,7 +296,8 @@
     if (!open) return msg(formMsg, "err", "응모 기간(2026. 10. 9. ~ 12. 30.)이 아닙니다.");
     if (!title || !nick) return msg(formMsg, "err", "작품 제목과 닉네임을 적어 주세요.");
     if (!/^https?:\/\/\S+\.\S+/i.test(url)) return msg(formMsg, "err", "SNS 게시물 주소를 https:// 로 시작하는 링크로 붙여 넣어 주세요.");
-    if (!photo || !proof) return msg(formMsg, "err", "응모 사진과 SNS 인증샷을 모두 골라 주세요.");
+    const category = formCat();
+    if (!photo || !proof) return msg(formMsg, "err", `${FORM_TEXT[category].pic}과 SNS 인증샷을 모두 골라 주세요.`);
     if (![photo, proof].every((f) => /^image\//.test(f.type) && f.size <= MAX_SRC)) return msg(formMsg, "err", "사진 파일(30MB 이하)만 올릴 수 있어요.");
     if (!$("#f-a1").checked || !$("#f-a2").checked) return msg(formMsg, "err", "필수 동의 두 가지에 체크해 주세요.");
 
@@ -255,7 +313,7 @@
       if (bad) throw bad.error;
 
       const { data, error } = await c.from("contest_entries").insert({
-        title, nickname: nick, sns_url: url, story, ...paths, w: big.w, h: big.h,
+        category, title, nickname: nick, sns_url: url, story, ...paths, w: big.w, h: big.h,
       }).select("id").single();
       if (error) {
         await c.storage.from(BUCKET).remove(Object.values(paths));         // 등록 실패 → 올린 파일 치우기
@@ -264,12 +322,14 @@
       const key = newKey();
       await c.from("contest_entry_keys").insert({ entry_id: data.id, delete_key: key });
       const m = mine();
-      m[data.id] = { key, title, thumb: paths.photo_thumb, at: kstToday() };
+      m[data.id] = { key, title, cat: category, thumb: paths.photo_thumb, at: kstToday() };
       saveMine(m);
 
       form.reset();
+      form.querySelector(`input[value=${category}]`).checked = true;      // 같은 부문으로 이어서 응모하기 쉽게
       document.querySelectorAll(".ct-drop").forEach((b) => { b.classList.remove("has"); b.querySelector("img").hidden = true; });
-      $("#drop-photo span").textContent = "사진 고르기"; $("#drop-proof span").textContent = "캡처 고르기";
+      $("#drop-proof span").textContent = "캡처 고르기";
+      paintFormCat();
       msg(formMsg, "ok", "응모가 접수되었습니다! 담당자 확인 후 게시판에 올라갑니다. 친구들에게 투표를 부탁해 보세요.");
       drawMine();
     } catch (err) {
@@ -288,7 +348,7 @@
     box.innerHTML = `<div class="ct-mine"><h3>내가 응모한 작품 <span class="muted tiny">(이 기기에서 응모한 것만 보여요)</span></h3>
       <ul>${ids.map((id) => `<li>
         <img src="${pub(m[id].thumb)}" alt="" loading="lazy">
-        <div><b>${esc(m[id].title)}</b><span class="tiny muted">${shown.has(id) ? "게시 중" : "확인 대기 중 (또는 반려)"} · ${esc(m[id].at)}</span></div>
+        <div><b>${esc(m[id].title)}</b><span class="tiny muted">${CAT[m[id].cat] || "사진"} 부문 · ${shown.has(id) ? "게시 중" : "확인 대기 중 (또는 반려)"} · ${esc(m[id].at)}</span></div>
         <button type="button" class="btn btn--ghost btn--sm" data-del="${id}">응모 취소</button>
       </li>`).join("")}</ul></div>`;
   }
@@ -309,7 +369,7 @@
   /* ---------- 시작 ---------- */
   (async () => {
     period();
-    if (!sb()) { grid.innerHTML = '<p class="muted">사진전 게시판을 준비하고 있습니다.</p>'; return; }
+    if (!sb()) { grid.innerHTML = '<p class="ct-empty">사진전 게시판을 준비하고 있습니다.</p>'; return; }
     user = await Auth.user();
     await Promise.all([loadEntries(), loadMyVotes()]);
     draw(); drawVotebar(); drawMine();

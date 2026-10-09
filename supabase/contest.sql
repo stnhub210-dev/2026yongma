@@ -3,8 +3,9 @@
 -- Supabase 대시보드 → SQL Editor 에 통째로 붙여넣고 Run 한 번만 실행하면 됩니다.
 -- 여러 번 실행해도 안전합니다(있으면 건너뛰거나 정책만 다시 만듭니다).
 --
+--  · 부문: 사진(photo) / 숏폼 영상(short). 영상은 파일 대신 SNS 링크 + 대표 화면 캡처로 받는다.
 --  · 응모: 로그인 없이 누구나. 관리자가 '승인' 해야 게시판에 보입니다.
---  · 투표: 로그인한 사람만, 하루(한국 시간) 3표, 같은 작품엔 하루 1표.
+--  · 투표: 로그인한 사람만, 부문별 하루(한국 시간) 3표, 같은 작품엔 하루 1표.
 --  · 기간: 응모·투표 모두 2026-10-09 ~ 2026-12-30 (한국 시간). 발표 12-31 14:00.
 --  · 시상 점수 = 심사 30% + 시민투표 70% (계산은 관리자 화면 admin/contest.html)
 -- ---------------------------------------------------------------------------
@@ -34,6 +35,8 @@ create policy "사진전 파일 관리자 삭제" on storage.objects
 -- 2. 응모작 -----------------------------------------------------------------
 create table if not exists public.contest_entries (
   id          bigserial primary key,
+  category    text not null default 'photo'  -- 부문: photo 사진 / short 숏폼 영상
+              check (category in ('photo', 'short')),
   title       text not null,                 -- 작품 제목
   nickname    text not null,                 -- 게시판에 보일 이름
   sns_url     text not null,                 -- 본인 SNS 게시물 주소
@@ -48,7 +51,9 @@ create table if not exists public.contest_entries (
   vote_count  int  not null default 0,       -- 시민투표 수 (contest_vote 함수만 올린다)
   created_at  timestamptz not null default now()
 );
-create index if not exists contest_entries_status_idx on public.contest_entries (status, created_at desc);
+-- 부문 칸이 생기기 전에 표를 만든 경우를 위해(이미 있으면 건너뜀)
+alter table public.contest_entries add column if not exists category text not null default 'photo';
+create index if not exists contest_entries_status_idx on public.contest_entries (status, category, created_at desc);
 
 alter table public.contest_entries enable row level security;
 
@@ -61,6 +66,7 @@ drop policy if exists "응모작 누구나 등록" on public.contest_entries;
 create policy "응모작 누구나 등록" on public.contest_entries
   for insert with check (
     status = 'pending' and vote_count = 0
+    and category in ('photo', 'short')
     and length(btrim(title)) between 1 and 40
     and length(btrim(nickname)) between 1 and 20
     and length(sns_url) <= 300 and sns_url ~* '^https?://'
@@ -148,13 +154,15 @@ create policy "내 투표만 보기" on public.contest_votes
   for select using (user_id = auth.uid() or public.is_staff());
 
 -- 투표하기: 결과를 글자로 돌려준다
---   OK / LOGIN(로그인 필요) / CLOSED(기간 아님) / NOENTRY(없는·미승인 작품) / DUP(오늘 이미 투표) / LIMIT(오늘 3표 다 씀)
+--   OK / LOGIN(로그인 필요) / CLOSED(기간 아님) / NOENTRY(없는·미승인 작품) / DUP(오늘 이미 투표) / LIMIT(이 부문 오늘 3표 다 씀)
+--   votes_left 는 그 작품이 속한 부문의 오늘 남은 표
 create or replace function public.contest_vote(p_entry bigint)
 returns table (result text, votes_left int, entry_votes int)
 language plpgsql security definer set search_path = public as $$
 declare
   uid   uuid := auth.uid();
   today date := (now() at time zone 'Asia/Seoul')::date;
+  cat   text;
   used  int;
   cnt   int;
 begin
@@ -164,13 +172,17 @@ begin
   if today < date '2026-10-09' or today > date '2026-12-30' then
     return query select 'CLOSED'::text, 0, 0; return;
   end if;
-  if not exists (select 1 from contest_entries where id = p_entry and status = 'approved') then
+  select category into cat from contest_entries where id = p_entry and status = 'approved';
+  if cat is null then
     return query select 'NOENTRY'::text, 0, 0; return;
   end if;
 
   perform pg_advisory_xact_lock(hashtext(uid::text));          -- 같은 사람이 동시에 눌러도 3표를 넘지 않게
 
-  select count(*) into used from contest_votes where user_id = uid and vote_day = today;
+  -- 같은 부문에서 오늘 쓴 표
+  select count(*) into used
+    from contest_votes v join contest_entries e on e.id = v.entry_id
+   where v.user_id = uid and v.vote_day = today and e.category = cat;
   if exists (select 1 from contest_votes where user_id = uid and vote_day = today and entry_id = p_entry) then
     select vote_count into cnt from contest_entries where id = p_entry;
     return query select 'DUP'::text, greatest(3 - used, 0), cnt; return;
@@ -185,3 +197,16 @@ begin
   return query select 'OK'::text, 3 - used - 1, cnt;
 end $$;
 grant execute on function public.contest_vote(bigint) to authenticated;
+
+
+-- 6. Realtime 켜기 — 메인 페이지 '지금 올라온 응모작' 이 새로고침 없이 바뀌도록 ----------
+-- 응모작 표의 변경(승인·투표수)을 브라우저로 바로 보낸다. 보이는 범위는 위 RLS(승인된 것만)를 따른다.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+     where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'contest_entries'
+  ) then
+    alter publication supabase_realtime add table public.contest_entries;
+  end if;
+end $$;

@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="../assets/css/style.css?v=20261009j">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261009l">
 <style>
   /* 이 화면 전용 — 응모작 썸네일과 점수 칸 */
   .cta-thumb { width: 96px; height: 72px; object-fit: cover; border-radius: 8px; cursor: zoom-in; background: #eee; }
@@ -36,7 +36,7 @@
     <div class="panel">
       <p class="panel-sub">
         <b>대기</b> 응모작의 SNS 원문·인증샷을 확인하고 <b>승인</b>하면 공개 게시판에 올라갑니다.
-        <b>최종 점수 = 심사 점수(0~100) × 30% + 투표 점수 × 70%</b>, 투표 점수는 최다 득표작을 100점으로 환산합니다.
+        <b>부문(사진·숏폼)별로</b> <b>최종 점수 = 심사 점수(0~100) × 30% + 투표 점수 × 70%</b>, 투표 점수는 그 부문 최다 득표작을 100점으로 환산합니다.
         심사 점수는 관리자만 볼 수 있습니다.
       </p>
       <div class="cta-tabs" id="tabs">
@@ -44,6 +44,10 @@
         <button data-f="approved">승인 · 순위</button>
         <button data-f="rejected">반려</button>
         <button data-f="all">전체</button>
+        <span style="width:16px"></span>
+        <select class="select" id="catf" style="width:auto;padding:7px 12px">
+          <option value="all">부문 전체</option><option value="photo">📷 사진 부문</option><option value="short">🎬 숏폼 부문</option>
+        </select>
       </div>
       <div class="table-scroll">
         <table class="data">
@@ -76,29 +80,38 @@
   const ST = { pending: ["대기", ""], approved: ["승인", "chip--green"], rejected: ["반려", "chip--red"] };
   let rows = [], scores = {}, filter = "pending";
 
-  /* 최종 점수 — 승인작만 순위를 매긴다 */
+  /* 최종 점수 — 부문(사진·숏폼)마다 따로, 승인작만 순위를 매긴다.
+     투표 점수 = 그 부문 최다 득표를 100점으로 환산 */
+  const CATN = { photo: "📷 사진", short: "🎬 숏폼" };
+  let catF = "all";
   const ranked = () => {
-    const ok = rows.filter((r) => r.status === "approved");
-    const top = Math.max(1, ...ok.map((r) => r.vote_count));
-    ok.forEach((r) => {
-      r._vote = r.vote_count / top * 100;
-      r._judge = scores[r.id]?.judge_score;
-      r._total = r._judge == null ? null : +(r._judge * 0.3 + r._vote * 0.7).toFixed(2);
+    const out = [];
+    ["photo", "short"].forEach((k) => {
+      const ok = rows.filter((r) => r.status === "approved" && (r.category || "photo") === k);
+      const top = Math.max(1, ...ok.map((r) => r.vote_count));
+      ok.forEach((r) => {
+        r._vote = r.vote_count / top * 100;
+        r._judge = scores[r.id]?.judge_score;
+        r._total = r._judge == null ? null : +(r._judge * 0.3 + r._vote * 0.7).toFixed(2);
+      });
+      ok.sort((a, b) => (b._total ?? -1) - (a._total ?? -1) || b.vote_count - a.vote_count);
+      ok.forEach((r, i) => (r._rank = r._total == null ? null : i + 1));
+      out.push(...ok);
     });
-    ok.sort((a, b) => (b._total ?? -1) - (a._total ?? -1) || b.vote_count - a.vote_count);
-    ok.forEach((r, i) => (r._rank = r._total == null ? null : i + 1));
-    return ok;
+    return out;
   };
 
   const render = () => {
     ranked();
     let list = filter === "all" ? rows : rows.filter((r) => r.status === filter);
-    if (filter === "approved") list = list.slice().sort((a, b) => (a._rank ?? 1e9) - (b._rank ?? 1e9));
+    if (catF !== "all") list = list.filter((r) => (r.category || "photo") === catF);
+    if (filter === "approved") list = list.slice().sort((a, b) =>
+      (a.category || "photo").localeCompare(b.category || "photo") || (a._rank ?? 1e9) - (b._rank ?? 1e9));
     document.getElementById("rows").innerHTML = list.map((r) => `
       <tr data-id="${r.id}">
         <td class="cta-rank">${r._rank ?? "-"}</td>
         <td><img class="cta-thumb" src="${url(r.photo_thumb)}" data-big="${esc(r.photo_path)}" data-cap="${esc(r.title)}" alt=""></td>
-        <td><b>${esc(r.title)}</b><br><span class="tiny">by ${esc(r.nickname)} · ${UI.date(r.created_at)}</span>
+        <td><span class="chip">${CATN[r.category || "photo"]}</span> <b>${esc(r.title)}</b><br><span class="tiny">by ${esc(r.nickname)} · ${UI.date(r.created_at)}</span>
             ${r.story ? `<br><span class="tiny muted">${esc(r.story)}</span>` : ""}</td>
         <td class="tiny" style="white-space:nowrap"><a href="${esc(r.sns_url)}" target="_blank" rel="noopener">SNS 원문 ↗</a><br>
             <a href="#" data-big="${esc(r.proof_path)}" data-cap="인증샷 — ${esc(r.title)}">인증샷 보기</a></td>
@@ -131,6 +144,8 @@
     document.querySelectorAll("#tabs button").forEach((x) => x.classList.toggle("active", x === b));
     render();
   });
+
+  document.getElementById("catf").addEventListener("change", (e) => { catF = e.target.value; render(); });
 
   const tbody = document.getElementById("rows");
   tbody.addEventListener("click", async (e) => {
@@ -176,8 +191,8 @@
   // 순위표 CSV (엑셀에서 열림)
   document.getElementById("btn-csv").onclick = () => {
     const ok = ranked();
-    const head = ["순위", "작품", "닉네임", "SNS", "투표수", "투표점수", "심사점수", "최종점수"];
-    const lines = ok.map((r) => [r._rank ?? "", r.title, r.nickname, r.sns_url, r.vote_count, r._vote.toFixed(2), r._judge ?? "", r._total ?? ""]);
+    const head = ["부문", "부문내 순위", "작품", "닉네임", "SNS", "투표수", "투표점수", "심사점수", "최종점수"];
+    const lines = ok.map((r) => [(r.category || "photo") === "short" ? "숏폼" : "사진", r._rank ?? "", r.title, r.nickname, r.sns_url, r.vote_count, r._vote.toFixed(2), r._judge ?? "", r._total ?? ""]);
     const csv = "﻿" + [head, ...lines].map((l) => l.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\r\n");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
