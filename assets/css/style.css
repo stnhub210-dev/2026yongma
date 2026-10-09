@@ -182,8 +182,10 @@ h4 { font-size: 1.0625rem; }
   /* 언어바·메뉴·운영안내바를 뺀 나머지를 배경 사진이 채우게 한다.
      내용이 더 길면 그만큼 늘어나므로 잘리지 않는다. */
   min-height: max(520px, calc(100svh - 162px));
-  display: flex; align-items: center; justify-content: center;
+  /* 세로로 쌓는다 — 본문은 남는 높이 가운데, 기관 로고 띠(.hero-orgs)는 맨 아래 전체 폭 */
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
+.hero > .hero__inner { margin-block: auto; }
 .hero__bg { position: absolute; inset: 0; }
 .hero__bg img { width: 100%; height: 100%; object-fit: cover; }
 /* 사진 위에 검정 반투명 10% 만 — 밤하늘 사진이라 이 정도로도 글자가 읽힌다 */
@@ -209,8 +211,8 @@ h4 { font-size: 1.0625rem; }
    빛 띠가 좁아 「포 → 남 → 용 → 마 → 거 → 리」 순으로 한 글자씩 훑고 지나간다. */
 .hero__logo-shine {
   position: absolute; inset: 0; overflow: hidden; pointer-events: none;
-  -webkit-mask: url(../img/logo-yongma-white.webp) center / contain no-repeat;
-          mask: url(../img/logo-yongma-white.webp) center / contain no-repeat;
+  -webkit-mask: url(../img/logo-yongma-white.webp?v=20261009) center / contain no-repeat;
+          mask: url(../img/logo-yongma-white.webp?v=20261009) center / contain no-repeat;
 }
 .hero__logo-shine::before {
   content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 24%;
@@ -265,6 +267,19 @@ h4 { font-size: 1.0625rem; }
 .hero-stats dt { font-size: .8125rem; color: rgba(255,255,255,.62); font-weight: 600; }
 .hero-stats dd { font-size: clamp(1.875rem, 1.4rem + 1.7vw, 3rem); font-weight: 800; color: #fff; letter-spacing: -.02em; margin-top: 6px; line-height: 1.05; }
 .hero-stats dd span { font-size: clamp(1.125rem, .9rem + .7vw, 1.625rem); font-weight: 600; color: var(--amber-400); margin-left: 5px; }
+
+/* 히어로 맨 아래 주최·주관 로고 띠 — 현수막 하단처럼 검은 띠에 로고를 | 로 나눠 늘어놓는다 */
+.hero-orgs { position: relative; align-self: stretch; background: rgba(0, 0, 0, .62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-top: 1px solid rgba(255,255,255,.12); }
+.hero-orgs__list { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 0; padding-top: 14px; padding-bottom: 14px; list-style: none; margin: 0 auto; }
+.hero-orgs__list li { display: flex; align-items: center; padding: 0 clamp(12px, 1.8vw, 24px); }
+.hero-orgs__list li + li { border-left: 1px solid rgba(255,255,255,.35); }
+.hero-orgs__list img { display: block; height: var(--h, 26px); width: auto; }
+.hero-orgs__txt { color: #fff; font-size: .9375rem; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+@media (max-width: 720px) {
+  .hero-orgs__list li { padding: 0 10px; }
+  .hero-orgs__list img { height: calc(var(--h, 26px) * .72); }
+  .hero-orgs__txt { font-size: .8125rem; }
+}
 
 /* ---------- Cards ---------- */
 .card {
