@@ -1385,3 +1385,20 @@ img, video, iframe, table { max-width: 100%; }
 .contest__box li b { color: var(--ink-900); }
 .contest__tracks .contest__prizes li { padding: 14px 8px; }
 .contest__tracks .contest__prizes strong { font-size: clamp(1.25rem, 1.05rem + .8vw, 1.625rem); }
+
+/* 메인 사진전(남색 배경) 안의 응모 예시 그림 — 글자색을 밝게, 칸은 조금 작게 */
+.ct-howto--dark { margin-bottom: 0; gap: 12px; }
+.ct-howto--dark .ct-phone__screen { width: min(100%, 180px); border-color: #fff; box-shadow: 0 16px 36px rgba(0,0,0,.4); }
+.ct-howto--dark .ct-phone__screen::before { background: #fff; }
+.ct-howto--dark .ct-phone figcaption { color: rgba(255,255,255,.72); }
+.ct-howto--dark .ct-phone figcaption b { color: #fff; }
+.ct-howto--dark .ct-phone figcaption span { background: #FFD166; color: #2A1500; }
+.contest .ct-howto--dark mark { color: #1F3B8C; }
+.contest .ct-ig__cap b, .contest .ct-ig__top b { color: var(--ink-900); }
+
+/* 동영상 크게 보기 — 유튜브·인스타·틱톡 공통, 아래 '원문에서 보기' */
+.ct-video { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.ct-video iframe { flex: 1; min-height: 0; }
+.ct-video[data-kind="ig"] { aspect-ratio: 9 / 18; background: #fff; border-radius: 12px; }
+.ct-video[data-kind="ig"] iframe { background: #fff; }
+.ct-video__orig { color: #FFD166; font-size: .875rem; font-weight: 700; }

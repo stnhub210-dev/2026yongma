@@ -68,10 +68,16 @@
     open = t >= "2026-10-09" && t <= "2026-12-30";
   }
 
-  /* 유튜브 주소면 영상 번호를 꺼낸다 (shorts / watch?v= / youtu.be) — 페이지 안에서 바로 재생용 */
-  function ytId(u) {
-    const m = String(u).match(/(?:youtube\.com\/(?:shorts\/|watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/i);
-    return m ? m[1] : null;
+  /* 영상 게시물 주소 → 페이지 안에서 재생할 주소 (유튜브·인스타그램·틱톡). 모르는 주소면 null → 원문으로 연결 */
+  function embedOf(u) {
+    u = String(u);
+    let m = u.match(/(?:youtube\.com\/(?:shorts\/|watch\?v=|embed\/|live\/)|youtu\.be\/)([\w-]{11})/i);
+    if (m) return { src: `https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0`, kind: "yt" };
+    m = u.match(/instagram\.com\/(?:[\w.]+\/)?(?:p|reel|reels|tv)\/([\w-]+)/i);
+    if (m) return { src: `https://www.instagram.com/p/${m[1]}/embed/`, kind: "ig" };
+    m = u.match(/tiktok\.com\/.*\/video\/(\d+)/i);
+    if (m) return { src: `https://www.tiktok.com/embed/v2/${m[1]}`, kind: "tt" };
+    return null;
   }
 
   async function loadEntries() {
@@ -195,14 +201,16 @@
   /* ---------- 크게 보기 / 영상 재생 ---------- */
   const lb = $("#ct-lb"), lbImg = $("#ct-lb-img"), lbVid = $("#ct-lb-video");
   function view(e, which) {
-    const yt = which === "photo" && e.category === "short" && ytId(e.sns_url);
-    if (which === "photo" && e.category === "short" && !yt) {     // 인스타·틱톡 등은 원문에서 재생
+    const yt = which === "photo" && e.category === "short" && embedOf(e.sns_url);
+    if (which === "photo" && e.category === "short" && !yt) {     // 재생 주소를 못 만든 경우(단축 링크 등)는 원문에서
       window.open(e.sns_url, "_blank", "noopener");
       return;
     }
     lbVid.innerHTML = yt
-      ? `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&rel=0" title="${esc(e.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`
+      ? `<iframe src="${yt.src}" title="${esc(e.title)}" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen loading="lazy"></iframe>
+         <a class="ct-video__orig" href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">원문에서 보기 ↗</a>`
       : "";
+    lbVid.dataset.kind = yt ? yt.kind : "";
     lbVid.hidden = !yt; lbImg.hidden = !!yt;
     if (!yt) {
       lbImg.src = pub(which === "proof" ? e.proof_path : e.photo_path);
