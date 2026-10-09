@@ -202,7 +202,7 @@
     draw(); drawVotebar();
   }
 
-  /* ---------- 신고 — 서로 다른 3명이 신고하면 서버가 자동으로 숨기고 관리자가 확인 ---------- */
+  /* ---------- 신고 — 서로 다른 5명이 신고하면 서버가 자동으로 숨기고 관리자가 확인 ---------- */
   const REP_KEY = "yongma_contest_reported";
   function reported() { try { return new Set(JSON.parse(localStorage.getItem(REP_KEY)) || []); } catch (e) { return new Set(); } }
   function markReported(id) { try { const s = reported(); s.add(id); localStorage.setItem(REP_KEY, JSON.stringify([...s])); } catch (e) { /* 무시 */ } }

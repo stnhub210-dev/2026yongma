@@ -234,7 +234,7 @@ begin
   if p_photo not like 'entries/%' or p_thumb not like 'entries/%' or p_proof not like 'entries/%' then raise exception 'BAD_PATH'; end if;
   if p_key is null or length(p_key) not between 10 and 100 then raise exception 'BAD_KEY'; end if;
 
-  -- 응모 즉시 공개(approved). 유해 작품은 신고 3건이면 자동으로 숨김(pending) → 관리자 확인
+  -- 응모 즉시 공개(approved). 유해 작품은 신고 5건이면 자동으로 숨김(pending) → 관리자 확인
   insert into contest_entries (category, title, nickname, sns_url, story, photo_path, photo_thumb, proof_path, w, h, status)
   values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h, 'approved')
   returning id into new_id;
@@ -245,7 +245,7 @@ end $$;
 grant execute on function public.contest_submit(text, text, text, text, text, text, text, text, int, int, text) to anon, authenticated;
 
 
--- 5-2. 신고 — 같은 작품을 서로 다른 3명(접속 주소 기준)이 신고하면 자동으로 숨김(pending) → 관리자 확인
+-- 5-2. 신고 — 같은 작품을 서로 다른 5명(접속 주소 기준)이 신고하면 자동으로 숨김(pending) → 관리자 확인
 alter table public.contest_entries add column if not exists report_count int not null default 0;
 
 create table if not exists public.contest_reports (
@@ -277,7 +277,7 @@ begin
   if not found then return 'DUP'; end if;
   select count(*) into n from contest_reports where entry_id = p_entry;
   update contest_entries set report_count = n where id = p_entry;
-  if n >= 3 then
+  if n >= 5 then
     update contest_entries set status = 'pending' where id = p_entry;
     return 'HIDDEN';
   end if;
