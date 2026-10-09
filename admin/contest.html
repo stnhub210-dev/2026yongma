@@ -36,7 +36,7 @@
     <div class="panel">
       <p class="panel-sub">
         <b>대기</b> 응모작의 SNS 원문·인증샷을 확인하고 <b>승인</b>하면 공개 게시판에 올라갑니다.
-        <b>부문(사진·숏폼)별로</b> <b>최종 점수 = 심사 점수(0~100) × 30% + 투표 점수 × 70%</b>, 투표 점수는 그 부문 최다 득표작을 100점으로 환산합니다.
+        <b>부문(사진·동영상)별로</b> <b>최종 점수 = 심사 점수(0~100) × 30% + 투표 점수 × 70%</b>, 투표 점수는 그 부문 최다 득표작을 100점으로 환산합니다.
         심사 점수는 관리자만 볼 수 있습니다.
       </p>
       <div class="cta-tabs" id="tabs">
@@ -46,7 +46,7 @@
         <button data-f="all">전체</button>
         <span style="width:16px"></span>
         <select class="select" id="catf" style="width:auto;padding:7px 12px">
-          <option value="all">부문 전체</option><option value="photo">📷 사진 부문</option><option value="short">🎬 숏폼 부문</option>
+          <option value="all">부문 전체</option><option value="photo">📷 사진 부문</option><option value="short">🎬 동영상 부문</option>
         </select>
       </div>
       <div class="table-scroll">
@@ -80,9 +80,9 @@
   const ST = { pending: ["대기", ""], approved: ["승인", "chip--green"], rejected: ["반려", "chip--red"] };
   let rows = [], scores = {}, filter = "pending";
 
-  /* 최종 점수 — 부문(사진·숏폼)마다 따로, 승인작만 순위를 매긴다.
+  /* 최종 점수 — 부문(사진·동영상)마다 따로, 승인작만 순위를 매긴다.
      투표 점수 = 그 부문 최다 득표를 100점으로 환산 */
-  const CATN = { photo: "📷 사진", short: "🎬 숏폼" };
+  const CATN = { photo: "📷 사진", short: "🎬 동영상" };
   let catF = "all";
   const ranked = () => {
     const out = [];
@@ -192,7 +192,7 @@
   document.getElementById("btn-csv").onclick = () => {
     const ok = ranked();
     const head = ["부문", "부문내 순위", "작품", "닉네임", "SNS", "투표수", "투표점수", "심사점수", "최종점수"];
-    const lines = ok.map((r) => [(r.category || "photo") === "short" ? "숏폼" : "사진", r._rank ?? "", r.title, r.nickname, r.sns_url, r.vote_count, r._vote.toFixed(2), r._judge ?? "", r._total ?? ""]);
+    const lines = ok.map((r) => [(r.category || "photo") === "short" ? "동영상" : "사진", r._rank ?? "", r.title, r.nickname, r.sns_url, r.vote_count, r._vote.toFixed(2), r._judge ?? "", r._total ?? ""]);
     const csv = "﻿" + [head, ...lines].map((l) => l.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\r\n");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));

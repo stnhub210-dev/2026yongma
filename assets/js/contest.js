@@ -49,9 +49,9 @@
   }
 
   /* ======================================================================
-     게시판 — 부문(사진 photo / 숏폼 short) 탭으로 나눠 보여 준다
+     게시판 — 부문(사진 photo / 동영상 short) 탭으로 나눠 보여 준다
      ====================================================================== */
-  const CAT = { photo: "사진", short: "숏폼" };
+  const CAT = { photo: "사진", short: "동영상" };
   let entries = [];
   let cat = /#short/.test(location.hash) ? "short" : "photo";   // 지금 보는 부문
   let sort = "new";
@@ -156,7 +156,7 @@
         </div>`;
       return;
     }
-    bar.innerHTML = `<p>오늘 남은 투표 &nbsp;사진 <b class="ct-left">${leftOf("photo")}</b> / ${DAILY}표 &nbsp;·&nbsp; 숏폼 <b class="ct-left">${leftOf("short")}</b> / ${DAILY}표
+    bar.innerHTML = `<p>오늘 남은 투표 &nbsp;사진 <b class="ct-left">${leftOf("photo")}</b> / ${DAILY}표 &nbsp;·&nbsp; 동영상 <b class="ct-left">${leftOf("short")}</b> / ${DAILY}표
       <span class="muted tiny">· 매일 0시(한국 시간)에 다시 채워져요</span></p>`;
   }
 
@@ -250,10 +250,10 @@
      ====================================================================== */
   const form = $("#ct-form"), formMsg = $("#ct-form-msg");
 
-  // 부문을 고르면 칸 이름·안내가 바뀐다 (숏폼은 영상 파일 대신 링크 + 대표 화면 캡처)
+  // 부문을 고르면 칸 이름·안내가 바뀐다 (동영상은 영상 파일 대신 링크 + 대표 화면 캡처)
   const FORM_TEXT = {
     photo: { url: "내 SNS 게시물 주소", ph: "https://www.instagram.com/p/...", pic: "응모 사진", pick: "사진 고르기", note: "JPG·PNG 사진, 30MB 이하" },
-    short: { url: "내 숏폼 영상 주소 (유튜브 쇼츠·인스타 릴스·틱톡)", ph: "https://youtube.com/shorts/...", pic: "영상 대표 화면 (캡처)", pick: "대표 화면 고르기", note: "게시판에 보일 장면을 캡처해 주세요" },
+    short: { url: "내 SNS 영상 주소 (유튜브·인스타 릴스·틱톡 등)", ph: "https://youtube.com/shorts/...", pic: "영상 대표 화면 (캡처)", pick: "대표 화면 고르기", note: "게시판에 보일 장면을 캡처해 주세요" },
   };
   const formCat = () => (form.querySelector("input[name=f-cat]:checked") || {}).value || "photo";
   function paintFormCat() {
@@ -312,17 +312,18 @@
       const bad = ups.find((u) => u.error);
       if (bad) throw bad.error;
 
-      const { data, error } = await c.from("contest_entries").insert({
-        category, title, nickname: nick, sns_url: url, story, ...paths, w: big.w, h: big.h,
-      }).select("id").single();
+      // 등록은 서버 함수 contest_submit 이 한다 (검사 + 등록 + 지우기 열쇠 저장 → 번호)
+      const key = newKey();
+      const { data: newId, error } = await c.rpc("contest_submit", {
+        p_category: category, p_title: title, p_nickname: nick, p_sns_url: url, p_story: story,
+        p_photo: paths.photo_path, p_thumb: paths.photo_thumb, p_proof: paths.proof_path, p_w: big.w, p_h: big.h, p_key: key,
+      });
       if (error) {
         await c.storage.from(BUCKET).remove(Object.values(paths));         // 등록 실패 → 올린 파일 치우기
-        throw error;
+        throw new Error(/CLOSED/.test(error.message) ? "응모가 마감되었습니다." : error.message);
       }
-      const key = newKey();
-      await c.from("contest_entry_keys").insert({ entry_id: data.id, delete_key: key });
       const m = mine();
-      m[data.id] = { key, title, cat: category, thumb: paths.photo_thumb, at: kstToday() };
+      m[newId] = { key, title, cat: category, thumb: paths.photo_thumb, at: kstToday() };
       saveMine(m);
 
       form.reset();

@@ -199,6 +199,33 @@ end $$;
 grant execute on function public.contest_vote(bigint) to authenticated;
 
 
+-- 5-1. 응모하기 함수 — 방문객은 승인 전 응모작을 읽을 수 없어서(RLS) 직접 넣으면 번호를 돌려받지 못한다.
+--      그래서 이 함수가 검사 → 등록 → 지우기 열쇠 저장까지 한 번에 하고 번호만 돌려준다.
+create or replace function public.contest_submit(
+  p_category text, p_title text, p_nickname text, p_sns_url text, p_story text,
+  p_photo text, p_thumb text, p_proof text, p_w int, p_h int, p_key text)
+returns bigint
+language plpgsql security definer set search_path = public as $$
+declare new_id bigint;
+begin
+  if (now() at time zone 'Asia/Seoul') >= timestamp '2026-12-31 00:00' then raise exception 'CLOSED'; end if;
+  if p_category not in ('photo', 'short') then raise exception 'BAD_CATEGORY'; end if;
+  if length(btrim(coalesce(p_title, ''))) not between 1 and 40 then raise exception 'BAD_TITLE'; end if;
+  if length(btrim(coalesce(p_nickname, ''))) not between 1 and 20 then raise exception 'BAD_NICKNAME'; end if;
+  if p_sns_url is null or length(p_sns_url) > 300 or p_sns_url !~* '^https?://' then raise exception 'BAD_URL'; end if;
+  if length(coalesce(p_story, '')) > 300 then raise exception 'BAD_STORY'; end if;
+  if p_photo not like 'entries/%' or p_thumb not like 'entries/%' or p_proof not like 'entries/%' then raise exception 'BAD_PATH'; end if;
+  if p_key is null or length(p_key) not between 10 and 100 then raise exception 'BAD_KEY'; end if;
+
+  insert into contest_entries (category, title, nickname, sns_url, story, photo_path, photo_thumb, proof_path, w, h)
+  values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h)
+  returning id into new_id;
+  insert into contest_entry_keys (entry_id, delete_key) values (new_id, p_key);
+  return new_id;
+end $$;
+grant execute on function public.contest_submit(text, text, text, text, text, text, text, text, int, int, text) to anon, authenticated;
+
+
 -- 6. Realtime 켜기 — 메인 페이지 '지금 올라온 응모작' 이 새로고침 없이 바뀌도록 ----------
 -- 응모작 표의 변경(승인·투표수)을 브라우저로 바로 보낸다. 보이는 범위는 위 RLS(승인된 것만)를 따른다.
 do $$

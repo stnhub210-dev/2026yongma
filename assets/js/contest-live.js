@@ -1,6 +1,6 @@
 /* ==========================================================================
    메인 — 사진전 '지금 올라온 응모작' 실시간 띠 (index.html #contest-live)
-   · 승인된 응모작 최신 12점을 사진·숏폼 섞어 보여 준다. 누르면 사진전 게시판으로.
+   · 승인된 응모작 최신 12점을 사진·동영상 섞어 보여 준다. 누르면 사진전 게시판으로.
    · 실시간: Supabase Realtime 으로 응모작 표의 변경(승인·투표수)을 받아 바로 다시 그린다.
              (supabase/contest.sql 의 'Realtime 켜기' 부분이 실행돼 있어야 함)
              연결이 안 되는 환경을 위해 1분마다 한 번 더 불러온다.
@@ -15,7 +15,7 @@
   const row = document.getElementById("contest-live-row");
   const count = document.getElementById("contest-live-count");
   const SHOW = 12;
-  const CAT = { photo: "📷 사진", short: "🎬 숏폼" };
+  const CAT = { photo: "📷 사진", short: "🎬 동영상" };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const pub = (p) => c.storage.from("contest").getPublicUrl(p).data.publicUrl;
   let seen = null;                 // 처음 그린 뒤 새로 들어온 작품에 'NEW' 표시
