@@ -140,7 +140,8 @@
           <b>${isNew(e.created_at) ? '<i class="ct-new">N</i>' : ""}${esc(e.title)}</b>
           <small>by ${esc(e.nickname)} · ${ymd(e.created_at)}
             · <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">${short ? "영상 원문" : "SNS 원문"} ↗</a>
-            · <button type="button" data-view="proof">인증샷</button></small>
+            · <button type="button" data-view="proof">인증샷</button>
+            · <button type="button" class="ct-report" data-report ${reported().has(e.id) ? "disabled" : ""}>${reported().has(e.id) ? "신고함" : "신고"}</button></small>
           ${e.story ? `<em>${esc(e.story)}</em>` : ""}
         </span>
         <span class="ct-row__count"><b>${e.vote_count.toLocaleString("ko-KR")}</b>표</span>
@@ -201,6 +202,26 @@
     draw(); drawVotebar();
   }
 
+  /* ---------- 신고 — 서로 다른 3명이 신고하면 서버가 자동으로 숨기고 관리자가 확인 ---------- */
+  const REP_KEY = "yongma_contest_reported";
+  function reported() { try { return new Set(JSON.parse(localStorage.getItem(REP_KEY)) || []); } catch (e) { return new Set(); } }
+  function markReported(id) { try { const s = reported(); s.add(id); localStorage.setItem(REP_KEY, JSON.stringify([...s])); } catch (e) { /* 무시 */ } }
+
+  async function report(e) {
+    const reason = prompt(`「${e.title}」을(를) 신고하는 이유를 적어 주세요.\n(예: 다른 사람 사진 도용, 선정적·폭력적 내용, 행사와 무관 등)`);
+    if (reason === null) return;                                  // 취소
+    const { data, error } = await sb().rpc("contest_report", { p_entry: e.id, p_reason: reason.trim() });
+    if (error) return msg(boardMsg, "err", "신고하지 못했습니다: " + error.message);
+    markReported(e.id);
+    if (data === "HIDDEN") {
+      entries = entries.filter((x) => x.id !== e.id);
+      msg(boardMsg, "ok", "신고가 접수되었습니다. 신고가 누적되어 관리자 확인 전까지 숨김 처리했습니다.");
+    } else {
+      msg(boardMsg, data === "DUP" ? "warn" : "ok", data === "DUP" ? "이미 신고한 작품입니다." : "신고가 접수되었습니다. 관리자가 확인하겠습니다.");
+    }
+    draw();
+  }
+
   /* ---------- 크게 보기 / 영상 재생 ---------- */
   const lb = $("#ct-lb"), lbImg = $("#ct-lb-img"), lbVid = $("#ct-lb-video");
   function view(e, which) {
@@ -235,6 +256,7 @@
     if (!e) return;
     const v = ev.target.closest("[data-view]");
     if (v) return view(e, v.dataset.view);
+    if (ev.target.closest("[data-report]")) return report(e);
     const b = ev.target.closest("[data-vote]");
     if (b) vote(e.id, b);
   });
@@ -350,8 +372,8 @@
       document.querySelectorAll(".ct-drop").forEach((b) => { b.classList.remove("has"); b.querySelector("img").hidden = true; });
       $("#drop-proof span").textContent = "캡처 고르기";
       paintFormCat();
-      msg(formMsg, "ok", "응모가 접수되었습니다! 담당자 확인 후 게시판에 올라갑니다. 친구들에게 투표를 부탁해 보세요.");
-      drawMine();
+      msg(formMsg, "ok", "응모 완료! 게시판과 메인에 바로 올라갔어요. 친구들에게 투표를 부탁해 보세요.");
+      await loadEntries(); draw(); drawMine();
     } catch (err) {
       msg(formMsg, "err", "응모하지 못했습니다: " + (err.message || err));
     } finally {
@@ -368,7 +390,7 @@
     box.innerHTML = `<div class="ct-mine"><h3>내가 응모한 작품 <span class="muted tiny">(이 기기에서 응모한 것만 보여요)</span></h3>
       <ul>${ids.map((id) => `<li>
         <img src="${pub(m[id].thumb)}" alt="" loading="lazy">
-        <div><b>${esc(m[id].title)}</b><span class="tiny muted">${CAT[m[id].cat] || "사진"} 부문 · ${shown.has(id) ? "게시 중" : "확인 대기 중 (또는 반려)"} · ${esc(m[id].at)}</span></div>
+        <div><b>${esc(m[id].title)}</b><span class="tiny muted">${CAT[m[id].cat] || "사진"} 부문 · ${shown.has(id) ? "게시 중" : "숨김(관리자 확인 중) 또는 반려"} · ${esc(m[id].at)}</span></div>
         <button type="button" class="btn btn--ghost btn--sm" data-del="${id}">응모 취소</button>
       </li>`).join("")}</ul></div>`;
   }

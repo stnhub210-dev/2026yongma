@@ -217,13 +217,55 @@ begin
   if p_photo not like 'entries/%' or p_thumb not like 'entries/%' or p_proof not like 'entries/%' then raise exception 'BAD_PATH'; end if;
   if p_key is null or length(p_key) not between 10 and 100 then raise exception 'BAD_KEY'; end if;
 
-  insert into contest_entries (category, title, nickname, sns_url, story, photo_path, photo_thumb, proof_path, w, h)
-  values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h)
+  -- 응모 즉시 공개(approved). 유해 작품은 신고 3건이면 자동으로 숨김(pending) → 관리자 확인
+  insert into contest_entries (category, title, nickname, sns_url, story, photo_path, photo_thumb, proof_path, w, h, status)
+  values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h, 'approved')
   returning id into new_id;
   insert into contest_entry_keys (entry_id, delete_key) values (new_id, p_key);
   return new_id;
 end $$;
 grant execute on function public.contest_submit(text, text, text, text, text, text, text, text, int, int, text) to anon, authenticated;
+
+
+-- 5-2. 신고 — 같은 작품을 서로 다른 3명(접속 주소 기준)이 신고하면 자동으로 숨김(pending) → 관리자 확인
+alter table public.contest_entries add column if not exists report_count int not null default 0;
+
+create table if not exists public.contest_reports (
+  id         bigserial primary key,
+  entry_id   bigint not null references public.contest_entries(id) on delete cascade,
+  reporter   text   not null,              -- 로그인 사용자 id 또는 접속 주소(IP) 해시
+  reason     text   not null default '',
+  created_at timestamptz not null default now(),
+  unique (entry_id, reporter)
+);
+alter table public.contest_reports enable row level security;
+drop policy if exists "신고 관리자만" on public.contest_reports;
+create policy "신고 관리자만" on public.contest_reports
+  for all using (public.is_staff()) with check (public.is_staff());
+
+-- 결과: OK(접수) / DUP(이미 신고함) / HIDDEN(신고 누적으로 숨김 처리됨) / NOENTRY
+create or replace function public.contest_report(p_entry bigint, p_reason text)
+returns text
+language plpgsql security definer set search_path = public as $$
+declare
+  who text;
+  n   int;
+begin
+  if not exists (select 1 from contest_entries where id = p_entry and status = 'approved') then return 'NOENTRY'; end if;
+  who := coalesce(auth.uid()::text,
+           'ip:' || md5(coalesce(split_part(current_setting('request.headers', true)::json->>'x-forwarded-for', ',', 1), 'unknown')));
+  insert into contest_reports (entry_id, reporter, reason) values (p_entry, who, left(coalesce(p_reason, ''), 200))
+    on conflict (entry_id, reporter) do nothing;
+  if not found then return 'DUP'; end if;
+  select count(*) into n from contest_reports where entry_id = p_entry;
+  update contest_entries set report_count = n where id = p_entry;
+  if n >= 3 then
+    update contest_entries set status = 'pending' where id = p_entry;
+    return 'HIDDEN';
+  end if;
+  return 'OK';
+end $$;
+grant execute on function public.contest_report(bigint, text) to anon, authenticated;
 
 
 -- 6. Realtime 켜기 — 메인 페이지 '지금 올라온 응모작' 이 새로고침 없이 바뀌도록 ----------

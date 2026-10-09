@@ -1466,3 +1466,5 @@ img, video, iframe, table { max-width: 100%; }
 .contest__tracks--one { display: block; max-width: 760px; }
 .contest__tracks--one .contest__prizes { grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .contest__each { margin-left: 8px; padding: 3px 10px; border-radius: 999px; background: #FFD166; color: #2A1500; font-size: .8125rem; font-weight: 900; vertical-align: 2px; }
+.ct-row__main small .ct-report { color: var(--ink-500); font-weight: 600; }
+.ct-row__main small .ct-report[disabled] { opacity: .6; cursor: default; }
