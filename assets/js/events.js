@@ -25,7 +25,7 @@
   for (; d <= end; d.setDate(d.getDate() + 1)) {
     var w = d.getDay();                                    // 5=금, 6=토
     if (w !== 5 && w !== 6) continue;
-    EVENTS[key(d)] = { kind: "reg", name: "정규행사", sub: "버스킹" };
+    EVENTS[key(d)] = { kind: "reg", name: "정규행사", sub: "용마미식거리\n맛집대축제" };
   }
 
   // 10/30·31 은 중기부 동행축제 연계 — 정규행사보다 크게 치르고, 버스킹도 함께 연다

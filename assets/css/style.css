@@ -747,6 +747,9 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .cal-d { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; aspect-ratio: 1 / 1; border-radius: 10px; font-variant-numeric: tabular-nums; transition: transform .22s var(--ease), box-shadow .22s var(--ease); }
 .cal-d b { font-size: .8125rem; font-weight: 600; color: var(--ink-800); }
 .cal-d em { font-style: normal; font-size: .5625rem; font-weight: 700; line-height: 1; }
+.cal-d em.two { font-size: .4375rem; line-height: 1.15; letter-spacing: -.06em; white-space: nowrap; text-align: center; }
+@media (min-width: 900px)  { .cal-d em.two { font-size: .5625rem; } }
+@media (min-width: 1180px) { .cal-d em.two { font-size: .6875rem; } }
 .cal-d--pad { visibility: hidden; }
 .cal-d.sun b { color: #DC2626; }
 .cal-d.sat b { color: #2563EB; }

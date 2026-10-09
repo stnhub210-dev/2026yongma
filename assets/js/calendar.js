@@ -37,10 +37,12 @@
       if (w === 0) cls += " sun";
       if (w === 6) cls += " sat";
       if (ev) { cls += " on on--" + ev.kind; count++; }
-      var tip = ev ? ev.name + (ev.sub2 ? " · " + ev.sub2 + " 동시 진행" : " · " + ev.sub) : "";
+      var tip = ev ? ev.name + (ev.sub2 ? " · " + ev.sub2 + " 동시 진행" : " · " + ev.sub.replace(/\n/g, " ")) : "";
       cells += '<span class="' + cls + '"' + (ev ? ' title="' + esc(tip) + '"' : "") + ">" +
         '<b>' + day + "</b>" +
-        (ev ? '<em>' + esc(ev.sub) + "</em>" : "") +
+        // sub 에 줄바꿈(\n)이 있으면 두 줄로 나눠 그린다 — 예) "용마미식거리\n맛집대축제"
+        (ev ? '<em' + (ev.sub.indexOf("\n") > -1 ? ' class="two"' : "") + ">" +
+              esc(ev.sub).replace(/\n/g, "<br>") + "</em>" : "") +
         (ev && ev.sub2 ? '<em class="sub2">+' + esc(ev.sub2) + "</em>" : "") + "</span>";
     }
 
