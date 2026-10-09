@@ -1090,3 +1090,10 @@ img, video, iframe, table { max-width: 100%; }
   table.data:has(td.right) tr > :first-child { width: 28%; min-width: 0; }
   table.data td.right, table.data th.right { overflow-wrap: normal; word-break: keep-all; }
 }
+
+/* ---------- 앱 설치 버튼 (assets/js/main.js 가 설치 가능할 때만 붙인다) ---------- */
+.pwa-install { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 90; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: min(320px, calc(100vw - 32px)); }
+.pwa-install__go { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 10px 18px 10px 12px; background: #0E1F4D; color: #fff; font: inherit; font-size: .9375rem; font-weight: 700; box-shadow: 0 6px 20px rgba(0,0,0,.28); cursor: pointer; }
+.pwa-install__go img { border-radius: 6px; }
+.pwa-install__x { width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(18,16,14,.72); color: #fff; font-size: 1.125rem; line-height: 1; cursor: pointer; }
+.pwa-install__tip { flex-basis: 100%; margin: 0 0 4px; padding: 12px 14px; border-radius: 14px; background: #fff; color: var(--ink-900); font-size: .875rem; line-height: 1.55; box-shadow: 0 6px 20px rgba(0,0,0,.2); }

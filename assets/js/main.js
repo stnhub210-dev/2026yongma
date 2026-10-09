@@ -86,6 +86,65 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.Auth) Auth.paintHeader();
 });
 
+/* ---------- 앱으로 설치 (PWA) ----------
+   · 서비스워커(/sw.js)를 등록해야 크롬·삼성인터넷이 "앱 설치" 를 허용한다.
+   · 설치가 가능해지면 화면 왼쪽 아래에 [앱 설치] 버튼을 띄운다.
+   · 아이폰 사파리는 설치 창을 띄울 수 없어 "공유 → 홈 화면에 추가" 안내를 보여 준다.
+   · 닫기를 누르면 7일 동안 다시 띄우지 않는다. 관리자 화면에서는 띄우지 않는다. */
+(() => {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => { /* 등록 실패해도 사이트는 그대로 */ }));
+  }
+  if (location.pathname.indexOf("/admin/") === 0) return;
+
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (standalone) return;                                  // 이미 앱으로 열었으면 버튼 불필요
+
+  const HIDE_KEY = "yongma_install_hide_until";
+  try { if (Date.now() < +localStorage.getItem(HIDE_KEY)) return; } catch (e) { /* 저장소 못 써도 진행 */ }
+
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent);
+  let deferred = null;
+
+  function show(onClick) {
+    if (document.querySelector(".pwa-install")) return;
+    const box = document.createElement("div");
+    box.className = "pwa-install";
+    box.innerHTML =
+      '<button type="button" class="pwa-install__go"><img src="/assets/icons/favicon-32.png" alt="" width="20" height="20">앱 설치</button>' +
+      '<button type="button" class="pwa-install__x" aria-label="닫기">×</button>';
+    box.querySelector(".pwa-install__go").addEventListener("click", onClick);
+    box.querySelector(".pwa-install__x").addEventListener("click", () => {
+      try { localStorage.setItem(HIDE_KEY, String(Date.now() + 7 * 86400000)); } catch (e) { /* 무시 */ }
+      box.remove();
+    });
+    document.body.appendChild(box);
+  }
+
+  window.addEventListener("beforeinstallprompt", (e) => {   // 안드로이드·PC 크롬/엣지/삼성인터넷
+    e.preventDefault();
+    deferred = e;
+    show(async () => {
+      if (!deferred) return;
+      deferred.prompt();
+      await deferred.userChoice;
+      deferred = null;
+      document.querySelector(".pwa-install")?.remove();
+    });
+  });
+  window.addEventListener("appinstalled", () => document.querySelector(".pwa-install")?.remove());
+
+  if (ios) {                                                // 아이폰·아이패드 사파리
+    window.addEventListener("load", () => show(() => {
+      const box = document.querySelector(".pwa-install");
+      if (box && !box.querySelector(".pwa-install__tip")) {
+        box.insertAdjacentHTML("afterbegin",
+          '<p class="pwa-install__tip">화면 아래 <b>공유</b> 버튼(□↑)을 누른 뒤 <b>홈 화면에 추가</b>를 고르세요.</p>');
+      }
+    }));
+  }
+})();
+
 /* ---------- 유틸 ---------- */
 window.UI = {
   alert(el, type, msg) {

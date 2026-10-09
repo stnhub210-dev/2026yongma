@@ -1,0 +1,23 @@
+{
+  "name": "용마미식거리 — 강릉역 여행자 거리",
+  "short_name": "용마미식거리",
+  "description": "강릉 포남동 용마미식거리 맛집대축제 — 매주 금·토 17:00~22:00, 행사일정·4개 존·미식 지도",
+  "lang": "ko",
+  "id": "/",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E1F4D",
+  "theme_color": "#0E1F4D",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "행사일정", "url": "/#schedule", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "미식 지도", "url": "/food.html", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "참여 신청", "url": "/join.html", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
