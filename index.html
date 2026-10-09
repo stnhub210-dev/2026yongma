@@ -117,19 +117,6 @@
         <b>주관</b> STN미디어 · 포남용마거리 골목형상점가 상인회
       </p>
 
-      <div class="grid grid-2 mt-4" style="gap:16px">
-        <div class="tile tile--soft">
-          <dt>10월 9일까지</dt>
-          <dd><b id="dday">–</b><small>일</small></dd>
-          <span class="delta" id="dday-note">2026년 10월 9일 금요일</span>
-        </div>
-        <div class="tile tile--soft">
-          <dt>하루 운영</dt>
-          <dd><b>5</b><small>시간</small></dd>
-          <span class="delta">17:00 ~ 22:00 · 차 없는 거리</span>
-        </div>
-      </div>
-
       <ul class="stack mt-4">
         <li>· <b>17:00</b> 차 없는 거리 전환 — 맛집 운영부스 · 프리마켓 운영 시작</li>
         <li>· <b>17:00</b> <b>어서와존</b> K-미식벨트 · <b>놀아존</b> 체험 콘텐츠 · <b>한번봐존</b> 프리마켓</li>
@@ -153,27 +140,6 @@
     </div>
   </div>
 </section>
-
-<script>
-/* 금·토 정규운영 시작(10.9)까지 남은 일수 — 자정 기준, 11.14 지나면 종료 표시 */
-(function () {
-  var el = document.getElementById("dday");
-  if (!el) return;
-  var open = new Date(2026, 9, 9);           // 2026-10-09 (월은 0부터)
-  var close = new Date(2026, 10, 14);        // 2026-11-14 정규행사 마지막 날
-  var now = new Date();
-  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  var days = Math.round((open - today) / 86400000);
-  var note = document.getElementById("dday-note");
-  if (days > 0) { el.textContent = days; }
-  else if (days === 0) { el.textContent = "D"; el.nextElementSibling.textContent = "-DAY";
-                         if (note) note.textContent = "오늘 17:00 문을 엽니다"; }
-  else if (today <= close) { el.parentElement.innerHTML = "<b>운영 중</b>";
-         if (note) note.textContent = "11월 14일(토)까지 매주 금·토요일 17:00 ~ 22:00"; }
-  else { el.parentElement.innerHTML = "<b>정규행사 종료</b>";
-         if (note) note.textContent = "2026. 10. 9. ~ 11. 14. 매주 금·토요일"; }
-})();
-</script>
 
 <!-- ================= 행사일정 달력 =================
      일정은 assets/js/events.js 의 EVENTS 에서 고친다(달력·참여 신청이 함께 쓴다). -->
