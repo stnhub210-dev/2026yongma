@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009f">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009g">
 </head>
 <body>
 
@@ -70,9 +70,12 @@
     </dl>
   </div>
 
-  <!-- 주최·주관 기관 로고 띠 — 맛집대축제 현수막 하단과 같은 구성. 로고는 assets/img/org/ (흰 글자용) -->
+  <!-- 주최·주관 기관 로고 띠 — 맛집대축제 현수막 하단과 같은 구성. 로고는 assets/img/org/ (흰 글자용)
+       왼쪽으로 천천히 흐른다. 목록은 이 첫 번째 <ul> 하나만 고치면 되고,
+       끊김 없이 이어지도록 아래 스크립트가 같은 목록을 3벌 더 붙인다(읽기 프로그램에는 숨김). -->
   <div class="hero-orgs">
-    <ul class="wrap hero-orgs__list" aria-label="주최·주관 기관">
+    <div class="hero-orgs__track">
+    <ul class="hero-orgs__list" aria-label="주최·주관 기관">
       <li><img src="assets/img/org/mss.webp" alt="중소벤처기업부" width="472" height="96" style="--h:34px"></li>
       <li><img src="assets/img/org/semas.webp" alt="소상공인시장진흥공단" width="814" height="96" style="--h:24px"></li>
       <li><img src="assets/img/org/gangwon.webp" alt="강원특별자치도" width="423" height="96" style="--h:26px"></li>
@@ -80,7 +83,23 @@
       <li><img src="assets/img/org/stn.webp" alt="STN미디어" width="298" height="96" style="--h:24px"></li>
       <li class="hero-orgs__txt">포남용마거리 골목형상점가 상인회</li>
     </ul>
+    </div>
   </div>
+  <script>
+  (function () {
+    var track = document.querySelector(".hero-orgs__track");
+    if (!track || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var list = track.querySelector(".hero-orgs__list");
+    for (var i = 0; i < 3; i++) {                        // 같은 목록 3벌 더 → 4벌을 한 벌 길이씩 흘려 보낸다
+      var copy = list.cloneNode(true);
+      copy.setAttribute("aria-hidden", "true");
+      copy.removeAttribute("aria-label");
+      copy.querySelectorAll("img").forEach(function (im) { im.alt = ""; });
+      track.appendChild(copy);
+    }
+    track.classList.add("is-marquee");
+  })();
+  </script>
 </section>
 
 <!-- ================= 운영 안내 바 ================= -->
@@ -106,23 +125,6 @@
         <b>10월 9일 금요일</b>부터 <b>11월 14일</b>까지 <b>매주 금·토요일</b> 저녁,
         40년 노포와 맛집 운영부스, 플리마켓이 같은 골목에서 이어집니다.
       </p>
-
-      <div class="chip-row mt-3">
-        <span class="chip chip--amber">2026. 10. 9.(금) ~ 11. 14.(토) 17:00 ~ 22:00</span>
-        <span class="chip">매주 금 · 토요일</span>
-        <span class="chip">강릉시 포남동 용마거리 일원</span>
-      </div>
-      <p class="muted mt-2" style="font-size:.875rem">
-        <b>주최</b> 강원지방중소벤처기업청 · 소상공인시장진흥공단 · 강원특별자치도 · 강릉시 &nbsp;|&nbsp;
-        <b>주관</b> STN미디어 · 포남용마거리 골목형상점가 상인회
-      </p>
-
-      <ul class="stack mt-4">
-        <li>· <b>17:00</b> 차 없는 거리 전환 — 맛집 운영부스 · 프리마켓 운영 시작</li>
-        <li>· <b>17:00</b> <b>어서와존</b> K-미식벨트 · <b>놀아존</b> 체험 콘텐츠 · <b>한번봐존</b> 프리마켓</li>
-        <li>· <b>17:00</b> 골목어게인 버스킹 1타임 → <b>19:00</b> DJ 음악다방 · 거리노래방</li>
-        <li>· <b>10. 30.~31.</b> 동행축제 연계 <b>K-컬처 기획공연</b></li>
-      </ul>
 
       <div class="btn-row mt-4">
         <a class="btn btn--primary" href="#schedule">행사일정 달력 보기</a>

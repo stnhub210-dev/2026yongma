@@ -271,6 +271,14 @@ h4 { font-size: 1.0625rem; }
 /* 히어로 맨 아래 주최·주관 로고 띠 — 현수막 하단처럼 검은 띠에 로고를 | 로 나눠 늘어놓는다 */
 .hero-orgs { position: relative; align-self: stretch; background: rgba(0, 0, 0, .62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-top: 1px solid rgba(255,255,255,.12); }
 .hero-orgs__list { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 0; padding-top: 14px; padding-bottom: 14px; list-style: none; margin: 0 auto; }
+/* 흐르는 띠 — 스크립트가 .is-marquee 를 붙였을 때만. 목록 4벌을 한 줄로 놓고 한 벌 길이(25%)만큼 왼쪽으로 반복 이동 */
+.hero-orgs { overflow: hidden; }
+.hero-orgs__track.is-marquee { display: flex; width: max-content; animation: orgs-flow 42s linear infinite; }
+.hero-orgs__track.is-marquee .hero-orgs__list { flex-wrap: nowrap; flex-shrink: 0; justify-content: flex-start; }
+.hero-orgs__track.is-marquee .hero-orgs__list li { border-left: 1px solid rgba(255,255,255,.35); }   /* 벌과 벌 사이에도 | */
+.hero-orgs:hover .hero-orgs__track.is-marquee { animation-play-state: paused; }
+@keyframes orgs-flow { from { transform: translateX(0); } to { transform: translateX(-25%); } }
+.hero-orgs__track:not(.is-marquee) .hero-orgs__list { width: min(100% - 40px, var(--wrap)); }   /* 움직임 줄이기: 예전처럼 가운데 고정 */
 .hero-orgs__list li { display: flex; align-items: center; padding: 0 clamp(12px, 1.8vw, 24px); }
 .hero-orgs__list li + li { border-left: 1px solid rgba(255,255,255,.35); }
 .hero-orgs__list img { display: block; height: var(--h, 26px); width: auto; }
