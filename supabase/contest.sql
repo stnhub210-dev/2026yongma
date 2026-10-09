@@ -199,6 +199,15 @@ end $$;
 grant execute on function public.contest_vote(bigint) to authenticated;
 
 
+-- 응모한 접속 주소(IP 해시) — 하루 10점 제한용. 응모작 표와 따로 두고 읽기 정책을 만들지 않아 아무도 볼 수 없다.
+create table if not exists public.contest_submitters (
+  entry_id   bigint primary key references public.contest_entries(id) on delete cascade,
+  submitter  text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists contest_submitters_who_idx on public.contest_submitters (submitter, created_at);
+alter table public.contest_submitters enable row level security;
+
 -- 5-1. 응모하기 함수 — 방문객은 승인 전 응모작을 읽을 수 없어서(RLS) 직접 넣으면 번호를 돌려받지 못한다.
 --      그래서 이 함수가 검사 → 등록 → 지우기 열쇠 저장까지 한 번에 하고 번호만 돌려준다.
 create or replace function public.contest_submit(
@@ -206,9 +215,17 @@ create or replace function public.contest_submit(
   p_photo text, p_thumb text, p_proof text, p_w int, p_h int, p_key text)
 returns bigint
 language plpgsql security definer set search_path = public as $$
-declare new_id bigint;
+declare
+  new_id bigint;
+  who    text := 'ip:' || md5(coalesce(split_part(current_setting('request.headers', true)::json->>'x-forwarded-for', ',', 1), 'unknown'));
+  today  date := (now() at time zone 'Asia/Seoul')::date;
 begin
   if (now() at time zone 'Asia/Seoul') >= timestamp '2026-12-31 00:00' then raise exception 'CLOSED'; end if;
+  -- 도배 방지: 같은 접속 주소(IP)에서 하루(한국 시간) 10점까지
+  if (select count(*) from contest_submitters
+       where submitter = who and (created_at at time zone 'Asia/Seoul')::date = today) >= 10 then
+    raise exception 'DAILY_LIMIT';
+  end if;
   if p_category not in ('photo', 'short') then raise exception 'BAD_CATEGORY'; end if;
   if length(btrim(coalesce(p_title, ''))) not between 1 and 40 then raise exception 'BAD_TITLE'; end if;
   if length(btrim(coalesce(p_nickname, ''))) not between 1 and 20 then raise exception 'BAD_NICKNAME'; end if;
@@ -222,6 +239,7 @@ begin
   values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h, 'approved')
   returning id into new_id;
   insert into contest_entry_keys (entry_id, delete_key) values (new_id, p_key);
+  insert into contest_submitters (entry_id, submitter) values (new_id, who);
   return new_id;
 end $$;
 grant execute on function public.contest_submit(text, text, text, text, text, text, text, text, int, int, text) to anon, authenticated;

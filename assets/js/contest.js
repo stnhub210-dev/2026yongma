@@ -361,7 +361,7 @@
       });
       if (error) {
         await c.storage.from(BUCKET).remove(Object.values(paths));         // 등록 실패 → 올린 파일 치우기
-        throw new Error(/CLOSED/.test(error.message) ? "응모가 마감되었습니다." : error.message);
+        throw new Error(/CLOSED/.test(error.message) ? "응모가 마감되었습니다." : /DAILY_LIMIT/.test(error.message) ? "오늘은 10점까지 응모할 수 있어요. 내일 다시 응모해 주세요!" : error.message);
       }
       const m = mine();
       m[newId] = { key, title, cat: category, thumb: paths.photo_thumb, at: kstToday() };
