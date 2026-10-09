@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /mypage.html
+
+Sitemap: https://2026yongma.com/sitemap.xml
