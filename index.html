@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>용마미식거리 — 강릉역 여행자 거리</title>
-<meta name="description" content="용마미식거리 2026년 10월 16일(금)부터 매주 금·토요일 17:00~22:00 운영. 강릉시 포남동 용마거리, KTX 강릉역 600m. 차 없는 거리로 열리는 야간 골목상권.">
+<meta name="description" content="용마미식거리 2026년 10월 9일(금)부터 11월 14일(토)까지 매주 금·토요일 17:00~22:00 운영. 강릉시 포남동 용마거리, KTX 강릉역 600m. 차 없는 거리로 열리는 야간 골목상권.">
 <meta property="og:title" content="용마미식거리 — 강릉역 여행자 거리">
 <meta property="og:description" content="강릉의 밤을 물들이는 예술·미식·문화 야간 골목상권">
 <meta property="og:image" content="https://2026yongma.com/assets/img/map-zones.webp">
@@ -78,7 +78,7 @@
     <span class="chip chip--amber" style="background:var(--amber-500);color:#fff;border:0">운영 안내</span>
     <strong style="font-size:1.0625rem">매주 금·토요일 17:00 – 22:00</strong>
     <span class="info-sep" style="color:rgba(255,255,255,.6)">|</span>
-    <span style="color:rgba(255,255,255,.8)">2026년 10월 16일 ~ 12월 · 차 없는 거리 운영</span>
+    <span style="color:rgba(255,255,255,.8)">2026년 10월 9일 ~ 11월 14일 · 차 없는 거리 운영</span>
     <span class="info-sep" style="color:rgba(255,255,255,.6)">|</span>
     <span style="color:rgba(255,255,255,.8)">강릉시 포남동 용마거리 일원</span>
   </div>
@@ -92,12 +92,12 @@
       <h2>제2회 <em class="em-dot">용마미식거리</em> 맛집대축제</h2>
       <p class="lead mt-2">
         강릉의 맛있는 밤거리가 <b>9월 18일</b> 첫 불을 밝혔습니다.
-        <b>10월 16일 금요일</b>부터는 <b>매주 금·토요일</b> 저녁,
+        <b>10월 9일 금요일</b>부터 <b>11월 14일</b>까지 <b>매주 금·토요일</b> 저녁,
         40년 노포와 맛집 운영부스, 플리마켓이 같은 골목에서 이어집니다.
       </p>
 
       <div class="chip-row mt-3">
-        <span class="chip chip--amber">2026. 10. 16.(금)부터 17:00 ~ 22:00</span>
+        <span class="chip chip--amber">2026. 10. 9.(금) ~ 11. 14.(토) 17:00 ~ 22:00</span>
         <span class="chip">매주 금 · 토요일</span>
         <span class="chip">강릉시 포남동 용마거리 일원</span>
       </div>
@@ -108,9 +108,9 @@
 
       <div class="grid grid-2 mt-4" style="gap:16px">
         <div class="tile tile--soft">
-          <dt>10월 16일까지</dt>
+          <dt>10월 9일까지</dt>
           <dd><b id="dday">–</b><small>일</small></dd>
-          <span class="delta" id="dday-note">2026년 10월 16일 금요일</span>
+          <span class="delta" id="dday-note">2026년 10월 9일 금요일</span>
         </div>
         <div class="tile tile--soft">
           <dt>하루 운영</dt>
@@ -137,18 +137,19 @@
         <img src="assets/img/poster-matjip.webp?v=20261009"
              alt="용마미식거리 맛집대축제 포스터 — 2026. 10. 9. ~ 11월 중순, 매주 금·토 오후 5시 ~ 10시, 강릉역 도보 10분 포남1동 자치센터 일원. 10.30 K-컬처 기획공연(동행축제), 차 없는 거리, 놀아존, 버스킹, 한번봐존, 어서와존"
              width="1080" height="1528" loading="lazy">
-        <figcaption>용마미식거리 맛집대축제 포스터 — 10. 9.(금)부터 11월 중순까지 매주 금·토요일</figcaption>
+        <figcaption>용마미식거리 맛집대축제 포스터 — 10. 9.(금)부터 11. 14.(토)까지 매주 금·토요일</figcaption>
       </figure>
     </div>
   </div>
 </section>
 
 <script>
-/* 금·토 정규운영 시작(10.16)까지 남은 일수 — 자정 기준 */
+/* 금·토 정규운영 시작(10.9)까지 남은 일수 — 자정 기준, 11.14 지나면 종료 표시 */
 (function () {
   var el = document.getElementById("dday");
   if (!el) return;
-  var open = new Date(2026, 9, 16);          // 2026-10-16 (월은 0부터)
+  var open = new Date(2026, 9, 9);           // 2026-10-09 (월은 0부터)
+  var close = new Date(2026, 10, 14);        // 2026-11-14 정규행사 마지막 날
   var now = new Date();
   var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   var days = Math.round((open - today) / 86400000);
@@ -156,8 +157,10 @@
   if (days > 0) { el.textContent = days; }
   else if (days === 0) { el.textContent = "D"; el.nextElementSibling.textContent = "-DAY";
                          if (note) note.textContent = "오늘 17:00 문을 엽니다"; }
-  else { el.parentElement.innerHTML = "<b>운영 중</b>";
-         if (note) note.textContent = "매주 금·토요일 17:00 ~ 22:00"; }
+  else if (today <= close) { el.parentElement.innerHTML = "<b>운영 중</b>";
+         if (note) note.textContent = "11월 14일(토)까지 매주 금·토요일 17:00 ~ 22:00"; }
+  else { el.parentElement.innerHTML = "<b>정규행사 종료</b>";
+         if (note) note.textContent = "2026. 10. 9. ~ 11. 14. 매주 금·토요일"; }
 })();
 </script>
 
@@ -405,7 +408,7 @@
       <span class="eyebrow">This Season</span>
       <h2 data-i18n="home.prog.title">2026년 가을, 용마거리의 주말</h2>
       <p class="lead mt-2">
-        10월 16일부터 12월까지 매주 금·토요일 오후 5시부터 밤 10시까지. 공연과 마켓, 체험이 겹겹이 쌓여
+        10월 9일부터 11월 14일까지 매주 금·토요일 오후 5시부터 밤 10시까지. 공연과 마켓, 체험이 겹겹이 쌓여
         머무는 시간이 길어집니다.
       </p>
       <ul class="timeline mt-4">
@@ -420,7 +423,7 @@
           <p>중소벤처기업부 동행축제와 연계한 K-POP·K-DANCE 무대. 시즌 최대 규모로 골목 전체가 무대가 됩니다.</p>
         </li>
         <li>
-          <span class="when">10월 ~ 12월</span>
+          <span class="when">10. 9. ~ 11. 14.</span>
           <h4>한번봐존 프리마켓 상시 운영</h4>
           <p>강릉 로컬 수공예·커피·디저트 셀러를 상시 모집합니다. 참가 신청은 홈페이지에서 받습니다.</p>
         </li>
@@ -494,7 +497,7 @@
         <table class="data">
           <tbody>
             <tr><th style="width:34%">주소</th><td>강원특별자치도 강릉시 포남동 용마거리 일원</td></tr>
-            <tr><th>운영</th><td><b>2026. 10. 16.(금)부터 매주 금·토요일 17:00 ~ 22:00</b> (12월까지)</td></tr>
+            <tr><th>운영</th><td><b>2026. 10. 9.(금) ~ 11. 14.(토) 매주 금·토요일 17:00 ~ 22:00</b></td></tr>
             <tr><th>면적</th><td>29,171.14㎡ (상업지역 14,810.41㎡)</td></tr>
             <tr><th>점포</th><td>전체 168곳 · 상인회 회원 124곳</td></tr>
             <tr><th>KTX</th><td>강릉역 600m · 차량 약 5분 / 서울 청량리 1시간 24분</td></tr>
