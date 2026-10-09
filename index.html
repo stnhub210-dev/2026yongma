@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009h">
+<link rel="stylesheet" href="assets/css/style.css?v=20261009i">
 </head>
 <body>
 
@@ -176,50 +176,78 @@
 
     <div class="cal-months reveal" id="cal-months"></div>
 
-    <!-- 운영일마다 함께 열리는 4개 존 — 원형 인포그래픽.
-         얇은 링 위에 굵은 호를 얹고, 안쪽에 떠 있는 흰 원판을 둔다.
-         존별 색은 배치도(map-zones)와 존 소개 페이지의 색을 그대로 쓴다. -->
-    <figure class="zonemap reveal">
-      <figcaption class="zonemap__head">운영일에는 <b>4개 존</b>이 한 거리에서 함께 열립니다</figcaption>
-      <ol class="zonemap__circles">
-        <li style="--z:var(--z-food)"><a href="zones.html#food">
-          <span class="zc">
-            <span class="zc__disc">
-              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.4 1-1.9 1-3"/><path d="M12 7c0-1.4 1-1.9 1-3"/><path d="M16 7c0-1.4 1-1.9 1-3"/></svg>
-              <b>어서와존</b>
-              <small>K-미식벨트 먹거리 부스</small>
-            </span>
-          </span>
-        </a></li>
-        <li style="--z:var(--z-busking)"><a href="zones.html#busking">
-          <span class="zc">
-            <span class="zc__disc">
-              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/></svg>
-              <b>골목어게인</b>
-              <small>버스킹 · DJ 음악다방</small>
-            </span>
-          </span>
-        </a></li>
-        <li style="--z:var(--z-play)"><a href="zones.html#play">
-          <span class="zc">
-            <span class="zc__disc">
-              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 1 9-9c0 2-1.6 3-3 3h-1.4a1.6 1.6 0 0 0-1.1 2.7c.4.4.5 1 .2 1.5A2 2 0 0 1 12 21Z"/><circle cx="8" cy="11" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r="1.1" fill="currentColor" stroke="none"/></svg>
-              <b>놀아존</b>
-              <small>체험 · 게임 · 외국인 체험</small>
-            </span>
-          </span>
-        </a></li>
-        <li style="--z:var(--z-startup)"><a href="zones.html#startup">
-          <span class="zc">
-            <span class="zc__disc">
-              <svg class="zc__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.1 11.1A2 2 0 0 1 15.9 21H8.1a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-              <b>한번봐존</b>
-              <small>프리마켓 로컬 수공예 셀러</small>
-            </span>
-          </span>
-        </a></li>
-      </ol>
-    </figure>
+  </div>
+</section>
+
+<!-- ================= 이벤트: 용마미식거리 사진전 =================
+     총상금 50만원 = 대상 20만 ×1 + 최우수 10만 ×1 + 우수 5만 ×2 + 참가상 1만 ×10(추첨).
+     참여: SNS 공개 게시(해시태그) — 당첨 연락은 SNS 메시지로 하므로 홈페이지에서 개인정보를 받지 않는다. -->
+<section class="section contest" id="contest">
+  <div class="wrap">
+    <div class="contest__grid">
+      <div class="contest__intro reveal">
+        <span class="eyebrow eyebrow--light">Photo Contest</span>
+        <h2>용마미식거리 <em>사진전</em></h2>
+        <p class="contest__lead">오늘 밤 골목에서 찍은 한 장이 작품이 됩니다.<br>
+          맛있는 한 접시, 불 켜진 천막, 함께 웃는 얼굴 — 용마미식거리의 밤을 보여 주세요.</p>
+        <div class="contest__money">
+          <span>총상금</span><b>50</b><small>만원</small>
+        </div>
+        <dl class="contest__facts">
+          <div><dt>참여 기간</dt><dd>2026. 10. 9.(금) ~ 11. 14.(토)</dd></div>
+          <div><dt>수상 발표</dt><dd>11월 하순 · 홈페이지 소식 / SNS 메시지</dd></div>
+          <div><dt>참여 대상</dt><dd>용마미식거리를 찾은 누구나</dd></div>
+        </dl>
+      </div>
+
+      <div class="contest__photos reveal" aria-hidden="true">
+        <img src="assets/img/gallery/20260918_201800.webp" alt="" loading="lazy">
+        <img src="assets/img/gallery/20260918_210840.webp" alt="" loading="lazy">
+        <img src="assets/img/gallery/20260918_185900.webp" alt="" loading="lazy">
+      </div>
+    </div>
+
+    <h3 class="contest__sub reveal">참여 방법</h3>
+    <ol class="contest__steps">
+      <li class="reveal"><span>1</span><b>찍기</b><p>운영일(매주 금·토 17:00~22:00) 용마미식거리에서 사진을 찍어요.</p></li>
+      <li class="reveal"><span>2</span><b>올리기</b><p>인스타그램 등 내 SNS에 <em>전체 공개</em>로 올려요.</p></li>
+      <li class="reveal"><span>3</span><b>해시태그</b><p><em>#용마미식거리사진전</em> <em>#용마미식거리</em> 두 개를 꼭 달아 주세요.</p></li>
+    </ol>
+
+    <h3 class="contest__sub reveal">시상 내역</h3>
+    <ul class="contest__prizes">
+      <li class="reveal is-top"><b>대상</b><strong>20만원</strong><small>1명</small></li>
+      <li class="reveal"><b>최우수상</b><strong>10만원</strong><small>1명</small></li>
+      <li class="reveal"><b>우수상</b><strong>5만원</strong><small>2명</small></li>
+      <li class="reveal"><b>참가상</b><strong>1만원</strong><small>10명 · 추첨</small></li>
+    </ul>
+
+    <div class="contest__cols">
+      <div class="contest__box reveal">
+        <h3>이런 사진을 기다려요</h3>
+        <ul>
+          <li><b>맛</b> — 노포의 한 접시, 맛집 부스의 김 나는 음식</li>
+          <li><b>밤</b> — 불 켜진 천막과 아치, 골목의 야경</li>
+          <li><b>사람</b> — 함께 웃는 가족·친구, 공연을 즐기는 순간</li>
+        </ul>
+        <p class="tiny">심사: 상인회·주관사 심사위원이 현장감·완성도·용마미식거리다움을 봅니다. 참가상은 참여작 중 추첨합니다.</p>
+      </div>
+      <div class="contest__box reveal">
+        <h3>꼭 확인해 주세요</h3>
+        <ul>
+          <li>본인이 직접 찍은 사진만 참여할 수 있어요. 1인 여러 장 참여 가능, 시상은 1인 1회.</li>
+          <li>다른 사람의 얼굴이 크게 나오면 그분의 동의를 받아 주세요.</li>
+          <li>비공개 계정·삭제된 게시물은 심사에서 빠집니다. 발표 때까지 공개로 남겨 주세요.</li>
+          <li>수상작은 용마미식거리 홍보(홈페이지·SNS·인쇄물)에 촬영자 이름과 함께 쓰일 수 있어요.</li>
+          <li>당첨자에게는 게시한 SNS 메시지로 개별 연락드립니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="btn-row contest__cta reveal">
+      <a class="btn btn--primary" href="gallery.html">홈페이지 갤러리에도 올리기</a>
+      <a class="btn btn--onimg" href="#schedule">운영일 달력 보기</a>
+    </div>
   </div>
 </section>
 
