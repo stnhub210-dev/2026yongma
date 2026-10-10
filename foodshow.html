@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ko" data-base="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 가게 음식 자랑하기 — 용마미식거리 상인회</title>
+<meta name="description" content="포남용마거리 상인회 점포 대상 — 우리 가게 대표 메뉴 사진을 올리면 매달 2곳을 추첨해 STN 홍보 영상 촬영과 홈페이지 메인 노출로 홍보해 드립니다.">
+<meta property="og:title" content="우리 가게 음식 자랑하기 — 용마미식거리 상인회">
+<meta property="og:description" content="대표 메뉴 사진 한 장으로 응모 · 매달 2곳 추첨 · STN 홍보 영상 촬영 + 홈페이지 메인 노출">
+<meta property="og:image" content="https://2026yongma.com/assets/img/og-kakao.jpg?v=20261009">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0E1F4D">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010g">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+
+<section class="page-hero" style="background-image:linear-gradient(180deg,rgba(60,24,6,.72),rgba(30,12,4,.88)),url('assets/img/gallery/20260918_201800.webp')">
+  <div class="wrap">
+    <span class="eyebrow">For Merchants · 상인회 회원 점포</span>
+    <h1>우리 가게 음식 자랑하기</h1>
+    <p class="ct-slogan">사장님의 자신 있는 한 접시, <strong>우리가 영상으로 만들어 드립니다!</strong></p>
+    <p class="lead mt-2" style="max-width:62ch">
+      대표 메뉴 사진 한 장만 올려 주세요. 매달 말일 추첨으로 <b>2곳</b>을 뽑아
+      STN 방송팀이 가게를 찾아가 홍보 영상을 촬영하고, 용마미식거리 홈페이지 메인에 소개합니다.
+    </p>
+    <div class="chip-row mt-3">
+      <span class="chip chip--amber">매달 2곳 · 총 4곳 추첨</span>
+      <span class="chip">10월 · 11월 말일 추첨</span>
+      <span class="chip">응모 ~ 11. 30.(월)</span>
+      <span class="chip">상인회 회원 점포 누구나</span>
+    </div>
+  </div>
+</section>
+
+<!-- 혜택 · 일정 -->
+<section class="section" style="padding-bottom:clamp(24px,3vw,40px)">
+  <div class="wrap">
+    <div class="fs-perks">
+      <article class="fs-perk">
+        <span class="fs-perk__ico" aria-hidden="true">🎬</span>
+        <h3>STN 홍보 영상 촬영</h3>
+        <p>방송 제작 전문 STN 팀이 직접 가게를 찾아가 대표 메뉴와 사장님 이야기를 담은 홍보 영상을 만들어 드립니다.</p>
+      </article>
+      <article class="fs-perk">
+        <span class="fs-perk__ico" aria-hidden="true">🏠</span>
+        <h3>홈페이지 메인 노출</h3>
+        <p>용마미식거리 홈페이지 첫 화면에 '이달의 맛집'으로 가게와 메뉴를 소개해, 거리를 찾는 손님들에게 알립니다.</p>
+      </article>
+    </div>
+
+    <div class="fs-sched">
+      <div><b>10월 회차</b><span>응모 10. 10.(토) ~ 10. 31.(토)</span><em>10. 31. 추첨 · 2곳</em></div>
+      <div><b>11월 회차</b><span>응모 11. 1.(일) ~ 11. 30.(월)</span><em>11. 30. 추첨 · 2곳</em></div>
+    </div>
+    <ul class="fs-notes">
+      <li>포남용마거리 골목형상점가 <b>상인회 회원 점포</b>만 참여할 수 있어요. 담당자가 확인한 뒤 갤러리에 공개합니다.</li>
+      <li>메뉴별로 여러 장 응모해도 되지만, 추첨은 <b>가게 단위 1회</b>입니다. 10월 당첨 가게는 11월 추첨에서 빠집니다.</li>
+      <li>추첨은 그 달 공개된 응모 가게 중에서 무작위로 뽑고, 결과는 이 페이지와 홈페이지 소식에 알립니다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 당첨 가게 -->
+<section class="section section--warm" id="winners" hidden style="padding:clamp(32px,4vw,56px) 0">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Winners</span><h2>이달의 맛집 — 추첨 결과</h2></div>
+    <div class="fs-grid" id="fs-winners"></div>
+  </div>
+</section>
+
+<!-- 응모 갤러리 -->
+<section class="section" id="gallery" style="padding-top:clamp(32px,4vw,56px)">
+  <div class="wrap">
+    <div class="ct-board-head">
+      <div><span class="eyebrow">Gallery</span><h2>우리 가게 자랑 <small class="fs-count" id="fs-count"></small></h2></div>
+      <div class="ct-cat" role="group" aria-label="회차">
+        <button type="button" data-round="all" class="active">전체 <small></small></button>
+        <button type="button" data-round="2026-10">10월 <small></small></button>
+        <button type="button" data-round="2026-11">11월 <small></small></button>
+      </div>
+    </div>
+    <div class="fs-grid" id="fs-grid"><p class="ct-empty">응모작을 불러오는 중입니다…</p></div>
+  </div>
+</section>
+
+<!-- 응모하기 -->
+<section class="section section--warm" id="enter">
+  <div class="wrap" style="max-width:860px">
+    <div class="sec-head">
+      <span class="eyebrow">Enter</span>
+      <h2>응모하기</h2>
+      <p>로그인 없이 응모할 수 있어요. 연락처는 <b>당첨 안내에만</b> 쓰고 화면에는 공개하지 않습니다.</p>
+    </div>
+    <div class="panel" style="border-radius:var(--radius-lg)">
+      <div id="fs-msg" class="alert"></div>
+      <form id="fs-form" novalidate>
+        <div class="grid grid-2" style="gap:0 20px">
+          <div class="field"><label for="f-shop">가게 이름</label><input class="input" id="f-shop" maxlength="40" required placeholder="예) 용마식당"></div>
+          <div class="field"><label for="f-menu">대표 메뉴</label><input class="input" id="f-menu" maxlength="40" required placeholder="예) 초당순두부 전골"></div>
+        </div>
+        <div class="field"><label for="f-intro">한 줄 자랑 <span class="muted" style="font-weight:500">(선택)</span></label>
+          <input class="input" id="f-intro" maxlength="200" placeholder="예) 40년 동안 매일 아침 직접 콩을 갈아 만듭니다"></div>
+        <div class="grid grid-2" style="gap:0 20px">
+          <div class="field"><label for="f-owner">사장님 성함 <span class="muted" style="font-weight:500">(비공개)</span></label><input class="input" id="f-owner" maxlength="20" required placeholder="홍길동"></div>
+          <div class="field"><label for="f-phone">연락처 <span class="muted" style="font-weight:500">(비공개)</span></label><input class="input" id="f-phone" type="tel" maxlength="15" required placeholder="010-0000-0000"></div>
+        </div>
+        <div class="field">
+          <label>음식 사진</label>
+          <label class="ct-drop" id="drop-photo">
+            <input type="file" id="f-photo" accept="image/*" required hidden>
+            <img alt="" hidden><span>사진 고르기</span><small>JPG·PNG 사진, 30MB 이하 · 메뉴가 잘 보이게 찍어 주세요</small>
+          </label>
+        </div>
+        <div class="field ct-agree">
+          <label class="checkbox"><input type="checkbox" id="f-a1" required><span>[필수] 상인회 회원 점포이며, 우리 가게 메뉴를 직접 찍은 사진입니다.</span></label>
+          <label class="checkbox"><input type="checkbox" id="f-a2" required><span>[필수] 응모 사진과 가게 이름·메뉴가 홈페이지·SNS 홍보에 쓰이는 것에 동의합니다.</span></label>
+          <label class="checkbox"><input type="checkbox" id="f-a3" required><span>[필수] 당첨 안내를 위한 성함·연락처 수집에 동의합니다. (행사 종료 후 파기)</span></label>
+        </div>
+        <input type="text" id="f-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
+        <button class="btn btn--primary btn--block" type="submit" id="f-submit">응모하기</button>
+        <p class="hint center mt-2">응모 마감 2026. 11. 30.(월) 23:59 · 담당자 확인 후 갤러리에 공개(보통 1~2일)</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<dialog class="lightbox" id="fs-lb" aria-label="크게 보기">
+  <figure class="lightbox__fig"><img id="fs-lb-img" alt=""><figcaption><span id="fs-lb-cap"></span><span class="lightbox__meta" id="fs-lb-meta"></span></figcaption></figure>
+  <button class="lightbox__btn lightbox__close" id="fs-lb-close" aria-label="닫기">×</button>
+</dialog>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js?v=20261006f"></script>
+<script src="assets/js/layout.js?v=20261006f"></script>
+<script src="assets/js/i18n.js?v=20261006f"></script>
+<script src="assets/js/auth.js?v=20261006f"></script>
+<script src="assets/js/main.js?v=20261009e"></script>
+<script src="assets/js/food.js?v=20261010"></script>
+</body>
+</html>

@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261010e">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010g">
 </head>
 <body>
 
@@ -184,11 +184,18 @@
      참여: SNS 공개 게시(해시태그) — 당첨 연락은 SNS 메시지로 하므로 홈페이지에서 개인정보를 받지 않는다. -->
 <section class="section contest" id="contest">
   <div class="wrap">
-    <div class="contest__grid">
-      <div class="contest__card contest__intro reveal">
+    <!-- 타이틀 — 두 카드 위 가운데, 왼쪽에 용마 캐릭터 -->
+    <header class="contest__title reveal">
+      <img class="contest__mascot" src="assets/img/mascot-greet.webp" alt="인사하는 용마미식거리 캐릭터 용지와 마루" width="720" height="566" loading="lazy">
+      <div>
         <span class="eyebrow eyebrow--light">Photo Contest</span>
         <h2>용마미식거리 <em>사진전</em></h2>
         <p class="contest__cats">📷 사진 · 🎬 동영상 자율 참가</p>
+      </div>
+    </header>
+
+    <div class="contest__grid">
+      <div class="contest__card contest__intro reveal">
         <p class="contest__slogan">먹고, 찍고, 올리면<br><strong>오늘 밤 한 컷이 상금이 됩니다!</strong></p>
         <p class="contest__lead">폰 하나면 충분해요. 김 나는 한 접시, 불 켜진 천막, 친구와 터진 웃음 —<br class="br-pc">
           내 SNS에 올린 그 순간이 그대로 응모작이 되고, 시민 투표로 주인공이 정해집니다.</p>
@@ -222,6 +229,27 @@
     <div class="btn-row contest__cta reveal">
       <a class="btn btn--primary" href="contest.html#enter">응모하기</a>
       <a class="btn btn--onimg" href="contest.html#board">응모작 보고 투표하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 상인회: 우리 가게 음식 자랑하기 =================
+     매달 말일 2곳 추첨 → STN 홍보 영상 + 이 자리에 '이달의 맛집' 노출. 당첨 가게는 food_entries.winner (assets/js/food-main.js) -->
+<section class="fs-band" id="foodshow">
+  <div class="wrap fs-band__in">
+    <div class="fs-band__txt">
+      <span class="eyebrow">For Merchants · 상인회 회원 점포</span>
+      <h2>사장님, <em>우리 가게 음식</em> 자랑해 주세요!</h2>
+      <p>대표 메뉴 사진 한 장으로 응모 · 매달 말일 <b>2곳</b> 추첨 → <b>STN 홍보 영상 촬영</b> + <b>홈페이지 메인 노출</b></p>
+      <div class="btn-row mt-3">
+        <a class="btn btn--primary" href="foodshow.html#enter">음식 사진 응모하기</a>
+        <a class="btn btn--ghost" href="foodshow.html#gallery">우리 가게 자랑 보기</a>
+      </div>
+    </div>
+    <img class="fs-band__art" id="fs-band-art" src="assets/img/mascot-food.webp" alt="향토음식 한 그릇을 든 캐릭터 용" loading="lazy">
+    <div class="fs-band__win" id="fs-band-win" hidden>
+      <p class="fs-band__wt">🏆 이달의 맛집</p>
+      <div class="fs-band__list" id="fs-band-list"></div>
     </div>
   </div>
 </section>
@@ -557,6 +585,7 @@
 <script src="assets/js/events.js?v=20261009b"></script>
 <script src="assets/js/calendar.js?v=20261009b"></script>
 <script src="assets/js/contest-samples.js?v=20261009"></script>
+<script src="assets/js/food-main.js?v=20261010"></script>
 <script src="assets/js/contest-live.js?v=20261010b"></script>
 </body>
 </html>

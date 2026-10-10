@@ -13,6 +13,7 @@ const ADMIN_NAV = [
     ["events.html", "일정 관리", "📅"],
     ["shops.html",  "점포 관리", "🏪"],
     ["contest.html", "사진전 심사", "📷"],
+    ["food.html",    "음식 자랑 추첨", "🍲"],
   ]],
   ["사업 관리", [
     ["budget.html", "정산 관리",   "💰"],

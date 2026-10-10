@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>음식 자랑 추첨 — 용마미식거리 관리자</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0E1F4D">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261010g">
+<style>
+  .fa-thumb { width: 96px; height: 72px; object-fit: cover; border-radius: 8px; cursor: zoom-in; background: #eee; }
+  .fa-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .fa-tabs button { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
+  .fa-tabs button.active { background: var(--ink-900); color: #fff; border-color: var(--ink-900); }
+  .fa-draw { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px; margin-bottom: 16px; border-radius: 14px; background: #FFF7EC; border: 1px solid #F8D7AE; }
+  .fa-draw b { font-size: 1rem; }
+</style>
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div><h1>음식 자랑 · 추첨</h1><p class="muted tiny" id="admin-who"></p></div>
+      <div class="btn-row"><a class="btn btn--ghost btn--sm" href="../foodshow.html" target="_blank">공개 페이지 보기</a></div>
+    </div>
+    <div id="admin-msg" class="alert"></div>
+
+    <div class="panel">
+      <p class="panel-sub">
+        <b>확인 대기</b> 응모의 가게가 상인회 회원 점포인지 확인하고 <b>공개</b>하면 갤러리에 올라갑니다. 연락처는 이 화면에서만 보입니다.<br>
+        회차 말일(10. 31. / 11. 30.)에 <b>추첨</b>을 누르면 그 회차에 공개된 가게 중 아직 당첨되지 않은 가게 2곳을 무작위로 뽑습니다(가게 단위).
+      </p>
+      <div class="fa-draw" id="fa-draw"></div>
+      <div class="fa-tabs" id="tabs">
+        <button data-f="pending" class="active">확인 대기</button>
+        <button data-f="approved">공개</button>
+        <button data-f="rejected">반려</button>
+        <button data-f="all">전체</button>
+        <span style="width:12px"></span>
+        <select class="select" id="roundf" style="width:auto;padding:7px 12px">
+          <option value="all">회차 전체</option><option value="2026-10">10월 회차</option><option value="2026-11">11월 회차</option>
+        </select>
+      </div>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>사진</th><th style="min-width:200px">가게 · 메뉴</th><th>사장님 · 연락처</th><th>회차</th><th>상태</th><th></th></tr></thead>
+          <tbody id="rows"><tr><td colspan="6" class="center muted">불러오는 중…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<dialog class="lightbox" id="lb"><figure class="lightbox__fig"><img id="lb-img" alt=""><figcaption><span id="lb-cap"></span></figcaption></figure>
+  <button class="lightbox__btn lightbox__close" id="lb-close" aria-label="닫기">×</button></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js?v=20261006f"></script>
+<script src="../assets/js/auth.js?v=20261006f"></script>
+<script src="../assets/js/main.js?v=20261009e"></script>
+<script src="../assets/js/admin.js?v=20261010"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("food.html"))) return;
+  const c = Admin.c, esc = Admin.esc;
+  const url = (p) => c.storage.from("food").getPublicUrl(p).data.publicUrl;
+  const ROUND = { "2026-10": "10월", "2026-11": "11월" };
+  const ST = { pending: ["확인 대기", ""], approved: ["공개", "chip--green"], rejected: ["반려", "chip--red"] };
+  let rows = [], priv = {}, filter = "pending", roundF = "all";
+
+  const render = () => {
+    let list = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+    if (roundF !== "all") list = list.filter((r) => r.round === roundF);
+    document.getElementById("rows").innerHTML = list.map((r) => `
+      <tr data-id="${r.id}">
+        <td><img class="fa-thumb" src="${url(r.photo_thumb)}" data-big="${esc(r.photo_path)}" data-cap="${esc(r.shop_name)} — ${esc(r.menu_name)}" alt=""></td>
+        <td>${r.winner ? '<span class="chip chip--amber">🏆 당첨</span> ' : ""}<b>${esc(r.shop_name)}</b><br><span class="tiny">${esc(r.menu_name)} · ${UI.date(r.created_at)}</span>
+            ${r.intro ? `<br><span class="tiny muted">${esc(r.intro)}</span>` : ""}</td>
+        <td class="tiny">${esc(priv[r.id]?.owner_name || "-")}<br><a href="tel:${esc(priv[r.id]?.phone || "")}">${esc(priv[r.id]?.phone || "-")}</a></td>
+        <td>${ROUND[r.round] || esc(r.round)}</td>
+        <td><span class="chip ${ST[r.status][1]}">${ST[r.status][0]}</span></td>
+        <td style="white-space:nowrap">
+          ${r.status !== "approved" ? '<button class="btn btn--primary btn--sm" data-st="approved">공개</button>' : ""}
+          ${r.status !== "rejected" ? '<button class="btn btn--ghost btn--sm" data-st="rejected">반려</button>' : ""}
+          ${r.winner ? '<button class="btn btn--ghost btn--sm" data-unwin>당첨 취소</button>' : ""}
+          <button class="btn btn--ghost btn--sm" data-del>삭제</button></td>
+      </tr>`).join("") || '<tr><td colspan="6" class="center muted">해당하는 응모가 없습니다.</td></tr>';
+    drawDraw();
+  };
+
+  // 회차별 추첨 상태 — 당첨 가게 / 추첨 버튼
+  const drawDraw = () => {
+    document.getElementById("fa-draw").innerHTML = Object.keys(ROUND).map((k) => {
+      const wins = [...new Set(rows.filter((r) => r.round === k && r.winner).map((r) => r.shop_name))];
+      const pool = candidates(k);
+      return `<div style="flex:1;min-width:260px"><b>${ROUND[k]} 회차</b> — 당첨 ${wins.length}/2곳
+        ${wins.length ? `<span class="tiny">(${wins.map(esc).join(", ")})</span>` : ""}
+        <br><span class="tiny muted">추첨 대상 ${pool.length}곳</span>
+        ${wins.length < 2 ? `<button class="btn btn--primary btn--sm" data-draw="${k}" style="margin-left:8px" ${pool.length ? "" : "disabled"}>추첨하기</button>` : ""}</div>`;
+    }).join("");
+  };
+
+  // 추첨 대상 가게 — 그 회차에 공개된 응모가 있고, 어느 회차에서도 아직 당첨되지 않은 가게 (가게 이름 기준)
+  const norm = (s) => String(s).replace(/\s+/g, "").toLowerCase();
+  const candidates = (k) => {
+    const won = new Set(rows.filter((r) => r.winner).map((r) => norm(r.shop_name)));
+    const m = new Map();
+    rows.filter((r) => r.round === k && r.status === "approved" && !won.has(norm(r.shop_name)))
+        .forEach((r) => { if (!m.has(norm(r.shop_name))) m.set(norm(r.shop_name), r); });   // 가게마다 최신 응모 1건
+    return [...m.values()];
+  };
+
+  const reload = async () => {
+    rows = await Admin.load("food_entries", { order: ["created_at", false] });
+    const p = await Admin.load("food_entry_private");
+    priv = Object.fromEntries(p.map((x) => [x.entry_id, x]));
+    render();
+  };
+
+  document.getElementById("tabs").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-f]"); if (!b) return;
+    filter = b.dataset.f;
+    document.querySelectorAll("#tabs button").forEach((x) => x.classList.toggle("active", x === b));
+    render();
+  });
+  document.getElementById("roundf").addEventListener("change", (e) => { roundF = e.target.value; render(); });
+
+  document.getElementById("fa-draw").addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-draw]"); if (!b) return;
+    const k = b.dataset.draw;
+    const need = 2 - new Set(rows.filter((r) => r.round === k && r.winner).map((r) => norm(r.shop_name))).size;
+    const pool = candidates(k);
+    // 공정한 무작위 섞기 (crypto 난수)
+    const rnd = (n) => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+    for (let i = pool.length - 1; i > 0; i--) { const j = rnd(i + 1); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const pick = pool.slice(0, need);
+    if (!pick.length) return;
+    if (!confirm(`${ROUND[k]} 회차 추첨 결과\n\n${pick.map((r, i) => `${i + 1}. ${r.shop_name} (${r.menu_name})`).join("\n")}\n\n이대로 당첨 처리할까요?`)) return;
+    for (const r of pick) {
+      const { error } = await c.from("food_entries").update({ winner: true, winner_at: new Date().toISOString() }).eq("id", r.id);
+      if (error) return Admin.toast("err", error.message);
+    }
+    Admin.toast("ok", `${ROUND[k]} 회차 당첨: ${pick.map((r) => r.shop_name).join(", ")}`);
+    reload();
+  });
+
+  const tbody = document.getElementById("rows");
+  tbody.addEventListener("click", async (e) => {
+    const tr = e.target.closest("tr[data-id]"); if (!tr) return;
+    const id = +tr.dataset.id, r = rows.find((x) => x.id === id);
+    const big = e.target.closest("[data-big]");
+    if (big) { document.getElementById("lb-img").src = url(big.dataset.big); document.getElementById("lb-cap").textContent = big.dataset.cap; return document.getElementById("lb").showModal(); }
+    const st = e.target.closest("[data-st]");
+    if (st) {
+      const { error } = await c.from("food_entries").update({ status: st.dataset.st }).eq("id", id);
+      if (error) return Admin.toast("err", error.message);
+      Admin.toast("ok", st.dataset.st === "approved" ? "공개했습니다." : "반려했습니다."); return reload();
+    }
+    if (e.target.closest("[data-unwin]") && confirm(`${r.shop_name} 의 당첨을 취소할까요?`)) {
+      const { error } = await c.from("food_entries").update({ winner: false, winner_at: null }).eq("id", id);
+      if (error) return Admin.toast("err", error.message);
+      return reload();
+    }
+    if (e.target.closest("[data-del]") && confirm("이 응모를 삭제할까요?")) {
+      const { error } = await c.from("food_entries").delete().eq("id", id);
+      if (error) return Admin.toast("err", error.message);
+      await c.storage.from("food").remove([r.photo_path, r.photo_thumb]);
+      Admin.toast("ok", "삭제했습니다."); reload();
+    }
+  });
+  document.getElementById("lb-close").onclick = () => document.getElementById("lb").close();
+
+  try { await reload(); }
+  catch (e) { Admin.toast("err", /relation|does not exist|schema cache/i.test(e.message) ? "음식 자랑 표가 아직 없습니다. supabase/food.sql 을 SQL Editor 에서 실행해 주세요." : e.message); }
+})();
+</script>
+</body>
+</html>
