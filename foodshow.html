@@ -15,7 +15,7 @@
 <meta name="theme-color" content="#0E1F4D">
 <link rel="stylesheet" href="assets/css/style.css?v=20261010i">
 </head>
-<body>
+<body class="page-foodshow">
 <div id="site-header"></div>
 
 <main>
@@ -51,12 +51,12 @@
       <article class="fs-perk">
         <span class="fs-perk__ico" aria-hidden="true">🎬</span>
         <h3>STN 홍보 영상 촬영</h3>
-        <p>방송 제작 전문 STN 팀이 직접 가게를 찾아가 대표 메뉴와 사장님 이야기를 담은 홍보 영상을 만들어 드립니다.</p>
+        <p>방송 제작 전문 <b>STN 팀이 직접 가게를 찾아가</b> 대표 메뉴와 사장님 이야기를 담은 <b>홍보 영상</b>을 만들어 드립니다.</p>
       </article>
       <article class="fs-perk">
         <span class="fs-perk__ico" aria-hidden="true">🏠</span>
         <h3>홈페이지 메인 노출</h3>
-        <p>용마미식거리 홈페이지 첫 화면에 '이달의 맛집'으로 가게와 메뉴를 소개해, 거리를 찾는 손님들에게 알립니다.</p>
+        <p>용마미식거리 <b>홈페이지 첫 화면</b>에 <b>'이달의 맛집'</b>으로 가게와 메뉴를 소개해, 거리를 찾는 손님들에게 알립니다.</p>
       </article>
     </div>
 
@@ -116,12 +116,27 @@
           <div class="field"><label for="f-owner">사장님 성함 <span class="muted" style="font-weight:500">(비공개)</span></label><input class="input" id="f-owner" maxlength="20" required placeholder="홍길동"></div>
           <div class="field"><label for="f-phone">연락처 <span class="muted" style="font-weight:500">(비공개)</span></label><input class="input" id="f-phone" type="tel" maxlength="15" required placeholder="010-0000-0000"></div>
         </div>
+        <!-- 사진 — 간판·내부 전경·음식 각 1장 이상, 합계 3~9장 (assets/js/food.js) -->
         <div class="field">
-          <label>음식 사진</label>
-          <label class="ct-drop" id="drop-photo">
-            <input type="file" id="f-photo" accept="image/*" required hidden>
-            <img alt="" hidden><span>사진 고르기</span><small>JPG·PNG 사진, 30MB 이하 · 메뉴가 잘 보이게 찍어 주세요</small>
-          </label>
+          <label>가게 사진 <span class="muted" style="font-weight:500">— 간판 · 내부 전경 · 음식 각 1장 이상, 합계 3~9장</span></label>
+          <div class="fs-up">
+            <div class="fs-up__slot" data-kind="sign">
+              <div class="fs-up__head"><b>🪧 간판 사진</b><small>가게 간판·입구가 보이게</small></div>
+              <div class="fs-up__list"></div>
+              <label class="fs-up__add"><input type="file" accept="image/*" multiple hidden>＋ 사진 추가</label>
+            </div>
+            <div class="fs-up__slot" data-kind="inside">
+              <div class="fs-up__head"><b>🪑 내부 전경</b><small>테이블·주방 등 가게 안 모습</small></div>
+              <div class="fs-up__list"></div>
+              <label class="fs-up__add"><input type="file" accept="image/*" multiple hidden>＋ 사진 추가</label>
+            </div>
+            <div class="fs-up__slot" data-kind="food">
+              <div class="fs-up__head"><b>🍲 음식 사진</b><small>대표 메뉴가 잘 보이게 (첫 장이 대표 사진)</small></div>
+              <div class="fs-up__list"></div>
+              <label class="fs-up__add"><input type="file" accept="image/*" multiple hidden>＋ 사진 추가</label>
+            </div>
+          </div>
+          <p class="hint" id="fs-up-count">0 / 9장 · 간판·내부 전경·음식을 각 1장 이상 올려 주세요</p>
         </div>
         <div class="field ct-agree">
           <label class="checkbox"><input type="checkbox" id="f-a1" required><span>[필수] 상인회 회원 점포이며, 우리 가게 메뉴를 직접 찍은 사진입니다.</span></label>
@@ -130,7 +145,7 @@
         </div>
         <input type="text" id="f-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
         <button class="btn btn--primary btn--block" type="submit" id="f-submit">응모하기</button>
-        <p class="hint center mt-2">응모 마감 2026. 11. 30.(월) 23:59 · 응모하면 갤러리에 바로 공개</p>
+        <p class="hint center mt-2">응모 마감 2026. 11. 30.(월) 23:59 · 사진 3~9장 · 응모하면 갤러리에 바로 공개</p>
       </form>
     </div>
   </div>
@@ -141,6 +156,8 @@
 <dialog class="lightbox" id="fs-lb" aria-label="크게 보기">
   <figure class="lightbox__fig"><img id="fs-lb-img" alt=""><figcaption><span id="fs-lb-cap"></span><span class="lightbox__meta" id="fs-lb-meta"></span></figcaption></figure>
   <button class="lightbox__btn lightbox__close" id="fs-lb-close" aria-label="닫기">×</button>
+  <button class="lightbox__btn lightbox__prev" id="fs-lb-prev" aria-label="이전 사진">‹</button>
+  <button class="lightbox__btn lightbox__next" id="fs-lb-next" aria-label="다음 사진">›</button>
 </dialog>
 
 <div id="site-footer"></div>
@@ -151,6 +168,6 @@
 <script src="assets/js/i18n.js?v=20261006f"></script>
 <script src="assets/js/auth.js?v=20261006f"></script>
 <script src="assets/js/main.js?v=20261009e"></script>
-<script src="assets/js/food.js?v=20261010b"></script>
+<script src="assets/js/food.js?v=20261010c"></script>
 </body>
 </html>

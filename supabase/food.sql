@@ -61,14 +61,20 @@ drop policy if exists "음식자랑 연락처 관리자만" on public.food_entry
 create policy "음식자랑 연락처 관리자만" on public.food_entry_private for all using (public.is_staff()) with check (public.is_staff());
 
 
+-- 사진 여러 장 — [{ "kind": "sign"|"inside"|"food", "path": "...", "thumb": "..." }]  간판·내부 전경·음식 각 1장 이상, 합계 3~9장
+alter table public.food_entries add column if not exists photos jsonb not null default '[]'::jsonb;
+
 -- 4. 응모 함수 — 검사 → 등록(즉시 공개) → 연락처 비공개 저장 → 번호 ------------------------
+-- 사진 칸이 생기며 함수 모양이 바뀌어 예전 것을 지운다
+drop function if exists public.food_submit(text, text, text, text, text, text, text, int, int);
 create or replace function public.food_submit(
   p_shop text, p_menu text, p_intro text, p_owner text, p_phone text,
-  p_photo text, p_thumb text, p_w int, p_h int)
+  p_photo text, p_thumb text, p_w int, p_h int, p_photos jsonb)
 returns bigint
 language plpgsql security definer set search_path = public as $$
 declare
   new_id bigint;
+  n      int;
   kst    timestamp := now() at time zone 'Asia/Seoul';
   who    text := 'ip:' || md5(coalesce(split_part(current_setting('request.headers', true)::json->>'x-forwarded-for', ',', 1), 'unknown'));
 begin
@@ -79,14 +85,26 @@ begin
   if length(btrim(coalesce(p_owner, ''))) not between 1 and 20 then raise exception 'BAD_OWNER'; end if;
   if coalesce(p_phone, '') !~ '^[0-9\-\s]{9,15}$' then raise exception 'BAD_PHONE'; end if;
   if p_photo not like 'entries/%' or p_thumb not like 'entries/%' then raise exception 'BAD_PATH'; end if;
+  -- 사진: 합계 3~9장, 간판·내부 전경·음식 각 1장 이상, 경로는 entries/ 안
+  if p_photos is null or jsonb_typeof(p_photos) <> 'array' then raise exception 'BAD_COUNT'; end if;
+  n := jsonb_array_length(p_photos);
+  if n < 3 or n > 9 then raise exception 'BAD_COUNT'; end if;
+  if not exists (select 1 from jsonb_array_elements(p_photos) e where e->>'kind' = 'sign')   then raise exception 'NEED_SIGN'; end if;
+  if not exists (select 1 from jsonb_array_elements(p_photos) e where e->>'kind' = 'inside') then raise exception 'NEED_INSIDE'; end if;
+  if not exists (select 1 from jsonb_array_elements(p_photos) e where e->>'kind' = 'food')   then raise exception 'NEED_FOOD'; end if;
+  if exists (select 1 from jsonb_array_elements(p_photos) e
+              where coalesce(e->>'kind', '') not in ('sign', 'inside', 'food')
+                 or coalesce(e->>'path', '') not like 'entries/%' or coalesce(e->>'thumb', '') not like 'entries/%') then
+    raise exception 'BAD_PATH';
+  end if;
   -- 도배 방지: 같은 접속 주소에서 하루 10건까지
   if (select count(*) from food_entry_private where submitter = who
        and (created_at at time zone 'Asia/Seoul')::date = kst::date) >= 10 then raise exception 'DAILY_LIMIT'; end if;
 
-  insert into food_entries (round, shop_name, menu_name, intro, photo_path, photo_thumb, w, h, status)
-  values (to_char(kst, 'YYYY-MM'), btrim(p_shop), btrim(p_menu), coalesce(p_intro, ''), p_photo, p_thumb, p_w, p_h, 'approved')
+  insert into food_entries (round, shop_name, menu_name, intro, photo_path, photo_thumb, w, h, status, photos)
+  values (to_char(kst, 'YYYY-MM'), btrim(p_shop), btrim(p_menu), coalesce(p_intro, ''), p_photo, p_thumb, p_w, p_h, 'approved', p_photos)
   returning id into new_id;
   insert into food_entry_private (entry_id, owner_name, phone, submitter) values (new_id, btrim(p_owner), btrim(p_phone), who);
   return new_id;
 end $$;
-grant execute on function public.food_submit(text, text, text, text, text, text, text, int, int) to anon, authenticated;
+grant execute on function public.food_submit(text, text, text, text, text, text, text, int, int, jsonb) to anon, authenticated;
