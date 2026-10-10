@@ -1864,3 +1864,19 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   .hero-stats dd { font-size: 1.375rem; margin-top: 4px; }
   .hero-stats dd span { font-size: .75rem; margin-left: 2px; }
 }
+
+/* 히어로 버튼 호버 — 전구가 켜지듯 금빛으로 점등 (깜빡 → 은은히 빛남) */
+.hero-go a { position: relative; overflow: hidden; }
+.hero-go a::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(120% 140% at 50% 0%, rgba(255,209,102,.55), rgba(255,209,102,0) 60%); opacity: 0; transition: opacity .2s; }
+.hero-go a:hover, .hero-go a:focus-visible { border-color: #FFD166; color: #fff; text-shadow: 0 0 10px rgba(255,209,102,.9);
+  animation: go-light .7s ease-out forwards; }
+.hero-go a:hover::before, .hero-go a:focus-visible::before { opacity: 1; }
+@keyframes go-light {
+  0%   { box-shadow: 0 0 0 0 rgba(255,209,102,0); }
+  20%  { box-shadow: 0 0 22px 4px rgba(255,209,102,.85), 0 12px 30px rgba(0,0,0,.35); }
+  35%  { box-shadow: 0 0 6px 1px rgba(255,209,102,.3), 0 12px 30px rgba(0,0,0,.35); }
+  55%  { box-shadow: 0 0 26px 6px rgba(255,209,102,.9), 0 12px 30px rgba(0,0,0,.35); }
+  100% { box-shadow: 0 0 18px 3px rgba(255,209,102,.65), 0 12px 30px rgba(0,0,0,.35); }
+}
+@media (prefers-reduced-motion: reduce) { .hero-go a:hover { animation: none; box-shadow: 0 0 18px 3px rgba(255,209,102,.65); } }
