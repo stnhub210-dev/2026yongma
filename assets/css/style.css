@@ -1841,3 +1841,12 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   #opening .figure img { aspect-ratio: auto !important; height: auto; object-fit: contain !important; }
   #opening .figure figcaption { font-size: .6875rem; padding: 8px 12px; text-align: center; }
 }
+
+/* 휴대폰 — 음식 자랑 혜택 카드: 아이콘 빼고 제목 크게, 설명 아주 작게, 카드 낮게 */
+@media (max-width: 640px) {
+  .fs-perk { padding: 10px 6px; }
+  .fs-perk__ico { display: none; }
+  .fs-perk h3 { margin-top: 0; font-size: .9375rem; line-height: 1.25; }
+  .fs-perk p { margin-top: 4px; font-size: .5625rem; line-height: 1.4; color: var(--ink-500); }
+  .fs-perk p b { font-weight: 700; }
+}
