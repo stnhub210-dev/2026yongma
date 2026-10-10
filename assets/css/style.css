@@ -954,6 +954,11 @@ table.data tfoot td { padding: 14px 16px; font-weight: 800; background: var(--bg
 .gal-up__head h2 { font-size: clamp(1.2rem, 1.05rem + .8vw, 1.6rem); }
 .gal-up__form { display: grid; gap: 10px; margin-bottom: 12px; }
 @media (min-width: 640px) { .gal-up__form { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); } }
+@media (min-width: 640px) { .gal-up__form--3 { grid-template-columns: minmax(0, 170px) minmax(0, 200px) minmax(0, 1fr); align-items: end; } }
+.gal-up__date { display: grid; gap: 4px; }
+.gal-up__who { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: .9375rem; }
+.gal-up__who label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.gal-up__who input { accent-color: var(--amber-500); width: 16px; height: 16px; }
 .gal-up__btns { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .gal-up__msg { font-size: .875rem; font-weight: 600; color: var(--amber-700); font-variant-numeric: tabular-nums; }
 /* 내가 올린 사진에만 붙는 지우기 버튼 */
@@ -1600,3 +1605,22 @@ img, video, iframe, table { max-width: 100%; }
 @media (max-width: 899px) { .fs-band__in { grid-template-columns: 1fr; } }
 .fs-band__art { justify-self: center; width: min(100%, 260px); height: auto; filter: drop-shadow(0 14px 22px rgba(120,60,10,.2)); }
 .fs-band__art[hidden] { display: none; }
+
+/* 글씨 한 단계 키우기 — 음식 자랑 띠 버튼 · 응모 현황 카드 */
+.fs-band .btn { font-size: 1.0625rem; padding: 15px 30px; }
+.fs-band p { font-size: 1.0625rem; }
+.cs__head b { font-size: 1.4375rem; }
+.cs__head small { font-size: .8125rem; }
+.cs__stats dt { font-size: .9375rem; }
+.cs__stats dd { font-size: 1.0625rem; }
+.cs__stats dd b { font-size: clamp(1.875rem, 1.5rem + 1.1vw, 2.5rem); }
+.cs__stats small { font-size: .8125rem; }
+.cs__sub { font-size: 1.0625rem; }
+.cs__sub em { font-size: .75rem; }
+.cs__bars { gap: 10px; }
+.cs__rank { font-size: .9375rem; }
+.cs__name { font-size: 1rem; }
+.cs__val { font-size: 1rem; }
+.cs__track { height: 14px; }
+.cs__more { font-size: 1.0625rem; }
+.fs-band p b { white-space: nowrap; }
