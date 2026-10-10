@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261010j">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010l">
 </head>
 <body>
 
@@ -236,21 +236,56 @@
 <!-- ================= 상인회: 우리 가게 음식 자랑하기 =================
      매달 말일 2곳 추첨 → STN 홍보 영상 + 이 자리에 '이달의 맛집' 노출. 당첨 가게는 food_entries.winner (assets/js/food-main.js) -->
 <section class="fs-band" id="foodshow">
-  <div class="wrap fs-band__in">
-    <div class="fs-band__txt">
-      <span class="eyebrow">For Merchants · 상인회 회원 점포</span>
-      <h2>사장님, <em>우리 가게 음식</em> 자랑해 주세요!</h2>
-      <p>대표 메뉴 사진 한 장으로 응모 · 매달 말일 <b>2곳</b> 추첨 → <b>상금 10만원</b> + <b>STN 홍보 영상 촬영</b> + <b>홈페이지 메인 노출</b> <span class="fs-band__total">총상금 40만원</span></p>
-      <div class="btn-row mt-3">
-        <a class="btn btn--primary" href="foodshow.html#enter">음식 사진 응모하기</a>
-        <a class="btn btn--ghost" href="foodshow.html#gallery">우리 가게 자랑 보기</a>
+  <div class="wrap">
+    <div class="fs-band__in">
+      <div class="fs-band__txt">
+        <span class="eyebrow">For Merchants · 상인회 회원 점포</span>
+        <h2>사장님, <em>우리 가게 음식</em> 자랑해 주세요!</h2>
+        <p>간판 · 내부 전경 · 음식 사진(3~9장)으로 응모 · 매달 말일 <b>2곳</b> 추첨 <span class="fs-band__total">총상금 40만원</span></p>
+        <div class="btn-row mt-3">
+          <a class="btn btn--primary" href="foodshow.html#enter">음식 사진 응모하기</a>
+          <a class="btn btn--ghost" href="foodshow.html#gallery">우리 가게 자랑 보기</a>
+        </div>
+      </div>
+
+      <!-- 오른쪽 — 추첨 전에는 '예시 응모' 카드, 추첨 뒤에는 이달의 맛집 (assets/js/food-main.js) -->
+      <figure class="fs-ex" id="fs-band-art">
+        <span class="fs-ex__tag">예시</span>
+        <div class="fs-ex__shots">
+          <img class="fs-ex__main" src="assets/img/gallery/20260918_201800_t.webp" alt="예시 — 음식 사진">
+          <img src="assets/img/gallery/20260918_210840_t.webp" alt="예시 — 간판 사진">
+          <img src="assets/img/gallery/20260918_185900_t.webp" alt="예시 — 내부 전경">
+        </div>
+        <figcaption>
+          <b>용마식당</b><span>초당순두부 전골</span>
+          <em>“40년 동안 매일 아침 직접 콩을 갈아 만듭니다”</em>
+          <small>🍲 음식 · 🪧 간판 · 🪑 내부 전경 — 이렇게 올라가요</small>
+        </figcaption>
+        <img class="fs-ex__mascot" src="assets/img/mascot-food.webp" alt="" aria-hidden="true">
+      </figure>
+      <div class="fs-band__win" id="fs-band-win" hidden>
+        <p class="fs-band__wt">🏆 이달의 맛집</p>
+        <div class="fs-band__list" id="fs-band-list"></div>
       </div>
     </div>
-    <img class="fs-band__art" id="fs-band-art" src="assets/img/mascot-food.webp" alt="향토음식 한 그릇을 든 캐릭터 용" loading="lazy">
-    <div class="fs-band__win" id="fs-band-win" hidden>
-      <p class="fs-band__wt">🏆 이달의 맛집</p>
-      <div class="fs-band__list" id="fs-band-list"></div>
+
+    <!-- 혜택 3가지 · 회차 · 안내 (foodshow.html 과 같은 내용) -->
+    <div class="fs-perks fs-perks--band">
+      <article class="fs-perk fs-perk--money"><span class="fs-perk__ico" aria-hidden="true">💰</span>
+        <h3>상금 10만원</h3><p>당첨 가게마다 <b>10만원</b> · 10월 2곳 · 11월 2곳, <b>총상금 40만원</b></p></article>
+      <article class="fs-perk"><span class="fs-perk__ico" aria-hidden="true">🎬</span>
+        <h3>STN 홍보 영상 촬영</h3><p>STN 팀이 직접 가게를 찾아가 대표 메뉴와 사장님 이야기를 담은 <b>홍보 영상</b>을 만들어 드립니다.</p></article>
+      <article class="fs-perk"><span class="fs-perk__ico" aria-hidden="true">🏠</span>
+        <h3>홈페이지 메인 노출</h3><p>홈페이지 첫 화면에 <b>'이달의 맛집'</b>으로 가게와 메뉴를 소개합니다.</p></article>
     </div>
+    <div class="fs-sched">
+      <div><b>10월 회차</b><span>응모 10. 10.(토) ~ 10. 31.(토)</span><em>10. 31. 추첨 · 2곳 × 10만원</em></div>
+      <div><b>11월 회차</b><span>응모 11. 1.(일) ~ 11. 30.(월)</span><em>11. 30. 추첨 · 2곳 × 10만원</em></div>
+    </div>
+    <ul class="fs-notes">
+      <li>포남용마거리 골목형상점가 <b>상인회 회원 점포</b>만 참여할 수 있어요. 회원 점포가 아니면 추첨에서 빠집니다.</li>
+      <li>메뉴별로 여러 번 응모해도 되지만 추첨은 <b>가게 단위 1회</b>, 10월 당첨 가게는 11월 추첨에서 빠집니다.</li>
+    </ul>
   </div>
 </section>
 

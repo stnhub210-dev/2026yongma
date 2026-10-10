@@ -52,8 +52,13 @@
     });
     const list = entries.filter((e) => round === "all" || e.round === round);
     $("#fs-count").textContent = entries.length ? `${entries.length}건` : "";
+    // 응모가 없으면 '예시' 카드 1장 — 응모하면 이렇게 보인다
+    const sample = `<article class="fs-card fs-card--sample">
+        <div class="fs-card__img"><img src="assets/img/gallery/20260918_201800_t.webp" alt="" loading="lazy"><span class="fs-round">사진 3장</span><span class="fs-ex-tag">예시</span></div>
+        <div class="fs-card__body"><b>용마식당</b><span>초당순두부 전골</span><em>40년 동안 매일 아침 직접 콩을 갈아 만듭니다</em></div>
+      </article>`;
     grid.innerHTML = list.length ? list.map((e) => card(e)).join("")
-      : '<p class="ct-empty">아직 공개된 응모가 없어요. 우리 가게 대표 메뉴로 첫 자랑의 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>';
+      : '<p class="ct-empty">아직 공개된 응모가 없어요. 아래는 <b>예시</b>예요 — 우리 가게 대표 메뉴로 첫 자랑의 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>' + sample;
   }
 
   function drawWinners() {
