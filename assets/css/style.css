@@ -1972,3 +1972,18 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .ev-tabs a.is-on small { color: #0B6FB8; }
 .ev-tabs a b { font-size: 1.3125rem; line-height: 1.25; white-space: normal; word-break: keep-all; }
 @media (max-width: 640px) { .ev-tabs a { padding: 11px 6px 12px; border-radius: 30px; } .ev-tabs a small { font-size: .75rem; } .ev-tabs a b { font-size: 1.0625rem; } }
+
+/* 메인 맨 아래 현장 사진 — 전체 + 페이지 번호 */
+.hg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.hg-item { position: relative; display: block; padding: 0; border: 0; border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; background: var(--ink-900); cursor: zoom-in; }
+.hg-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+.hg-item:hover img { transform: scale(1.06); }
+.hg-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 10px 8px; background: linear-gradient(to top, rgba(0,0,0,.7), transparent); color: #fff; font-size: .75rem; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hg-cap b { margin-right: 6px; } .hg-cap em { font-style: normal; margin-right: 6px; padding: 1px 6px; border-radius: 999px; background: rgba(255,255,255,.25); font-size: .625rem; }
+.hg-pager { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin-top: 22px; }
+.hg-pager button { min-width: 40px; height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; color: var(--ink-700); cursor: pointer; }
+.hg-pager button:hover:not([disabled]) { border-color: var(--amber-500); color: var(--amber-700); }
+.hg-pager button.is-on { background: var(--amber-500); border-color: var(--amber-500); color: #fff; }
+.hg-pager button[disabled] { opacity: .4; cursor: default; }
+.hg-dots { color: var(--ink-500); padding: 0 2px; }
+@media (max-width: 640px) { .hg-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; } .hg-item { border-radius: 8px; } .hg-cap { font-size: .5625rem; padding: 14px 5px 4px; } .hg-cap em { display: none; } .hg-pager button { min-width: 34px; height: 34px; padding: 0 9px; font-size: .8125rem; } }

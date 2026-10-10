@@ -33,7 +33,7 @@
   }
 
   async function copy(btn) {
-    try { await navigator.clipboard.writeText(URL_); say(btn, "주소를 복사했어요. 카카오톡 대화창에 붙여 넣어 주세요."); }
+    try { await navigator.clipboard.writeText(URL_); say(btn, "주소를 복사했어요! PC 카카오톡 대화창에 붙여 넣기(Ctrl+V) 하세요."); }
     catch (e) { prompt("아래 주소를 복사해 카카오톡으로 보내 주세요.", URL_); }
   }
 
@@ -51,7 +51,9 @@
         return;
       } catch (err) { console.warn("카카오 공유 실패 — 다른 방법으로", err); }
     }
-    if (navigator.share) {
+    // 휴대폰에서만 공유 창(카카오톡 선택). PC(윈도우)의 공유 창은 카카오톡이 없고 실패가 잦아 주소 복사로
+    const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    if (mobile && navigator.share) {
       try { await navigator.share({ title: TITLE, text: DESC, url: URL_ }); return; }
       catch (err) { if (err && err.name === "AbortError") return; }
     }
