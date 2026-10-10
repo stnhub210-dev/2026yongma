@@ -2004,3 +2004,7 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .up-day__head span { font-size: .875rem; color: var(--ink-500); }
 .up-day__head em { margin-left: auto; font-style: normal; font-size: .8125rem; font-weight: 700; color: var(--ink-500); }
 @media (max-width: 640px) { .up-day__head span { display: none; } }
+@media (max-width: 640px) {
+  /* 지도·배치도·포스터처럼 글자가 든 그림은 자르지 않고 전체 보이기 */
+  .split .figure img[src*="map-"], .split .figure img[src*="poster"], .figure img[src*="map-"] { aspect-ratio: auto !important; height: auto; object-fit: contain !important; }
+}
