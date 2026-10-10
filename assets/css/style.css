@@ -1728,3 +1728,85 @@ img, video, iframe, table { max-width: 100%; }
 .up-dlg[open] { max-width: calc(100vw - 24px); }
 .up-dlg .input { width: 100%; min-width: 0; }
 @media (max-width: 520px) { .up-dlg__box { padding: 18px 16px; } }
+
+/* ================= 모바일 정돈 (640px 이하) — 카드 2~3칸으로 촘촘하게, 덜 중요한 글은 작게 =================
+   PC 화면은 바꾸지 않는다. 제목은 낱말 단위로만 줄바꿈(keep-all)해서 어색하게 끊기지 않게. */
+h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; overflow-wrap: break-word; }
+@media (max-width: 640px) {
+  h2 { font-size: clamp(1.375rem, 5.6vw, 1.75rem); line-height: 1.3; }
+  h3 { font-size: 1rem; }
+  .section { padding: 44px 0; }
+  .sec-head p, .lead { font-size: .9375rem; line-height: 1.6; }
+
+  /* 4개 존 카드 — 2칸, 사진 낮게, 설명 작게 */
+  .grid-3:has(.zone-card) { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .zone-card .card__img { aspect-ratio: 4 / 3; }
+  .zone-card .card__img img { height: 100%; object-fit: cover; }
+  .zone-card .card__body { padding: 12px; }
+  .zone-card h3 { font-size: .9375rem; margin-top: 6px; }
+  .zone-card p { font-size: .75rem; line-height: 1.5; margin-top: 4px; }
+  .zone-tag { font-size: .6875rem; padding: 3px 9px; }
+
+  /* 개막 안내 캐릭터 — 작게 */
+  .greet { max-width: 240px; margin-top: 24px; }
+  .greet__bubble { font-size: .8125rem; padding: 8px 14px; }
+  .greet figcaption { font-size: .75rem; }
+
+  /* 음식 자랑 — 혜택 3칸 · 회차 2칸, 글 작게 */
+  .fs-perks, .fs-band .fs-perks--band { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .fs-perk { padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .fs-perk__ico { width: 34px; height: 34px; margin: 0 auto; font-size: 1.125rem; border-radius: 10px; }
+  .fs-perk h3 { margin-top: 8px; font-size: .8125rem; }
+  .fs-perk p { font-size: .6875rem; line-height: 1.45; }
+  .fs-sched { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .fs-sched div { padding: 10px 12px; }
+  .fs-sched b { font-size: .875rem; }
+  .fs-sched span { font-size: .6875rem; }
+  .fs-sched em { font-size: .875rem; }
+  .fs-notes { font-size: .75rem; }
+  .fs-band h2 { font-size: 1.375rem; }
+  .fs-band p { font-size: .875rem; }
+  .fs-band .btn { font-size: .9375rem; padding: 12px 18px; }
+  .fs-ex { width: min(100%, 320px); }
+  .fs-ex__shots { height: 160px; }
+
+  /* 사진전 — 안내 줄·현황 칸 글 작게, TOP 5 제목은 두 줄까지 보이게(잘리지 않게) */
+  .contest__facts div { font-size: .8125rem; gap: 10px; }
+  .contest__facts dt { flex-basis: 62px; }
+  .contest__lead { font-size: .875rem; }
+  .cs__stats { gap: 6px; }
+  .cs__stats > div { padding: 10px 4px; }
+  .cs__stats dt { font-size: .75rem; }
+  .cs__stats dd b { font-size: 1.625rem; }
+  .cs__stats small { font-size: .6875rem; }
+  .cs__bars li { grid-template-columns: 16px 40px minmax(0, 1fr) 30% 30px; gap: 7px; }
+  .cs__img { width: 40px; }
+  .cs__name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: .8125rem; line-height: 1.3; }
+  .cs__val { font-size: .875rem; }
+
+  /* 시즌 타임라인 · 일반 카드 글 */
+  .timeline p { font-size: .8125rem; }
+  .tile p, .card__body p { font-size: .8125rem; }
+}
+@media (max-width: 640px) {
+  /* 부스 사진 줄 — 2칸 */
+  .zone-shots { grid-template-columns: 1fr 1fr; gap: 8px; }
+  /* 좌우 배치 섹션의 큰 사진 — 낮게 잘라서 */
+  .split > .figure img, .split .figure > img { aspect-ratio: 16 / 10; object-fit: cover; }
+  .figure figcaption { font-size: .75rem; padding: 10px 14px; }
+  /* 4칸 숫자 타일 — 2칸, 글 작게 */
+  .grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grid-4 .tile { padding: 14px 12px; }
+  .grid-4 .tile dt { font-size: .75rem; }
+  .grid-4 .tile dd { font-size: 1.375rem; }
+  .grid-4 .tile .delta { font-size: .6875rem; padding: 2px 8px; }
+  /* 표 글 작게 */
+  table.data { font-size: .8125rem; }
+  table.data th, table.data td { padding: 8px 10px; }
+  .chip { font-size: .75rem; padding: 4px 10px; }
+}
+@media (max-width: 640px) {
+  .grid-2:has(> .figure) { grid-template-columns: 1fr 1fr; gap: 8px !important; }
+  .grid-2:has(> .figure) .figure img { aspect-ratio: 4 / 3; object-fit: cover; }
+  .grid-2:has(> .figure) figcaption { font-size: .6875rem; padding: 6px 8px; }
+}
