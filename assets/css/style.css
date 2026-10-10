@@ -2100,3 +2100,5 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .field label.checkbox { display: flex; align-items: center; gap: 10px; font-weight: 600; }
 .field label.checkbox input { margin-top: 0; }
 .field label.checkbox span { line-height: 1.5; }
+.checkbox, .field label.checkbox { gap: 12px; }
+.checkbox input { margin-right: 2px; }
