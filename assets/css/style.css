@@ -2045,3 +2045,28 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   .sec-bar__tabs .sec-bar__tab--2 { margin-left: 0; padding-left: 16px; }
   .sec-bar__en { color: color-mix(in srgb, var(--bar) 70%, #333); }
 }
+
+/* 봉사자 모집 — 왼쪽 사진(오른쪽으로 투명하게 사라짐) + 오른쪽 감성 문구 + 1365 버튼 */
+.vol { position: relative; overflow: hidden; background: linear-gradient(120deg, #FFF6EC, #FFE9D4); padding: clamp(56px, 7vw, 100px) 0; }
+.vol__photo { position: absolute; left: 0; top: 0; height: 100%; width: 58%; object-fit: cover; object-position: left center; }
+.vol__in { position: relative; display: grid; grid-template-columns: 1fr 1fr; }
+.vol__txt { grid-column: 2; }
+.vol h2 { margin-top: 8px; font-size: clamp(2rem, 1.5rem + 2vw, 3rem); color: var(--ink-900); }
+.vol__lead { margin-top: 14px; font-size: clamp(1.125rem, 1rem + .5vw, 1.375rem); font-weight: 700; line-height: 1.6; color: var(--amber-700); word-break: keep-all; }
+.vol__body { margin-top: 12px; font-size: .9375rem; line-height: 1.8; color: var(--ink-700); word-break: keep-all; }
+.vol__info { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 6px; font-size: .9375rem; color: var(--ink-800); }
+.vol__info b { display: inline-block; width: 44px; color: var(--amber-700); }
+.vol__btn { display: inline-flex; align-items: center; gap: 14px; margin-top: 22px; padding: 10px 22px 10px 10px; border-radius: 22px; background: #fff;
+  box-shadow: 0 12px 30px rgba(120,60,10,.18); text-decoration: none; transition: transform .25s var(--ease), box-shadow .25s; }
+.vol__btn img { width: 120px; height: auto; border-radius: 12px; display: block; }
+.vol__btn span { font-size: 1.125rem; font-weight: 900; color: #2B5BA8; }
+.vol__btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 18px 40px rgba(120,60,10,.25); }
+.vol__note { margin-top: 10px; font-size: .75rem; color: var(--ink-500); }
+@media (max-width: 899px) {
+  .vol { padding-top: 0; }
+  .vol__photo { position: relative; width: 100%; height: 220px; -webkit-mask: linear-gradient(#000 60%, transparent); mask: linear-gradient(#000 60%, transparent); }
+  .vol__in { grid-template-columns: 1fr; }
+  .vol__txt { grid-column: 1; margin-top: -30px; }
+}
+@media (max-width: 640px) { .vol__body { font-size: .8125rem; } .vol__btn img { width: 90px; } .vol__btn span { font-size: 1rem; } }
+@media (min-width: 900px) { .vol__photo { width: 70%; -webkit-mask: linear-gradient(90deg, #000 30%, rgba(0,0,0,.6) 52%, transparent 82%); mask: linear-gradient(90deg, #000 30%, rgba(0,0,0,.6) 52%, transparent 82%); } }
