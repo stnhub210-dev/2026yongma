@@ -2144,3 +2144,7 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .sec-bar__tabs .sec-bar__tab { background: color-mix(in srgb, var(--tc) 22%, #fff); color: color-mix(in srgb, var(--tc) 80%, #000); border: 2px solid var(--tc); box-shadow: none; transition: background .2s, color .2s, transform .2s; }
 .sec-bar__tabs .sec-bar__tab:not(.is-on):hover { background: color-mix(in srgb, var(--tc) 38%, #fff); transform: translateY(-1px); }
 .sec-bar__tabs .sec-bar__tab.is-on { background: var(--tc); color: #fff; box-shadow: 0 6px 14px color-mix(in srgb, var(--tc) 40%, transparent); }
+/* 참여하기 카드 제목 — 크게, '지금 참여하세요!'는 금빛 */
+.join-card h3 { font-size: 1.625rem; line-height: 1.3; }
+.join-card h3 em { font-style: normal; font-size: 1.875rem; font-weight: 900; color: #FFD166; text-shadow: 0 0 14px rgba(255,209,102,.45); }
+@media (max-width: 640px) { .join-card h3 { font-size: 1rem; } .join-card h3 em { font-size: 1.125rem; } }
