@@ -1987,3 +1987,12 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .hg-pager button[disabled] { opacity: .4; cursor: default; }
 .hg-dots { color: var(--ink-500); padding: 0 2px; }
 @media (max-width: 640px) { .hg-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; } .hg-item { border-radius: 8px; } .hg-cap { font-size: .5625rem; padding: 14px 5px 4px; } .hg-cap em { display: none; } .hg-pager button { min-width: 34px; height: 34px; padding: 0 9px; font-size: .8125rem; } }
+
+/* 메인 섹션 구분 띠 — 비스듬한 색 탭(한글 제목) + 오른쪽 작은 영어, 아래 색 선 */
+.sec-bar { position: relative; background: #fff; border-top: 1px solid var(--line); }
+.sec-bar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--bar); }
+.sec-bar__in { display: flex; align-items: stretch; justify-content: space-between; min-height: 44px; }
+.sec-bar__tab { position: relative; display: flex; align-items: center; padding: 10px 46px 10px 18px; margin-left: -18px; background: var(--bar); color: #fff;
+  font-size: 1rem; font-weight: 900; letter-spacing: .02em; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 100%, 0 100%); }
+.sec-bar__en { align-self: center; font-size: .6875rem; font-weight: 800; letter-spacing: .18em; color: var(--ink-500); }
+@media (max-width: 640px) { .sec-bar__in { min-height: 36px; } .sec-bar__tab { font-size: .875rem; padding: 8px 34px 8px 16px; margin-left: -16px; } .sec-bar__en { font-size: .5625rem; letter-spacing: .12em; } }
