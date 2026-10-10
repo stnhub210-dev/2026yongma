@@ -5,4 +5,4 @@ Disallow: /mypage.html
 
 Sitemap: https://2026yongma.com/sitemap.xml
 
-#DaumWebMasterTool:201ac9f00bbd3d3e0fcc57d735d26af79e4c8f5d9c63b9021c3d1e49a6fbbeaa:0hLs22uXuQEdQ5MT1Nx0Pw==
+#DaumWebMasterTool:201ac9f00bbd3d3e0fcc57d735d26af79e4c8f5d9c63b9021c3d1e49a6fbbeaa:TEcOMIBivQMU4H7qOlp5xQ==
