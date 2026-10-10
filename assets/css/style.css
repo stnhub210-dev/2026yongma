@@ -2089,3 +2089,5 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .vol__pair .vol__maru { animation-delay: -1.4s; }
 @media (max-width: 1100px) { .vol__in { grid-template-columns: 1fr 1fr 290px; } }
 @media (max-width: 899px) { .vol__in { grid-template-columns: 1fr; } .vol__mascot { width: 300px; } }
+.ev-tabs { grid-template-columns: repeat(3, 1fr); max-width: 720px; }
+@media (max-width: 640px) { .ev-tabs { grid-template-columns: repeat(3, 1fr); } .ev-tabs a b { font-size: .875rem; } .ev-tabs a small { font-size: .625rem; } }
