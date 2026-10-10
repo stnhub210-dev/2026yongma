@@ -8,8 +8,8 @@
    ========================================================================== */
 (function () {
   "use strict";
-  const box = document.getElementById("contest-live");
-  if (!box) return;
+  const box = document.getElementById("contest-live");                 // 이미지 띠(없을 수 있음)
+  if (!box && !document.getElementById("contest-status")) return;
 
   const c = window.Auth && Auth.ready() ? Auth.client() : null;
   const row = document.getElementById("contest-live-row");
@@ -36,13 +36,14 @@
     $id("cs-votes").textContent = votes.toLocaleString("ko-KR");
     $id("cs-dday").textContent = ddayText();
     // TOP 5 — 실제 응모작이 없으면 예시 작품으로 (예시 표시)
-    const src = all.length ? all.map((e) => ({ title: e.title, votes: e.vote_count || 0, short: e.category === "short" }))
-                           : (window.CONTEST_SAMPLES || []).map((s) => ({ title: s.title, votes: s.votes, short: s.category === "short" }));
+    const src = all.length ? all.map((e) => ({ title: e.title, votes: e.vote_count || 0, short: e.category === "short", img: pub(e.photo_thumb) }))
+                           : (window.CONTEST_SAMPLES || []).map((s) => ({ title: s.title, votes: s.votes, short: s.category === "short", img: `assets/img/gallery/${s.img}_t.webp` }));
     const top = src.sort((a, b) => b.votes - a.votes).slice(0, 5);
     const max = Math.max(1, top.length ? top[0].votes : 1);
     $id("cs-ex").textContent = all.length ? "" : "예시";
     $id("cs-bars").innerHTML = top.map((x, i) => `<li${i === 0 && x.votes ? ' class="is-top"' : ""}>
         <span class="cs__rank">${i + 1}</span>
+        <span class="cs__img"><img src="${x.img}" alt="" loading="lazy">${x.short ? '<i aria-hidden="true">▶</i>' : ""}</span>
         <span class="cs__name">${x.short ? "🎬 " : ""}${esc(x.title)}</span>
         <span class="cs__track"><i style="width:${Math.max(x.votes / max * 100, x.votes ? 3 : 0)}%"></i></span>
         <span class="cs__val">${x.votes.toLocaleString("ko-KR")}</span>
@@ -55,6 +56,7 @@
       .eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
     drawStatus(error ? [] : all || [], !all || !all.length);
     const data = (all || []).slice(0, SHOW), total = (all || []).length;
+    if (!box) return;                                                   // 이미지 띠가 없으면 여기까지
     if (error || !data.length) { drawSamples(); return; }               // 표 없음·응모작 없음 → 예시 카드
     const fresh = seen ? new Set(data.filter((e) => !seen.has(e.id)).map((e) => e.id)) : new Set();
     seen = new Set(data.map((e) => e.id));
@@ -72,6 +74,7 @@
 
   /* 아직 승인된 응모작이 없을 때 — 예시 작품(contest-samples.js)으로 띠를 채운다 */
   function drawSamples() {
+    if (!box) return;
     const ex = window.CONTEST_SAMPLES || [];
     if (!ex.length) { box.hidden = true; return; }
     count.textContent = "예시";
