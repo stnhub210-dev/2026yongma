@@ -356,7 +356,7 @@
 
     /* 올리는 사람 — 수행사는 직원 계정 로그인이 필요합니다 */
     const kindNote = $("#up-kind-note");
-    const kind = () => (host.querySelector('input[name="up-kind"]:checked') || {}).value || "visitor";
+    const kind = () => (dlg.querySelector('input[name="up-kind"]:checked') || {}).value || "visitor";   // 고르는 칸은 팝업 안에 있다
     const base = document.documentElement.dataset.base || "";
     const paintKind = () => {
       if (kind() !== "staff") { kindNote.innerHTML = ""; return; }
@@ -364,7 +364,7 @@
         ? "위쪽 날짜별 갤러리에 올라갑니다."
         : `수행사 사진은 직원 계정으로 <a href="${base}login.html">로그인</a>한 뒤 올릴 수 있습니다.`;
     };
-    host.querySelectorAll('input[name="up-kind"]').forEach((r) => r.addEventListener("change", paintKind));
+    dlg.querySelectorAll('input[name="up-kind"]').forEach((r) => r.addEventListener("change", paintKind));
 
     btnF.onclick = () => inF.click();
     btnD.onclick = () => inD.click();
