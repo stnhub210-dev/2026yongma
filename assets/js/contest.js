@@ -3,7 +3,7 @@
    · 서버 쪽 표·규칙은 supabase/contest.sql (먼저 SQL Editor 에서 실행해야 동작)
    · 응모: 로그인 없이. 사진은 브라우저에서 줄여서 'contest' 저장소에 올린다.
            올린 사람 브라우저에 지우기 열쇠를 남겨 승인 전에도 직접 지울 수 있다.
-   · 투표: 로그인한 사람만, 하루 3표. 실제 제한은 서버 함수 contest_vote 가 지킨다.
+   · 투표: 로그인한 사람만, 하루 10표. 실제 제한은 서버 함수 contest_vote 가 지킨다.
    ========================================================================== */
 (function () {
   "use strict";
@@ -11,7 +11,7 @@
   const BUCKET = "contest";
   const BIG = 1600, THUMB = 560, PROOF = 1400;      // 긴 변 길이(px)
   const MAX_SRC = 30 * 1024 * 1024;
-  const DAILY = 3;
+  const DAILY = 10;
   const MINE_KEY = "yongma_contest_mine";
 
   const $ = (s, r) => (r || document).querySelector(s);
@@ -56,7 +56,7 @@
   let cat = /#short/.test(location.hash) ? "short" : /#photo/.test(location.hash) ? "photo" : "all";   // 지금 보는 탭(전체·사진·동영상)
   let sort = "new";
   let myVotes = new Set();     // 오늘 내가 투표한 작품 id
-  let limitHit = false;        // 서버가 LIMIT(오늘 3표 다 씀) 라고 알려 줬는지
+  let limitHit = false;        // 서버가 LIMIT(오늘 10표 다 씀) 라고 알려 줬는지
   let user = null;
   let open = true;             // 응모·투표 기간 안인지
   let failed = false;          // 목록을 못 불러왔으면 안내 문구를 그대로 둔다
@@ -96,7 +96,7 @@
     entries = data || [];
   }
 
-  // 오늘 남은 표 — 사진·동영상 합산 하루 3표
+  // 오늘 남은 표 — 사진·동영상 합산 하루 10표
   const leftOf = () => limitHit ? 0 : Math.max(DAILY - myVotes.size, 0);
 
   function draw() {
@@ -361,7 +361,7 @@
       });
       if (error) {
         await c.storage.from(BUCKET).remove(Object.values(paths));         // 등록 실패 → 올린 파일 치우기
-        throw new Error(/CLOSED/.test(error.message) ? "응모가 마감되었습니다." : /DAILY_LIMIT/.test(error.message) ? "오늘은 10점까지 응모할 수 있어요. 내일 다시 응모해 주세요!" : error.message);
+        throw new Error(/CLOSED/.test(error.message) ? "응모가 마감되었습니다." : /DAILY_LIMIT/.test(error.message) ? "오늘은 30점까지 응모할 수 있어요. 내일 다시 응모해 주세요!" : error.message);
       }
       const m = mine();
       m[newId] = { key, title, cat: category, thumb: paths.photo_thumb, at: kstToday() };

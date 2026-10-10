@@ -5,7 +5,7 @@
 --
 --  · 부문: 사진(photo) / 숏폼 영상(short). 영상은 파일 대신 SNS 링크 + 대표 화면 캡처로 받는다.
 --  · 응모: 로그인 없이 누구나. 관리자가 '승인' 해야 게시판에 보입니다.
---  · 투표: 로그인한 사람만, 하루(한국 시간) 3표(사진·동영상 통합), 같은 작품엔 하루 1표.
+--  · 투표: 로그인한 사람만, 하루(한국 시간) 10표(사진·동영상 통합), 같은 작품엔 하루 1표.
 --  · 기간: 응모·투표 모두 2026-10-09 ~ 2026-12-30 (한국 시간). 발표 12-31 14:00.
 --  · 시상 점수 = 심사 30% + 시민투표 70% (계산은 관리자 화면 admin/contest.html)
 -- ---------------------------------------------------------------------------
@@ -154,7 +154,7 @@ create policy "내 투표만 보기" on public.contest_votes
   for select using (user_id = auth.uid() or public.is_staff());
 
 -- 투표하기: 결과를 글자로 돌려준다
---   OK / LOGIN(로그인 필요) / CLOSED(기간 아님) / NOENTRY(없는·미승인 작품) / DUP(오늘 이미 투표) / LIMIT(오늘 3표 다 씀)
+--   OK / LOGIN(로그인 필요) / CLOSED(기간 아님) / NOENTRY(없는·미승인 작품) / DUP(오늘 이미 투표) / LIMIT(오늘 10표 다 씀)
 --   votes_left 는 오늘 남은 표
 create or replace function public.contest_vote(p_entry bigint)
 returns table (result text, votes_left int, entry_votes int)
@@ -177,29 +177,29 @@ begin
     return query select 'NOENTRY'::text, 0, 0; return;
   end if;
 
-  perform pg_advisory_xact_lock(hashtext(uid::text));          -- 같은 사람이 동시에 눌러도 3표를 넘지 않게
+  perform pg_advisory_xact_lock(hashtext(uid::text));          -- 같은 사람이 동시에 눌러도 10표를 넘지 않게
 
-  -- 오늘 쓴 표 (사진·동영상 통합 시상이므로 부문 구분 없이 하루 3표)
+  -- 오늘 쓴 표 (사진·동영상 통합 시상이므로 부문 구분 없이 하루 10표)
   select count(*) into used
     from contest_votes v
    where v.user_id = uid and v.vote_day = today;
   if exists (select 1 from contest_votes where user_id = uid and vote_day = today and entry_id = p_entry) then
     select vote_count into cnt from contest_entries where id = p_entry;
-    return query select 'DUP'::text, greatest(3 - used, 0), cnt; return;
+    return query select 'DUP'::text, greatest(10 - used, 0), cnt; return;
   end if;
-  if used >= 3 then
+  if used >= 10 then
     select vote_count into cnt from contest_entries where id = p_entry;
     return query select 'LIMIT'::text, 0, cnt; return;
   end if;
 
   insert into contest_votes (entry_id, user_id, vote_day) values (p_entry, uid, today);
   update contest_entries set vote_count = vote_count + 1 where id = p_entry returning vote_count into cnt;
-  return query select 'OK'::text, 3 - used - 1, cnt;
+  return query select 'OK'::text, 10 - used - 1, cnt;
 end $$;
 grant execute on function public.contest_vote(bigint) to authenticated;
 
 
--- 응모한 접속 주소(IP 해시) — 하루 10점 제한용. 응모작 표와 따로 두고 읽기 정책을 만들지 않아 아무도 볼 수 없다.
+-- 응모한 접속 주소(IP 해시) — 하루 30점 제한용. 응모작 표와 따로 두고 읽기 정책을 만들지 않아 아무도 볼 수 없다.
 create table if not exists public.contest_submitters (
   entry_id   bigint primary key references public.contest_entries(id) on delete cascade,
   submitter  text not null,
@@ -221,9 +221,9 @@ declare
   today  date := (now() at time zone 'Asia/Seoul')::date;
 begin
   if (now() at time zone 'Asia/Seoul') >= timestamp '2026-12-31 00:00' then raise exception 'CLOSED'; end if;
-  -- 도배 방지: 같은 접속 주소(IP)에서 하루(한국 시간) 10점까지
+  -- 도배 방지: 같은 접속 주소(IP)에서 하루(한국 시간) 30점까지
   if (select count(*) from contest_submitters
-       where submitter = who and (created_at at time zone 'Asia/Seoul')::date = today) >= 10 then
+       where submitter = who and (created_at at time zone 'Asia/Seoul')::date = today) >= 30 then
     raise exception 'DAILY_LIMIT';
   end if;
   if p_category not in ('photo', 'short') then raise exception 'BAD_CATEGORY'; end if;
