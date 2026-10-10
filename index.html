@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261010c">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010d">
 </head>
 <body>
 
@@ -185,7 +185,7 @@
 <section class="section contest" id="contest">
   <div class="wrap">
     <div class="contest__grid">
-      <div class="contest__intro reveal">
+      <div class="contest__card contest__intro reveal">
         <span class="eyebrow eyebrow--light">Photo Contest</span>
         <h2>용마미식거리 <em>사진전</em></h2>
         <p class="contest__cats">📷 사진 · 🎬 동영상 자율 참가</p>
@@ -203,33 +203,18 @@
         </dl>
       </div>
 
-      <!-- 응모 예시 그림 — 사진전 페이지(contest.html #enter) 의 휴대폰 예시 3장과 같은 내용 -->
-      <div class="ct-howto ct-howto--dark reveal" aria-label="응모 예시">
-        <figure class="ct-phone">
-          <div class="ct-phone__screen">
-            <div class="ct-ig__top"><i></i><b>my_gangneung</b><span>···</span></div>
-            <img src="assets/img/gallery/20260918_201800_t.webp" alt="">
-            <div class="ct-ig__bar">♡ 💬 ↗</div>
-            <p class="ct-ig__cap"><b>my_gangneung</b> 오늘 저녁은 여기서! <mark>#용마미식거리사진전</mark> <mark>#용마미식거리</mark></p>
-          </div>
-          <figcaption><span>1</span><b>SNS 인증샷</b>해시태그 두 개가 보이게 게시물 화면을 캡처</figcaption>
-        </figure>
-        <figure class="ct-phone">
-          <div class="ct-phone__screen ct-phone__screen--photo">
-            <img src="assets/img/gallery/20260918_185900_t.webp" alt="">
-            <span class="ct-tag">원본 사진</span>
-          </div>
-          <figcaption><span>2</span><b>사진 부문</b>SNS에 올린 그 사진의 원본 파일</figcaption>
-        </figure>
-        <figure class="ct-phone">
-          <div class="ct-phone__screen ct-phone__screen--video">
-            <img src="assets/img/gallery/20260918_201709_t.webp" alt="">
-            <span class="ct-play" aria-hidden="true">▶</span>
-            <span class="ct-tag">대표 화면 캡처</span>
-          </div>
-          <figcaption><span>3</span><b>동영상 부문</b>영상에서 가장 멋진 장면을 캡처 + 게시물 주소</figcaption>
-        </figure>
-      </div>
+      <!-- 응모 현황 — 실시간 (assets/js/contest-live.js). 숫자는 실제 값, 응모작이 없을 때만 TOP 5 가 '예시' -->
+      <aside class="contest__card contest__status reveal" id="contest-status" aria-label="응모 현황">
+        <div class="cs__head"><span class="contest-live__dot" aria-hidden="true"></span><b>응모 현황</b><small>실시간</small></div>
+        <dl class="cs__stats">
+          <div><dt>응모작</dt><dd><b id="cs-total">0</b>점</dd><small id="cs-split">사진 0 · 동영상 0</small></div>
+          <div><dt>시민 투표</dt><dd><b id="cs-votes">0</b>표</dd><small id="cs-today">하루 10표 투표</small></div>
+          <div><dt>응모 마감</dt><dd><b id="cs-dday">D-</b></dd><small>12. 30.(수) 23:59</small></div>
+        </dl>
+        <p class="cs__sub">득표 TOP 5 <em id="cs-ex"></em></p>
+        <ol class="cs__bars" id="cs-bars"></ol>
+        <a class="cs__more" href="contest.html#board">전체 순위 보고 투표하기 →</a>
+      </aside>
     </div>
 
 
@@ -581,6 +566,6 @@
 <script src="assets/js/events.js?v=20261009b"></script>
 <script src="assets/js/calendar.js?v=20261009b"></script>
 <script src="assets/js/contest-samples.js?v=20261009"></script>
-<script src="assets/js/contest-live.js?v=20261009c"></script>
+<script src="assets/js/contest-live.js?v=20261010"></script>
 </body>
 </html>

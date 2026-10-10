@@ -1506,3 +1506,33 @@ img, video, iframe, table { max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .ct-bar__track i { transition: none; } }
 .ct-chart__tip[hidden] { display: none; }
+
+/* 메인 사진전 — 왼쪽 안내 카드 / 오른쪽 응모 현황 카드 */
+.contest__grid { align-items: stretch; }
+.contest__card { padding: clamp(22px, 3vw, 34px); border-radius: 24px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); }
+.contest__status { display: flex; flex-direction: column; background: #fff; color: var(--ink-900); border: 0; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+.cs__head { display: flex; align-items: center; gap: 10px; }
+.cs__head b { font-size: 1.25rem; color: var(--ink-900); }
+.cs__head small { margin-left: auto; padding: 3px 10px; border-radius: 999px; background: #FFF1F0; color: #CF1322; font-size: .75rem; font-weight: 800; }
+.cs__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 0; }
+.cs__stats > div { padding: 14px 10px; border-radius: 16px; background: var(--bg-soft); text-align: center; }
+.cs__stats dt { font-size: .8125rem; font-weight: 700; color: var(--ink-500); }
+.cs__stats dd { margin-top: 4px; font-size: .9375rem; color: var(--ink-500); }
+.cs__stats dd b { font-size: clamp(1.625rem, 1.3rem + 1vw, 2.125rem); font-weight: 900; color: var(--ink-900); letter-spacing: -.02em; margin-right: 2px; font-variant-numeric: tabular-nums; }
+.cs__stats small { display: block; margin-top: 2px; font-size: .75rem; color: var(--ink-500); }
+.cs__sub { margin-top: 20px; font-size: .9375rem; font-weight: 800; color: var(--ink-900); }
+.cs__sub em { margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #FFD166; color: #2A1500; font-style: normal; font-size: .6875rem; font-weight: 900; vertical-align: 2px; }
+.cs__sub em:empty { display: none; }
+.cs__bars { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.cs__bars li { display: grid; grid-template-columns: 20px minmax(80px, 38%) 1fr 44px; align-items: center; gap: 10px; }
+.cs__rank { text-align: center; font-size: .8125rem; font-weight: 800; color: var(--ink-500); }
+.cs__bars li.is-top .cs__rank { color: var(--ink-900); }
+.cs__name { font-size: .875rem; font-weight: 600; color: var(--ink-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs__track { position: relative; height: 12px; border-left: 1px solid var(--line); }
+.cs__track i { position: absolute; left: 0; top: 0; bottom: 0; background: #E0701F; border-radius: 0 4px 4px 0; transition: width .6s var(--ease); }
+.cs__val { text-align: right; font-size: .875rem; font-weight: 800; color: var(--ink-900); font-variant-numeric: tabular-nums; }
+.cs__none { display: block !important; padding: 12px 0; color: var(--ink-500); font-size: .875rem; }
+.cs__more { margin-top: auto; padding-top: 16px; align-self: flex-end; color: var(--amber-700); font-weight: 800; font-size: .9375rem; }
+.contest .cs__head b, .contest .cs__sub { color: var(--ink-900); }
+@media (max-width: 899px) { .contest__card { padding: 20px; } }
+@media (prefers-reduced-motion: reduce) { .cs__track i { transition: none; } }

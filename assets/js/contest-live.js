@@ -20,14 +20,42 @@
   const pub = (p) => c.storage.from("contest").getPublicUrl(p).data.publicUrl;
   let seen = null;                 // 처음 그린 뒤 새로 들어온 작품에 'NEW' 표시
 
+  /* ---------- 오른쪽 '응모 현황' 카드 ---------- */
+  const $id = (k) => document.getElementById(k);
+  function ddayText() {
+    const now = new Date(Date.now() + 9 * 3600e3), today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    const d = Math.round((Date.UTC(2026, 11, 30) - today) / 86400000);
+    return d > 0 ? `D-${d}` : d === 0 ? "D-DAY" : "마감";
+  }
+  function drawStatus(all, sample) {
+    if (!$id("contest-status")) return;
+    const photo = all.filter((e) => e.category !== "short").length, short = all.length - photo;
+    const votes = all.reduce((s, e) => s + (e.vote_count || 0), 0);
+    $id("cs-total").textContent = all.length.toLocaleString("ko-KR");
+    $id("cs-split").textContent = `사진 ${photo} · 동영상 ${short}`;
+    $id("cs-votes").textContent = votes.toLocaleString("ko-KR");
+    $id("cs-dday").textContent = ddayText();
+    // TOP 5 — 실제 응모작이 없으면 예시 작품으로 (예시 표시)
+    const src = all.length ? all.map((e) => ({ title: e.title, votes: e.vote_count || 0, short: e.category === "short" }))
+                           : (window.CONTEST_SAMPLES || []).map((s) => ({ title: s.title, votes: s.votes, short: s.category === "short" }));
+    const top = src.sort((a, b) => b.votes - a.votes).slice(0, 5);
+    const max = Math.max(1, top.length ? top[0].votes : 1);
+    $id("cs-ex").textContent = all.length ? "" : "예시";
+    $id("cs-bars").innerHTML = top.map((x, i) => `<li${i === 0 && x.votes ? ' class="is-top"' : ""}>
+        <span class="cs__rank">${i + 1}</span>
+        <span class="cs__name">${x.short ? "🎬 " : ""}${esc(x.title)}</span>
+        <span class="cs__track"><i style="width:${Math.max(x.votes / max * 100, x.votes ? 3 : 0)}%"></i></span>
+        <span class="cs__val">${x.votes.toLocaleString("ko-KR")}</span>
+      </li>`).join("") || '<li class="cs__none">첫 응모의 주인공을 기다려요</li>';
+  }
+
   async function load() {
-    if (!c) { drawSamples(); return; }                          // 서버 연결 없음 → 예시만
-    const [{ data, error }, { count: total }] = await Promise.all([
-      c.from("contest_entries").select("id,category,title,nickname,photo_thumb,vote_count")
-        .eq("status", "approved").order("created_at", { ascending: false }).limit(SHOW),
-      c.from("contest_entries").select("id", { count: "exact", head: true }).eq("status", "approved"),
-    ]);
-    if (error || !data || !data.length) { drawSamples(); return; }       // 표 없음·응모작 없음 → 예시 카드
+    if (!c) { drawSamples(); drawStatus([], true); return; }    // 서버 연결 없음 → 예시만
+    const { data: all, error } = await c.from("contest_entries").select("id,category,title,nickname,photo_thumb,vote_count")
+      .eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
+    drawStatus(error ? [] : all || [], !all || !all.length);
+    const data = (all || []).slice(0, SHOW), total = (all || []).length;
+    if (error || !data.length) { drawSamples(); return; }               // 표 없음·응모작 없음 → 예시 카드
     const fresh = seen ? new Set(data.filter((e) => !seen.has(e.id)).map((e) => e.id)) : new Set();
     seen = new Set(data.map((e) => e.id));
     count.textContent = total ? `${total}점` : "";
