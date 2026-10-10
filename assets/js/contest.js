@@ -116,6 +116,7 @@
 
     if (!list.length) {                       // 응모작이 없으면 '예시' 줄로 채운다 (contest-samples.js)
       const ex = (window.CONTEST_SAMPLES || []).filter((s) => cat === "all" || s.category === cat);
+      drawChart(ex.map((s) => ({ title: s.title, nickname: s.nickname, votes: s.votes, category: s.category })), true);
       grid.innerHTML = `<p class="ct-empty ct-empty--ex">아직 게시된 ${cat === "all" ? "" : CAT[cat] + " "}응모작이 없어요. 아래는 <b>예시</b>입니다 — 첫 번째 주인공이 되어 주세요! <a href="#enter">응모하기 →</a></p>` +
         `<div class="ct-list">${head}` +
         ex.map((s, i) => `<div class="ct-row ct-row--sample">
@@ -127,6 +128,7 @@
         </div>`).join("") + `</div>`;
       return;
     }
+    drawChart(list.map((e) => ({ id: e.id, title: e.title, nickname: e.nickname, votes: e.vote_count, category: e.category })), false);
     const left = leftOf();
     grid.innerHTML = `<div class="ct-list">${head}` + list.map((e, i) => {
       const voted = myVotes.has(e.id), short = e.category === "short";
@@ -151,6 +153,50 @@
           ${voted ? "투표함 ✓" : !open ? "마감" : user && left === 0 ? "표 소진" : "♥ 투표"}</button></span>
       </div>`;
     }).join("") + `</div>`;
+  }
+
+  /* ---------- 실시간 투표 현황 — 득표 TOP 10 가로 막대 ----------
+     한 가지 값(득표)만 보여 주므로 색은 한 가지(#E0701F, 흰 바탕 대비 3:1 이상).
+     막대 길이 = 1위 득표 대비 비율. 값·제목은 글자색으로 막대 옆에 직접 적고, 마우스를 올리면 자세히. */
+  const chartBox = $("#ct-chart"), chartBars = $("#ct-chart-bars"), chartTip = $("#ct-chart-tip");
+  let chartItems = [];
+  function drawChart(items, sample) {
+    if (!chartBox) return;
+    const top = items.slice().sort((a, b) => b.votes - a.votes || (b.id || 0) - (a.id || 0)).slice(0, 10);
+    if (!top.length) { chartBox.hidden = true; return; }
+    const max = Math.max(1, top[0].votes), sum = items.reduce((s, x) => s + x.votes, 0) || 1;
+    chartItems = top;
+    $("#ct-chart-title").textContent = sample ? "실시간 투표 현황 (예시)" : "실시간 투표 현황";
+    $("#ct-chart-sub").textContent = sample ? "응모작이 올라오면 실제 득표로 바뀝니다"
+      : `${cat === "all" ? "전체" : CAT[cat]} · 총 ${sum.toLocaleString("ko-KR")}표 · 득표 상위 ${top.length}점`;
+    chartBars.innerHTML = top.map((x, i) => {
+      const w = x.votes / max * 100;
+      return `<li class="ct-bar${i === 0 && x.votes > 0 ? " is-top" : ""}" data-i="${i}" tabindex="0"
+          aria-label="${i + 1}위 ${esc(x.title)} ${x.votes}표">
+        <span class="ct-bar__rank">${i + 1}</span>
+        <span class="ct-bar__name">${x.category === "short" ? "🎬 " : ""}${esc(x.title)}</span>
+        <span class="ct-bar__track"><i style="width:${Math.max(w, x.votes ? 2 : 0)}%"></i></span>
+        <span class="ct-bar__val"><b>${x.votes.toLocaleString("ko-KR")}</b>표</span>
+      </li>`;
+    }).join("");
+    chartBox.dataset.sum = sum;
+    chartBox.hidden = false;
+  }
+  // 마우스·키보드로 막대에 올리면 자세히 (득표·전체 대비 비율)
+  function showTip(li) {
+    const x = chartItems[+li.dataset.i]; if (!x) return;
+    const pct = (x.votes / (+chartBox.dataset.sum || 1) * 100).toFixed(1);
+    chartTip.innerHTML = `<b>${esc(x.title)}</b><span>by ${esc(x.nickname)} · ${x.category === "short" ? "동영상" : "사진"}</span>
+      <span><b>${x.votes.toLocaleString("ko-KR")}표</b> · 전체의 ${pct}%</span>`;
+    const r = li.getBoundingClientRect(), b = chartBox.getBoundingClientRect();
+    chartTip.style.top = (r.top - b.top - 6) + "px";
+    chartTip.hidden = false;
+  }
+  if (chartBars) {
+    chartBars.addEventListener("mouseover", (ev) => { const li = ev.target.closest(".ct-bar"); if (li) showTip(li); });
+    chartBars.addEventListener("focusin", (ev) => { const li = ev.target.closest(".ct-bar"); if (li) showTip(li); });
+    chartBars.addEventListener("mouseleave", () => (chartTip.hidden = true));
+    chartBars.addEventListener("focusout", () => (chartTip.hidden = true));
   }
 
   /* ---------- 로그인·남은 표 표시 ---------- */
@@ -455,6 +501,14 @@
     user = await Auth.user();
     await Promise.all([loadEntries(), loadMyVotes()]);
     draw(); drawVotebar(); drawMine();
+    // 실시간 — 다른 사람이 투표·응모하면 게시판과 투표 현황 그래프가 바로 바뀐다
+    let rt = null;
+    try {
+      sb().channel("contest-board")
+        .on("postgres_changes", { event: "*", schema: "public", table: "contest_entries" }, () => {
+          clearTimeout(rt); rt = setTimeout(async () => { await loadEntries(); draw(); }, 800);
+        }).subscribe();
+    } catch (e) { /* 실시간을 못 써도 페이지는 동작 */ }
     sb().auth.onAuthStateChange(async (_e, s) => {                   // 다른 탭에서 로그인·로그아웃
       const u = s?.user || null;
       if ((u && u.id) === (user && user.id)) return;

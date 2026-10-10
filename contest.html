@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261010">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010c">
 </head>
 <body>
 <div id="site-header"></div>
@@ -75,6 +75,16 @@
     <!-- 투표 상태(로그인 여부·오늘 남은 표) -->
     <div class="ct-votebar" id="ct-votebar"></div>
     <div id="ct-msg" class="alert"></div>
+
+    <!-- 실시간 투표 현황 — 득표 TOP 10 가로 막대 (assets/js/contest.js drawChart) -->
+    <figure class="ct-chart" id="ct-chart" hidden aria-labelledby="ct-chart-title">
+      <figcaption class="ct-chart__head">
+        <b id="ct-chart-title">실시간 투표 현황</b>
+        <span class="ct-chart__sub" id="ct-chart-sub"></span>
+      </figcaption>
+      <ol class="ct-chart__bars" id="ct-chart-bars"></ol>
+      <div class="ct-chart__tip" id="ct-chart-tip" role="status" hidden></div>
+    </figure>
 
     <div class="ct-grid" id="ct-grid"><p class="muted">응모작을 불러오는 중입니다…</p></div>
   </div>
@@ -236,6 +246,6 @@
 <script src="assets/js/auth.js?v=20261006f"></script>
 <script src="assets/js/main.js?v=20261009e"></script>
 <script src="assets/js/contest-samples.js?v=20261009"></script>
-<script src="assets/js/contest.js?v=20261010b"></script>
+<script src="assets/js/contest.js?v=20261010c"></script>
 </body>
 </html>

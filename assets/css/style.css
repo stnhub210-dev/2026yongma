@@ -1481,3 +1481,28 @@ img, video, iframe, table { max-width: 100%; }
 .ct-acct__pre { display: flex; align-items: center; padding: 0 12px; background: var(--bg-soft); color: var(--ink-500); font-size: .9375rem; font-weight: 600; white-space: nowrap; border-right: 1px solid var(--line); }
 .ct-acct .input { border: 0; border-radius: 0; box-shadow: none; min-width: 0; flex: 1; }
 .ct-acct .input:focus { box-shadow: none; }
+
+/* 사진전 실시간 투표 현황 — 가로 막대 (한 가지 색, 기준선 왼쪽, 끝만 둥글게) */
+.ct-chart { position: relative; margin: 0 0 16px; padding: 18px 20px 14px; background: #fff; border: 1px solid var(--line); border-radius: 18px; }
+.ct-chart__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 12px; }
+.ct-chart__head b { font-size: 1.0625rem; color: var(--ink-900); }
+.ct-chart__sub { font-size: .8125rem; color: var(--ink-500); }
+.ct-chart__bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.ct-bar { display: grid; grid-template-columns: 26px minmax(90px, 220px) 1fr 70px; align-items: center; gap: 10px; padding: 5px 6px; border-radius: 8px; cursor: default; outline: none; }
+.ct-bar:hover, .ct-bar:focus-visible { background: var(--bg-soft); }
+.ct-bar__rank { text-align: center; font-size: .8125rem; font-weight: 800; color: var(--ink-500); font-variant-numeric: tabular-nums; }
+.ct-bar.is-top .ct-bar__rank { color: var(--ink-900); }
+.ct-bar__name { font-size: .875rem; font-weight: 600; color: var(--ink-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-bar__track { position: relative; height: 14px; border-left: 1px solid var(--line); }
+.ct-bar__track i { position: absolute; left: 0; top: 0; bottom: 0; background: #E0701F; border-radius: 0 4px 4px 0; transition: width .6s var(--ease); }
+.ct-bar__val { text-align: right; font-size: .8125rem; color: var(--ink-500); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ct-bar__val b { font-size: .9375rem; color: var(--ink-900); margin-right: 1px; }
+.ct-chart__tip { position: absolute; right: 20px; transform: translateY(-100%); display: grid; gap: 2px; padding: 8px 12px; border-radius: 10px; background: var(--ink-900); color: #fff;
+  font-size: .8125rem; pointer-events: none; box-shadow: var(--shadow); z-index: 2; }
+.ct-chart__tip span { color: rgba(255,255,255,.8); }
+@media (max-width: 640px) {
+  .ct-chart { padding: 14px 12px 10px; }
+  .ct-bar { grid-template-columns: 22px minmax(70px, 34%) 1fr 54px; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .ct-bar__track i { transition: none; } }
+.ct-chart__tip[hidden] { display: none; }
