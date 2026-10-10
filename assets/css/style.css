@@ -1834,3 +1834,10 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .zone-card--link:hover .card__img img { transform: scale(1.06); }
 .zone-card--link .card__body::after { content: "자세히 보기 →"; display: block; margin-top: 10px; font-size: .8125rem; font-weight: 800; color: var(--amber-700); }
 @media (max-width: 640px) { .zone-card--link .card__body::after { font-size: .6875rem; margin-top: 6px; } }
+
+/* 개막 안내 포스터 — 휴대폰에서 잘리지 않게 작게, 전체 보이기 */
+@media (max-width: 640px) {
+  #opening .figure { max-width: 300px; margin-inline: auto; }
+  #opening .figure img { aspect-ratio: auto !important; height: auto; object-fit: contain !important; }
+  #opening .figure figcaption { font-size: .6875rem; padding: 8px 12px; text-align: center; }
+}
