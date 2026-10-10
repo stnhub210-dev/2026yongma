@@ -1905,3 +1905,11 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   .info-bar .wrap > * { font-size: .6875rem !important; }
   .info-bar .chip { padding: 2px 8px; }
 }
+
+/* 포스터 위 카카오톡 공유하기 */
+.share-row { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border: 0; border-radius: 999px; background: #FEE500; color: #191600;
+  font: inherit; font-size: .9375rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.12); transition: transform .2s var(--ease), box-shadow .2s; }
+.share-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 10px 24px rgba(0,0,0,.18); }
+.share-msg { font-size: .8125rem; font-weight: 700; color: var(--amber-700); }
+@media (max-width: 640px) { .share-row { justify-content: center; max-width: 300px; margin-inline: auto; } .share-btn { font-size: .8125rem; padding: 8px 14px; } }
