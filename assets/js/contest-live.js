@@ -15,7 +15,7 @@
   const row = document.getElementById("contest-live-row");
   const count = document.getElementById("contest-live-count");
   const SHOW = 12;
-  const CAT = { photo: "📷 사진", short: "🎬 동영상" };
+  const CAT = { photo: "사진", short: "동영상" };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const pub = (p) => c.storage.from("contest").getPublicUrl(p).data.publicUrl;
   let seen = null;                 // 처음 그린 뒤 새로 들어온 작품에 'NEW' 표시
@@ -44,7 +44,7 @@
     $id("cs-bars").innerHTML = top.map((x, i) => `<li${i === 0 && x.votes ? ' class="is-top"' : ""}>
         <span class="cs__rank">${i + 1}</span>
         <span class="cs__img"><img src="${x.img}" alt="" loading="lazy">${x.short ? '<i aria-hidden="true">▶</i>' : ""}</span>
-        <span class="cs__name">${x.short ? "🎬 " : ""}${esc(x.title)}</span>
+        <span class="cs__name">${x.short ? "" : ""}${esc(x.title)}</span>
         <span class="cs__track"><i style="width:${Math.max(x.votes / max * 100, x.votes ? 3 : 0)}%"></i></span>
         <span class="cs__val">${x.votes.toLocaleString("ko-KR")}</span>
       </li>`).join("") || '<li class="cs__none">첫 응모의 주인공을 기다려요</li>';

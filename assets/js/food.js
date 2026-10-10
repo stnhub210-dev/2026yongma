@@ -38,7 +38,7 @@
   const card = (e, big) => `<article class="fs-card${e.winner ? " is-win" : ""}" data-id="${e.id}">
       <button type="button" class="fs-card__img" aria-label="${esc(e.shop_name)} ${esc(e.menu_name)} 크게 보기">
         <img src="${pub(e.photo_thumb)}" alt="" loading="lazy">
-        ${e.winner ? '<span class="fs-win">🏆 이달의 맛집</span>' : ""}
+        ${e.winner ? '<span class="fs-win">이달의 맛집</span>' : ""}
         <span class="fs-round">${ROUND[e.round] || e.round}</span>
       </button>
       <div class="fs-card__body"><b>${esc(e.shop_name)}</b><span>${esc(e.menu_name)}</span>${e.intro && big !== false ? `<em>${esc(e.intro)}</em>` : ""}</div>

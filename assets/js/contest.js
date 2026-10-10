@@ -174,7 +174,7 @@
       return `<li class="ct-bar${i === 0 && x.votes > 0 ? " is-top" : ""}" data-i="${i}" tabindex="0"
           aria-label="${i + 1}위 ${esc(x.title)} ${x.votes}표">
         <span class="ct-bar__rank">${i + 1}</span>
-        <span class="ct-bar__name">${x.category === "short" ? "🎬 " : ""}${esc(x.title)}</span>
+        <span class="ct-bar__name">${x.category === "short" ? "" : ""}${esc(x.title)}</span>
         <span class="ct-bar__track"><i style="width:${Math.max(w, x.votes ? 2 : 0)}%"></i></span>
         <span class="ct-bar__val"><b>${x.votes.toLocaleString("ko-KR")}</b>표</span>
       </li>`;

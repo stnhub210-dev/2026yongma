@@ -7,7 +7,7 @@
 <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="../assets/css/style.css?v=20261010zq">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261010zr">
 <style>
   .fa-thumb { width: 96px; height: 72px; object-fit: cover; border-radius: 8px; cursor: zoom-in; background: #eee; }
   .fa-mini { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; max-width: 120px; }
@@ -78,7 +78,7 @@
       <tr data-id="${r.id}">
         <td><img class="fa-thumb" src="${url(r.photo_thumb)}" data-big="${esc(r.photo_path)}" data-cap="${esc(r.shop_name)} — ${esc(r.menu_name)}" alt="">
             ${(r.photos || []).length ? `<div class="fa-mini">${r.photos.map((p) => `<img src="${url(p.thumb)}" data-big="${esc(p.path)}" data-cap="${esc(r.shop_name)} — ${{ sign: "간판", inside: "내부 전경", food: "음식" }[p.kind] || ""}" title="${{ sign: "간판", inside: "내부", food: "음식" }[p.kind] || ""}" alt="">`).join("")}</div><span class="tiny muted">사진 ${r.photos.length}장</span>` : ""}</td>
-        <td>${r.winner ? '<span class="chip chip--amber">🏆 당첨</span> ' : ""}<b>${esc(r.shop_name)}</b><br><span class="tiny">${esc(r.menu_name)} · ${UI.date(r.created_at)}</span>
+        <td>${r.winner ? '<span class="chip chip--amber">당첨</span> ' : ""}<b>${esc(r.shop_name)}</b><br><span class="tiny">${esc(r.menu_name)} · ${UI.date(r.created_at)}</span>
             ${r.intro ? `<br><span class="tiny muted">${esc(r.intro)}</span>` : ""}</td>
         <td class="tiny">${esc(priv[r.id]?.owner_name || "-")}<br><a href="tel:${esc(priv[r.id]?.phone || "")}">${esc(priv[r.id]?.phone || "-")}</a></td>
         <td>${ROUND[r.round] || esc(r.round)}</td>

@@ -250,7 +250,7 @@
     if (loadError) { grid.innerHTML = `<p class="muted" style="grid-column:1/-1">${esc(loadError)}</p>`; return; }
     const m = mine();
     if (!list.length) {
-      grid.innerHTML = `<p class="muted" style="grid-column:1/-1">첫 사진을 올려 주세요. 「📷 사진 올리기」를 누르면 됩니다.</p>`;
+      grid.innerHTML = `<p class="muted" style="grid-column:1/-1">첫 사진을 올려 주세요. 「사진 올리기」를 누르면 됩니다.</p>`;
       return;
     }
     // 날짜별로 묶기 — 최근 날짜 먼저 (list 는 이미 날짜·시각 최신순)
@@ -304,7 +304,7 @@
           </div>
           <div class="gal-up__headr">
             <span class="chip" id="up-count">—</span>
-            <button class="btn btn--primary btn--sm" type="button" data-up-open>📷 사진 올리기</button>
+            <button class="btn btn--primary btn--sm" type="button" data-up-open>사진 올리기</button>
           </div>
         </div>
         <p class="gal-up__done" id="up-done" hidden></p>
@@ -318,12 +318,12 @@
     dlg.setAttribute("aria-label", "사진 올리기");
     dlg.innerHTML = `
       <form method="dialog" class="up-dlg__box" onsubmit="return false">
-        <div class="up-dlg__head"><h3>📷 사진 올리기</h3><button type="button" class="up-dlg__x" data-up-close aria-label="닫기">×</button></div>
+        <div class="up-dlg__head"><h3>사진 올리기</h3><button type="button" class="up-dlg__x" data-up-close aria-label="닫기">×</button></div>
 
         <p class="up-dlg__step"><span>1</span>누가 올리나요?</p>
         <div class="up-dlg__who" role="radiogroup" aria-label="올리는 사람">
-          <label><input type="radio" name="up-kind" value="visitor" checked><span><b>🙋 방문객</b><small>아래 '방문객 사진'에 올라가요</small></span></label>
-          <label><input type="radio" name="up-kind" value="staff"><span><b>🎬 수행사</b><small>STN·상인회·기획사 — 날짜별 갤러리로</small></span></label>
+          <label><input type="radio" name="up-kind" value="visitor" checked><span><b>방문객</b><small>아래 '방문객 사진'에 올라가요</small></span></label>
+          <label><input type="radio" name="up-kind" value="staff"><span><b>수행사</b><small>STN·상인회·기획사 — 날짜별 갤러리로</small></span></label>
         </div>
         <p class="tiny muted" id="up-kind-note" style="min-height:1.2em"></p>
 

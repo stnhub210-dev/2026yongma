@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="../assets/css/style.css?v=20261010zq">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261010zr">
 <style>
   /* 이 화면 전용 — 응모작 썸네일과 점수 칸 */
   .cta-thumb { width: 96px; height: 72px; object-fit: cover; border-radius: 8px; cursor: zoom-in; background: #eee; }
@@ -46,7 +46,7 @@
         <button data-f="all">전체</button>
         <span style="width:16px"></span>
         <select class="select" id="catf" style="width:auto;padding:7px 12px">
-          <option value="all">부문 전체</option><option value="photo">📷 사진 부문</option><option value="short">🎬 동영상 부문</option>
+          <option value="all">부문 전체</option><option value="photo">사진 부문</option><option value="short">동영상 부문</option>
         </select>
       </div>
       <div class="table-scroll">
@@ -82,7 +82,7 @@
 
   /* 최종 점수 — 사진·동영상 통합, 승인작만 순위를 매긴다.
      투표 점수 = 최다 득표를 100점으로 환산 */
-  const CATN = { photo: "📷 사진", short: "🎬 동영상" };
+  const CATN = { photo: "사진", short: "동영상" };
   let catF = "all";
   const ranked = () => {
     const out = [];
