@@ -2018,3 +2018,30 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 @media (max-width: 640px) { .sec-bar__tabs { margin-left: -16px; } .sec-bar__tabs .sec-bar__tab { font-size: .8125rem; } .sec-bar__tabs .sec-bar__tab--2 { padding-left: 28px; } }
 .social-kakao { background: #FEE500; color: #191600; border-color: #FEE500; box-shadow: var(--shadow-sm); margin-bottom: 8px; }
 .social-kakao:hover { background: #F5DC00; border-color: #F5DC00; }
+
+/* 구분 띠 새 디자인 (PC) — 둥근 알약 띠, 왼쪽 둥근 색 탭 + 은은한 색 바탕 + 오른쪽 영어. 휴대폰은 기존 크기 유지 */
+@media (min-width: 641px) {
+  .sec-bar { background: transparent; border-top: 0; padding: 26px 0 0; }
+  .sec-bar::after { display: none; }
+  .sec-bar__in { min-height: 58px; padding: 6px 26px 6px 6px; border-radius: 999px; width: min(100% - 40px, 1240px);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--bar) 14%, #fff), #fff 70%);
+    border: 1px solid color-mix(in srgb, var(--bar) 35%, #fff); box-shadow: 0 8px 22px color-mix(in srgb, var(--bar) 14%, transparent); }
+  .sec-bar__tab, .sec-bar__tabs .sec-bar__tab { margin-left: 0; clip-path: none; border-radius: 999px; padding: 12px 30px; font-size: 1.0625rem;
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--bar) 35%, transparent); }
+  .sec-bar__tabs { margin-left: 0; gap: 6px; }
+  .sec-bar__tabs .sec-bar__tab--2 { margin-left: 0; padding-left: 30px; }
+  .sec-bar__tabs .sec-bar__tab:not(.is-on) { box-shadow: none; }
+  .sec-bar__en { font-size: .75rem; letter-spacing: .24em; color: color-mix(in srgb, var(--bar) 70%, #333); }
+  .sec-bar__en::before { content: ""; display: inline-block; width: 26px; height: 2px; margin-right: 10px; vertical-align: middle; background: var(--bar); border-radius: 2px; }
+}
+/* 휴대폰 — 같은 둥근 디자인, 크기는 기존대로 작게 */
+@media (max-width: 640px) {
+  .sec-bar { background: transparent; border-top: 0; padding: 14px 0 0; }
+  .sec-bar::after { display: none; }
+  .sec-bar__in { min-height: 40px; padding: 4px 14px 4px 4px; border-radius: 999px; width: calc(100% - 32px);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--bar) 14%, #fff), #fff 75%); border: 1px solid color-mix(in srgb, var(--bar) 35%, #fff); }
+  .sec-bar__tab, .sec-bar__tabs .sec-bar__tab { margin-left: 0; clip-path: none; border-radius: 999px; padding: 7px 16px; }
+  .sec-bar__tabs { margin-left: 0; gap: 4px; }
+  .sec-bar__tabs .sec-bar__tab--2 { margin-left: 0; padding-left: 16px; }
+  .sec-bar__en { color: color-mix(in srgb, var(--bar) 70%, #333); }
+}
