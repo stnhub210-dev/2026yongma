@@ -2070,3 +2070,14 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 }
 @media (max-width: 640px) { .vol__body { font-size: .8125rem; } .vol__btn img { width: 90px; } .vol__btn span { font-size: 1rem; } }
 @media (min-width: 900px) { .vol__photo { width: 70%; -webkit-mask: linear-gradient(90deg, #000 30%, rgba(0,0,0,.6) 52%, transparent 82%); mask: linear-gradient(90deg, #000 30%, rgba(0,0,0,.6) 52%, transparent 82%); } }
+
+/* 봉사 섹션 — 청소하는 용지 (오른쪽 아래, 살랑살랑) */
+.vol__in { grid-template-columns: 1fr 1fr 260px; align-items: end; }
+.vol__mascot { margin: 0; grid-column: 3; text-align: center; }
+.vol__mascot img { width: 100%; height: auto; filter: drop-shadow(0 14px 22px rgba(120,60,10,.22)); animation: vol-sweep 2.8s ease-in-out infinite; transform-origin: 50% 100%; }
+.vol__mascot figcaption { margin-top: 6px; font-size: .8125rem; font-weight: 700; color: var(--ink-700); }
+.vol__mascot figcaption b { color: var(--amber-700); }
+@keyframes vol-sweep { 0%, 100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-8px); } }
+@media (max-width: 1100px) { .vol__in { grid-template-columns: 1fr 1fr 190px; } }
+@media (max-width: 899px) { .vol__in { grid-template-columns: 1fr; } .vol__mascot { grid-column: 1; width: 170px; margin: 18px auto 0; } }
+@media (prefers-reduced-motion: reduce) { .vol__mascot img { animation: none; } }
