@@ -29,13 +29,13 @@
 
     <div class="panel">
       <p class="panel-sub">
-        <b>확인 대기</b> 응모의 가게가 상인회 회원 점포인지 확인하고 <b>공개</b>하면 갤러리에 올라갑니다. 연락처는 이 화면에서만 보입니다.<br>
+        응모는 <b>올리자마자 갤러리에 공개</b>됩니다. 상인회 회원 점포가 아니거나 부적절하면 <b>반려</b>(갤러리에서 내려감)하세요. 연락처는 이 화면에서만 보입니다.<br>
         회차 말일(10. 31. / 11. 30.)에 <b>추첨</b>을 누르면 그 회차에 공개된 가게 중 아직 당첨되지 않은 가게 2곳을 무작위로 뽑습니다(가게 단위).
       </p>
       <div class="fa-draw" id="fa-draw"></div>
       <div class="fa-tabs" id="tabs">
-        <button data-f="pending" class="active">확인 대기</button>
-        <button data-f="approved">공개</button>
+        <button data-f="approved" class="active">공개</button>
+        <button data-f="pending">숨김</button>
         <button data-f="rejected">반려</button>
         <button data-f="all">전체</button>
         <span style="width:12px"></span>
@@ -66,8 +66,8 @@
   const c = Admin.c, esc = Admin.esc;
   const url = (p) => c.storage.from("food").getPublicUrl(p).data.publicUrl;
   const ROUND = { "2026-10": "10월", "2026-11": "11월" };
-  const ST = { pending: ["확인 대기", ""], approved: ["공개", "chip--green"], rejected: ["반려", "chip--red"] };
-  let rows = [], priv = {}, filter = "pending", roundF = "all";
+  const ST = { pending: ["숨김", ""], approved: ["공개", "chip--green"], rejected: ["반려", "chip--red"] };
+  let rows = [], priv = {}, filter = "approved", roundF = "all";
 
   const render = () => {
     let list = filter === "all" ? rows : rows.filter((r) => r.status === filter);

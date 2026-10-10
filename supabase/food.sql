@@ -2,7 +2,7 @@
 -- 우리 가게 음식 자랑하기 — 상인회 점포 대상, 매달 말일 2곳 추첨 → STN 홍보 영상 촬영 + 홈페이지 메인 노출
 -- Supabase 대시보드 → SQL Editor 에 통째로 붙여넣고 Run 한 번만 실행하면 됩니다. 여러 번 실행해도 안전합니다.
 --
---  · 응모: 로그인 없이. 가게명·메뉴·사진 + (비공개) 사장님 이름·연락처. 관리자가 상인회 회원인지 확인 후 공개.
+--  · 응모: 로그인 없이. 가게명·메뉴·사진 + (비공개) 사장님 이름·연락처. 응모 즉시 갤러리에 공개, 상인회 회원이 아니거나 부적절하면 관리자가 숨김·반려.
 --  · 회차: 응모한 달(한국 시간) — 2026-10, 2026-11. 각 회차 말일에 공개된 응모 가게 중 2곳 추첨.
 --  · 기간: 2026-10-10 ~ 2026-11-30 23:59 (한국 시간)
 -- ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ drop policy if exists "음식자랑 연락처 관리자만" on public.food_entry
 create policy "음식자랑 연락처 관리자만" on public.food_entry_private for all using (public.is_staff()) with check (public.is_staff());
 
 
--- 4. 응모 함수 — 검사 → 등록(확인 대기) → 연락처 비공개 저장 → 번호 ------------------------
+-- 4. 응모 함수 — 검사 → 등록(즉시 공개) → 연락처 비공개 저장 → 번호 ------------------------
 create or replace function public.food_submit(
   p_shop text, p_menu text, p_intro text, p_owner text, p_phone text,
   p_photo text, p_thumb text, p_w int, p_h int)
@@ -83,8 +83,8 @@ begin
   if (select count(*) from food_entry_private where submitter = who
        and (created_at at time zone 'Asia/Seoul')::date = kst::date) >= 10 then raise exception 'DAILY_LIMIT'; end if;
 
-  insert into food_entries (round, shop_name, menu_name, intro, photo_path, photo_thumb, w, h)
-  values (to_char(kst, 'YYYY-MM'), btrim(p_shop), btrim(p_menu), coalesce(p_intro, ''), p_photo, p_thumb, p_w, p_h)
+  insert into food_entries (round, shop_name, menu_name, intro, photo_path, photo_thumb, w, h, status)
+  values (to_char(kst, 'YYYY-MM'), btrim(p_shop), btrim(p_menu), coalesce(p_intro, ''), p_photo, p_thumb, p_w, p_h, 'approved')
   returning id into new_id;
   insert into food_entry_private (entry_id, owner_name, phone, submitter) values (new_id, btrim(p_owner), btrim(p_phone), who);
   return new_id;

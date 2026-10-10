@@ -2,7 +2,7 @@
    우리 가게 음식 자랑하기 (foodshow.html) — 갤러리 · 당첨 가게 · 응모
    · 서버 쪽 표·규칙은 supabase/food.sql (먼저 SQL Editor 에서 실행해야 동작)
    · 응모: 로그인 없이. 사진은 브라우저에서 줄여서 'food' 저장소에 올리고 food_submit 함수로 등록.
-           연락처는 비공개 표에 들어가고, 관리자가 확인(공개)해야 갤러리에 보인다.
+           연락처는 비공개 표에 들어가고, 사진은 응모 즉시 갤러리에 보인다(관리자가 숨김·반려 가능).
    ========================================================================== */
 (function () {
   "use strict";
@@ -132,7 +132,8 @@
         throw new Error(k ? ERR[k] : error.message);
       }
       form.reset(); box.classList.remove("has"); box.querySelector("img").hidden = true; box.querySelector("span").textContent = "사진 고르기";
-      msg(fmsg, "ok", "응모가 접수되었습니다! 담당자가 상인회 회원 점포인지 확인한 뒤 갤러리에 공개합니다. 다른 메뉴도 응모할 수 있어요.");
+      msg(fmsg, "ok", "응모 완료! 갤러리에 바로 올라갔어요. 다른 메뉴도 응모할 수 있어요.");
+      await load();
     } catch (err) {
       msg(fmsg, "err", "응모하지 못했습니다: " + (err.message || err));
     } finally {
