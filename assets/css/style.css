@@ -1624,3 +1624,9 @@ img, video, iframe, table { max-width: 100%; }
 .cs__track { height: 14px; }
 .cs__more { font-size: 1.0625rem; }
 .fs-band p b { white-space: nowrap; }
+
+/* 음식 자랑 상금 */
+.fs-perks { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.fs-perk--money { background: linear-gradient(160deg, #FFE7B8, #FFF6E2); border-color: #F5C26B; }
+.fs-perk--money h3 { color: #B45309; }
+.fs-band__total { display: inline-block; margin-left: 6px; padding: 2px 12px; border-radius: 999px; background: #E0701F; color: #fff; font-weight: 900; font-size: .9375rem; white-space: nowrap; }
