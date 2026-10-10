@@ -2096,3 +2096,7 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .ev-tabs a.is-on::before { padding: 3px;
   background: conic-gradient(from var(--ev-a), #E0701F 0deg, #F5A04A 200deg, #fff 290deg, #FFF6D0 315deg, #E0701F 345deg, #E0701F 360deg); }
 .ev-tabs a.is-on { box-shadow: 0 0 18px rgba(255,209,102,.55); }
+/* 체크박스 줄 — 칸 안에서도 상자와 글자를 가로로 나란히, 사이 여백 */
+.field label.checkbox { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.field label.checkbox input { margin-top: 0; }
+.field label.checkbox span { line-height: 1.5; }
