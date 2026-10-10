@@ -8,7 +8,7 @@
   const lb = document.getElementById("comic-lb"), img = document.getElementById("comic-img");
   const nextBtn = document.getElementById("comic-nextep");
   if (!tabs || !grid) return;
-  const src = (ep, k) => `assets/img/comic/ep${EPS[ep - 1]}-${String(k).padStart(2, "0")}.webp`;   // ep = 화면의 편 번호(1부터)
+  const src = (ep, k) => `assets/img/comic/ep${EPS[ep - 1]}-${String(k).padStart(2, "0")}.webp?v=20261010`;   // ep = 화면의 편 번호(1부터) · ?v= 는 그림을 바꿨을 때 새로 받게
   const ALL = [];
   for (let e = 1; e <= EPISODES; e++) for (let k = 1; k <= PER; k++) ALL.push([e, k]);
   let ep = 1, cur = 0;
