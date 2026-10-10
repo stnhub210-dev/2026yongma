@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261010r">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010s">
 </head>
 <body>
 
@@ -45,10 +45,13 @@
       KTX 강릉역에서 600m. 40년 역사의 골목이 매주 금·토요일 저녁,
       차 없는 거리가 되어 네 개의 존으로 열립니다.
     </p>
-    <div class="btn-row">
-      <a class="btn btn--primary" href="zones.html" data-i18n="home.hero.cta1">4개 존 둘러보기</a>
-      <a class="btn btn--onimg" href="programs.html" data-i18n="home.hero.cta2">이번 시즌 프로그램</a>
-    </div>
+    <!-- 바로가기 4개 — PC 한 줄, 휴대폰 2개씩 2줄. 마우스를 올리면 커진다 -->
+    <nav class="hero-go" aria-label="바로가기">
+      <a href="gallery.html#upload"><span aria-hidden="true">📷</span>사진 올리기</a>
+      <a href="join.html#busker"><span aria-hidden="true">🎤</span>버스킹 신청</a>
+      <a href="join.html#experience"><span aria-hidden="true">🥬</span>김치 만들기 체험 신청</a>
+      <a href="join.html#startup"><span aria-hidden="true">🏪</span>로컬창업 신청</a>
+    </nav>
 
     <dl class="hero-stats">
       <div>

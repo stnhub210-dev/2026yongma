@@ -1810,3 +1810,16 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   .grid-2:has(> .figure) .figure img { aspect-ratio: 4 / 3; object-fit: cover; }
   .grid-2:has(> .figure) figcaption { font-size: .6875rem; padding: 6px 8px; }
 }
+
+/* 히어로 바로가기 4개 — PC 한 줄 / 휴대폰 2×2, 호버하면 확대 */
+.hero-go { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: clamp(16px, 2.8vh, 32px); max-width: 860px; }
+.hero-go a { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; padding: 12px 14px; border-radius: 16px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.28); color: #fff; text-decoration: none; text-align: center;
+  font-size: 1rem; font-weight: 800; line-height: 1.25; word-break: keep-all; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: transform .25s var(--ease), background .25s, box-shadow .25s; }
+.hero-go a span { font-size: 1.25rem; }
+.hero-go a:first-child { background: var(--amber-500); border-color: var(--amber-500); }
+.hero-go a:hover, .hero-go a:focus-visible { transform: scale(1.07); background: rgba(255,255,255,.22); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+.hero-go a:first-child:hover { background: #F7964F; }
+@media (max-width: 640px) { .hero-go { grid-template-columns: 1fr 1fr; gap: 8px; } .hero-go a { min-height: 52px; font-size: .875rem; padding: 10px; } .hero-go a span { font-size: 1.0625rem; } }
+@media (prefers-reduced-motion: reduce) { .hero-go a { transition: none; } .hero-go a:hover { transform: none; } }
