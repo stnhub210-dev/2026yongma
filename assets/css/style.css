@@ -1823,3 +1823,14 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .hero-go a:first-child:hover { background: #F7964F; }
 @media (max-width: 640px) { .hero-go { grid-template-columns: 1fr 1fr; gap: 8px; } .hero-go a { min-height: 52px; font-size: .875rem; padding: 10px; } .hero-go a span { font-size: 1.0625rem; } }
 @media (prefers-reduced-motion: reduce) { .hero-go a { transition: none; } .hero-go a:hover { transform: none; } }
+
+/* 메인 존 카드 — 카드 전체가 링크(zones.html 해당 존). 마우스를 올리면 살짝 떠오르고 사진 확대 */
+.zone-card--link { position: relative; cursor: pointer; transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.zone-card__go { position: absolute; inset: 0; z-index: 2; border-radius: inherit; }
+.zone-card__go:focus-visible { outline: 3px solid var(--amber-400); outline-offset: 2px; }
+.zone-card--link:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.zone-card--link .card__img { overflow: hidden; }
+.zone-card--link .card__img img { transition: transform .5s var(--ease); }
+.zone-card--link:hover .card__img img { transform: scale(1.06); }
+.zone-card--link .card__body::after { content: "자세히 보기 →"; display: block; margin-top: 10px; font-size: .8125rem; font-weight: 800; color: var(--amber-700); }
+@media (max-width: 640px) { .zone-card--link .card__body::after { font-size: .6875rem; margin-top: 6px; } }
