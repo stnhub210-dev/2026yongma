@@ -98,7 +98,23 @@ document.addEventListener("DOMContentLoaded", () => {
   if (location.pathname.indexOf("/admin/") === 0) return;
 
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
-  if (standalone) return;                                  // 이미 앱으로 열었으면 버튼 불필요
+  if (standalone) {                                        // 앱으로 열었으면 설치 버튼 대신 '뒤로·홈' 버튼
+    // 앱 창에는 주소창·뒤로가기 버튼이 없어서(특히 PC) 화면 왼쪽 아래에 직접 둔다
+    const home = /^\/(index\.html)?$/.test(location.pathname);
+    const nav = document.createElement("div");
+    nav.className = "app-nav";
+    nav.innerHTML =
+      (home && history.length < 2 ? "" : '<button type="button" class="app-nav__back" aria-label="뒤로 가기">← 뒤로</button>') +
+      (home ? "" : '<a class="app-nav__home" href="/" aria-label="홈으로">홈</a>');
+    if (nav.innerHTML) {
+      nav.querySelector(".app-nav__back")?.addEventListener("click", () => {
+        if (history.length > 1) history.back(); else location.href = "/";   // 처음 연 페이지면 홈으로
+      });
+      (document.body ? Promise.resolve() : new Promise((r) => addEventListener("DOMContentLoaded", r)))
+        .then(() => document.body.appendChild(nav));
+    }
+    return;
+  }
 
   const HIDE_KEY = "yongma_install_hide_until";
   try { if (Date.now() < +localStorage.getItem(HIDE_KEY)) return; } catch (e) { /* 저장소 못 써도 진행 */ }

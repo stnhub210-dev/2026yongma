@@ -1693,3 +1693,10 @@ img, video, iframe, table { max-width: 100%; }
 .ev-tabs a.is-on { background: #FFD166; color: #2A1500; }
 .ev-tabs a.is-on small { color: rgba(42,21,0,.7); }
 @media (max-width: 640px) { .ev-tabs { grid-template-columns: repeat(2, 1fr); } .ev-tabs a b { font-size: .9375rem; } }
+
+/* 앱(설치)으로 열었을 때 — 왼쪽 아래 뒤로·홈 버튼 (assets/js/main.js) */
+.app-nav { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 90; display: flex; gap: 6px; }
+.app-nav button, .app-nav a { display: inline-flex; align-items: center; padding: 10px 16px; border: 0; border-radius: 999px; background: #0E1F4D; color: #fff;
+  font: inherit; font-size: .9375rem; font-weight: 800; text-decoration: none; box-shadow: 0 6px 20px rgba(0,0,0,.28); cursor: pointer; }
+.app-nav a { background: #fff; color: #0E1F4D; }
+@media print { .app-nav { display: none; } }
