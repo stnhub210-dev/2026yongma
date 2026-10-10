@@ -249,18 +249,37 @@
     count.textContent = list.length ? `${list.length}장` : loadError ? "준비 중" : "아직 없음";
     if (loadError) { grid.innerHTML = `<p class="muted" style="grid-column:1/-1">${esc(loadError)}</p>`; return; }
     const m = mine();
-    grid.innerHTML = list.length
-      ? list.map((p, i) => `
+    if (!list.length) {
+      grid.innerHTML = `<p class="muted" style="grid-column:1/-1">첫 사진을 올려 주세요. 「📷 사진 올리기」를 누르면 됩니다.</p>`;
+      return;
+    }
+    // 날짜별로 묶기 — 최근 날짜 먼저 (list 는 이미 날짜·시각 최신순)
+    const cell = (p, i) => `
           <div class="gal-cell">
             <button class="gal-item" data-i="${i}" aria-label="${esc(p.caption || "방문객 사진")} 크게 보기">
               <img src="${p.thumbUrl}" alt="${esc(p.caption)}" loading="lazy" width="${p.w || 480}" height="${p.h || 360}">
               <span class="gal-item__cap"><b>${esc(p.taken_at || "")}</b>${esc(p.caption || (p.uploader ? p.uploader + "님" : ""))}</span>
             </button>
             ${m[p.id] ? `<button class="gal-del" data-del="${p.id}" type="button" title="내가 올린 사진 지우기">지우기</button>` : ""}
-          </div>`).join("")
-      : `<p class="muted" style="grid-column:1/-1">첫 사진을 올려 주세요. 「📷 사진 올리기」를 누르면 됩니다.</p>`;
+          </div>`;
+    const days = [];
+    list.forEach((p, i) => {
+      const d = p.taken_on || "날짜 없음";
+      let g = days[days.length - 1];
+      if (!g || g.d !== d) days.push((g = { d, items: [] }));
+      g.items.push(cell(p, i));
+    });
+    const lab = (d) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return { short: d, long: "" };
+      const [y, mo, dd] = d.split("-").map(Number);
+      return { short: `${mo}. ${dd}.(${WEEK[new Date(y, mo - 1, dd).getDay()]})`, long: dayLong(d) };
+    };
+    grid.innerHTML = days.map((g) => `
+        <div class="up-day">
+          <div class="up-day__head"><b>${lab(g.d).short}</b><span>${lab(g.d).long}</span><em>${g.items.length}장</em></div>
+          <div class="gal-grid">${g.items.join("")}</div>
+        </div>`).join("");
   }
-
   /* ---------- 화면 붙이기 ---------- */
   function mount() {
     const host = $("#gal-upload");
@@ -290,7 +309,7 @@
         </div>
         <p class="gal-up__done" id="up-done" hidden></p>
       </div>
-      <div class="gal-grid" id="up-grid"></div>`;
+      <div class="up-days" id="up-grid"></div>`;
 
     // 팝업 — ① 올리는 사람 ② 날짜 ③ 사진 파일
     const dlg = document.createElement("dialog");

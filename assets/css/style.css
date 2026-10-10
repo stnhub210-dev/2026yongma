@@ -1996,3 +1996,11 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   font-size: 1rem; font-weight: 900; letter-spacing: .02em; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 100%, 0 100%); }
 .sec-bar__en { align-self: center; font-size: .6875rem; font-weight: 800; letter-spacing: .18em; color: var(--ink-500); }
 @media (max-width: 640px) { .sec-bar__in { min-height: 36px; } .sec-bar__tab { font-size: .875rem; padding: 8px 34px 8px 16px; margin-left: -16px; } .sec-bar__en { font-size: .5625rem; letter-spacing: .12em; } }
+
+/* 방문객 사진 — 날짜별 묶음 */
+.up-days { display: grid; gap: 22px; margin-top: 8px; }
+.up-day__head { display: flex; align-items: baseline; gap: 10px; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--line); }
+.up-day__head b { padding: 3px 12px; border-radius: 999px; background: var(--amber-500); color: #fff; font-size: .9375rem; font-weight: 900; }
+.up-day__head span { font-size: .875rem; color: var(--ink-500); }
+.up-day__head em { margin-left: auto; font-style: normal; font-size: .8125rem; font-weight: 700; color: var(--ink-500); }
+@media (max-width: 640px) { .up-day__head span { display: none; } }
