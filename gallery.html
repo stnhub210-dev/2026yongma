@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261009e">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010q">
 </head>
 <body>
 <div id="site-header"></div>
@@ -29,7 +29,7 @@
       하루 안에서는 찍은 시간 순서대로 이어집니다.
     </p>
     <div class="chip-row mt-3" id="gal-summary"></div>
-    <div class="btn-row mt-3"><a class="btn btn--primary" href="#visitor">📷 사진 올리기</a></div>
+    <div class="btn-row mt-3"><a class="btn btn--primary" href="#upload" data-up-open>📷 사진 올리기</a></div>
   </div>
 </section>
 
@@ -41,7 +41,7 @@
   </div>
 </section>
 
-<!-- 방문객 사진 — 누구나 올리기 (assets/js/gallery-upload.js) -->
+<!-- 사진 올리기 — 방문객 사진은 이 칸 아래, 수행사 사진은 위 날짜별 갤러리로 (assets/js/gallery-upload.js) -->
 <section class="section section--warm" id="visitor">
   <div class="wrap">
     <div id="gal-upload"></div>
@@ -71,7 +71,7 @@
 <script src="assets/js/layout.js?v=20261006f"></script>
 <script src="assets/js/i18n.js?v=20261006f"></script>
 <script src="assets/js/auth.js?v=20261006f"></script>
-<script src="assets/js/main.js?v=20261009e"></script>
+<script src="assets/js/main.js?v=20261010"></script>
 <script src="assets/js/gallery-data.js?v=20261006f"></script>
 <script>
 /* 갤러리 — assets/js/gallery-data.js 를 날짜별로 그린다 */
@@ -91,65 +91,89 @@
     return h < 12 ? "오전" : h < 17 ? "오후" : h < 19 ? "저녁" : "밤";
   };
 
-  // 날짜별 묶기 — 최근 날짜 먼저, 하루 안에서는 시간 순
-  const byDay = {};
-  G.photos.forEach((p) => (byDay[p.date] = byDay[p.date] || []).push(p));
-  const dates = Object.keys(byDay).sort().reverse();
-  const order = dates.flatMap((d) => byDay[d]);   // 확대 보기에서 넘기는 순서
-
-  document.getElementById("gal-summary").innerHTML =
-    `<span class="chip chip--amber">사진 ${G.photos.length}장</span><span class="chip">${dates.length}일의 기록</span>`;
+  // 공식 사진 = gallery-data.js 의 기록사진 + 수행사가 홈페이지에서 올린 사진(gallery-upload.js 가 넣어 줌)
+  // 수행사 사진은 { src, thumb, canDelete, dbId } 를 함께 가지고 옵니다.
+  let staff = [];
+  let order = [];
+  let official = [];
+  let picked = "all";                              // 지금 고른 날짜 버튼
 
   const filter = document.getElementById("gal-filter");
-  filter.innerHTML = `<button class="active" data-d="all">전체</button>` +
-    dates.map((d) => `<button data-d="${d}">${dayLabel(d).short}</button>`).join("");
-
   const box = document.getElementById("gal-days");
-  box.innerHTML = dates.map((d) => {
-    const info = G.days[d] || {};
-    const lab = dayLabel(d);
-    let last = "";
-    const items = byDay[d].map((p) => {
-      const b = bucket(p.time);
-      const head = b !== last ? `<p class="gal-bucket">${b}</p>` : "";
-      last = b;
-      const i = order.indexOf(p);
-      return head + `<button class="gal-item" data-i="${i}" aria-label="${esc(p.caption || "현장 사진")} 크게 보기">
-          <img src="${IMG}${p.id}_t.webp" alt="${esc(p.caption)}" loading="lazy" width="${p.w}" height="${p.h}">
-          <span class="gal-item__cap"><b>${p.time}</b>${esc(p.caption)}</span>
-        </button>`;
-    }).join("");
-    return `<section class="gal-day" id="d-${d}" data-d="${d}">
-      <header class="gal-day__head">
-        <div class="gal-day__date"><b>${lab.short}</b><span>${lab.long}</span></div>
-        <div>
-          <h2>${esc(info.title) || lab.long}</h2>
-          ${info.note ? `<p class="muted mt-1">${esc(info.note)}</p>` : ""}
-        </div>
-        <span class="chip">${byDay[d].length}장</span>
-      </header>
-      <div class="gal-grid">${items}</div>
-    </section>`;
-  }).join("") || `<p class="muted">등록된 사진이 없습니다.</p>`;
+
+  function render() {
+    // 날짜별 묶기 — 최근 날짜 먼저, 하루 안에서는 시간 순
+    const all = G.photos.concat(staff);
+    const byDay = {};
+    all.forEach((p) => (byDay[p.date] = byDay[p.date] || []).push(p));
+    Object.values(byDay).forEach((l) => l.sort((a, b) => (a.time || "").localeCompare(b.time || "")));
+    const dates = Object.keys(byDay).sort().reverse();
+    order = dates.flatMap((d) => byDay[d]);         // 확대 보기에서 넘기는 순서
+    official = order.map((p) => ({
+      url: p.src || IMG + p.id + ".webp",
+      caption: p.caption || "현장 사진",
+      meta: `${dayLabel(p.date).long} ${p.time || ""}`.trim(),
+    }));
+    if (picked !== "all" && !byDay[picked]) picked = "all";
+
+    document.getElementById("gal-summary").innerHTML =
+      `<span class="chip chip--amber">사진 ${all.length}장</span><span class="chip">${dates.length}일의 기록</span>`;
+
+    filter.innerHTML = `<button class="${picked === "all" ? "active" : ""}" data-d="all">전체</button>` +
+      dates.map((d) => `<button class="${picked === d ? "active" : ""}" data-d="${d}">${dayLabel(d).short}</button>`).join("");
+
+    box.innerHTML = dates.map((d) => {
+      const info = G.days[d] || {};
+      const lab = dayLabel(d);
+      let last = "";
+      const items = byDay[d].map((p) => {
+        const b = bucket(p.time || "12:00");
+        const head = b !== last ? `<p class="gal-bucket">${b}</p>` : "";
+        last = b;
+        const i = order.indexOf(p);
+        const btn = `<button class="gal-item" data-i="${i}" aria-label="${esc(p.caption || "현장 사진")} 크게 보기">
+            <img src="${p.thumb || IMG + p.id + "_t.webp"}" alt="${esc(p.caption)}" loading="lazy" width="${p.w || 480}" height="${p.h || 360}">
+            <span class="gal-item__cap"><b>${esc(p.time || "")}</b>${esc(p.caption)}</span>
+          </button>`;
+        // 수행사가 올린 사진은 직원 계정일 때 지우기 버튼을 붙입니다
+        return head + (p.canDelete
+          ? `<div class="gal-cell">${btn}<button class="gal-del" data-staff-del="${p.dbId}" type="button" title="수행사 사진 지우기">지우기</button></div>`
+          : btn);
+      }).join("");
+      return `<section class="gal-day" id="d-${d}" data-d="${d}"${picked !== "all" && picked !== d ? " hidden" : ""}>
+        <header class="gal-day__head">
+          <div class="gal-day__date"><b>${lab.short}</b><span>${lab.long}</span></div>
+          <div>
+            <h2>${esc(info.title) || lab.long}</h2>
+            ${info.note ? `<p class="muted mt-1">${esc(info.note)}</p>` : ""}
+          </div>
+          <span class="chip">${byDay[d].length}장</span>
+        </header>
+        <div class="gal-grid">${items}</div>
+      </section>`;
+    }).join("") || `<p class="muted">등록된 사진이 없습니다.</p>`;
+  }
+  render();
+
+  /* 수행사 사진 넣기 — gallery-upload.js 가 목록을 불러온 뒤 부릅니다 */
+  window.GallerySetStaff = (list) => { staff = list || []; render(); };
 
   filter.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
+    picked = btn.dataset.d;
     filter.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b === btn));
     box.querySelectorAll(".gal-day").forEach((s) => {
-      s.hidden = btn.dataset.d !== "all" && s.dataset.d !== btn.dataset.d;
+      s.hidden = picked !== "all" && s.dataset.d !== picked;
     });
+    // 사진 올리기 칸의 날짜도 같이 맞춰 줍니다
+    document.dispatchEvent(new CustomEvent("gal:day", { detail: picked }));
   });
 
   // ---- 확대 보기 ----
   // 공식 기록사진과 방문객 사진이 같은 창을 씁니다. 보여 줄 목록(items)만 갈아 끼웁니다.
   const lb = document.getElementById("lightbox");
   const img = document.getElementById("lb-img");
-  const official = order.map((p) => ({
-    url: IMG + p.id + ".webp",
-    caption: p.caption || "현장 사진",
-    meta: `${dayLabel(p.date).long} ${p.time}`,
-  }));
   let items = official;
   let cur = 0;
   const show = (i) => {
@@ -168,6 +192,11 @@
     lb.showModal();
   };
   box.addEventListener("click", (e) => {
+    const del = e.target.closest("[data-staff-del]");
+    if (del) {
+      if (window.GalleryDeleteStaff) window.GalleryDeleteStaff(+del.dataset.staffDel, del);
+      return;
+    }
     const it = e.target.closest(".gal-item");
     if (!it) return;
     items = official;
@@ -200,6 +229,6 @@
   window.addEventListener("hashchange", fromHash);
 })();
 </script>
-<script src="assets/js/gallery-upload.js?v=20261006f"></script>
+<script src="assets/js/gallery-upload.js?v=20261010"></script>
 </body>
 </html>

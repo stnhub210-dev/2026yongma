@@ -50,11 +50,20 @@ drop policy if exists "방문객사진 목록 누구나 보기" on public.galler
 create policy "방문객사진 목록 누구나 보기" on public.gallery_uploads
   for select using (true);
 
+-- 올린 사람 구분: visitor = 방문객(아래 방문객 사진), staff = 수행사(위 날짜별 갤러리)
+alter table public.gallery_uploads
+  add column if not exists kind text not null default 'visitor';
+alter table public.gallery_uploads drop constraint if exists gallery_uploads_kind_chk;
+alter table public.gallery_uploads
+  add constraint gallery_uploads_kind_chk check (kind in ('visitor', 'staff'));
+
 drop policy if exists "방문객사진 목록 누구나 등록" on public.gallery_uploads;
 create policy "방문객사진 목록 누구나 등록" on public.gallery_uploads
   for insert with check (
     length(coalesce(caption, '')) <= 200 and
-    length(coalesce(uploader, '')) <= 40
+    length(coalesce(uploader, '')) <= 40 and
+    -- 수행사 사진은 직원·관리자 계정으로 로그인했을 때만
+    (kind = 'visitor' or (kind = 'staff' and public.is_staff()))
   );
 
 drop policy if exists "방문객사진 목록 관리자만 삭제" on public.gallery_uploads;

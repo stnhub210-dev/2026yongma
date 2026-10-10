@@ -1700,3 +1700,31 @@ img, video, iframe, table { max-width: 100%; }
   font: inherit; font-size: .9375rem; font-weight: 800; text-decoration: none; box-shadow: 0 6px 20px rgba(0,0,0,.28); cursor: pointer; }
 .app-nav a { background: #fff; color: #0E1F4D; }
 @media print { .app-nav { display: none; } }
+
+/* 갤러리 사진 올리기 팝업 — ① 누가 ② 날짜 ③ 사진 (assets/js/gallery-upload.js) */
+.up-dlg { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 32px); padding: 0; border: 0; border-radius: 22px; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+.up-dlg::backdrop { background: rgba(12,10,9,.55); }
+.up-dlg__box { padding: 22px 24px 20px; display: grid; gap: 8px; }
+.up-dlg__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.up-dlg__head h3 { font-size: 1.25rem; }
+.up-dlg__x { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--bg-soft); font-size: 1.25rem; cursor: pointer; }
+.up-dlg__step { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-weight: 800; color: var(--ink-900); }
+.up-dlg__step span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #0E1F4D; color: #FFD166; font-size: .8125rem; }
+.up-dlg__who { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.up-dlg__who label { cursor: pointer; }
+.up-dlg__who input { position: absolute; opacity: 0; pointer-events: none; }
+.up-dlg__who span { display: grid; gap: 2px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); }
+.up-dlg__who b { font-size: 1rem; }
+.up-dlg__who small { font-size: .75rem; color: var(--ink-500); }
+.up-dlg__who input:checked + span { border-color: var(--amber-500); background: var(--amber-50); }
+.up-dlg__opt { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.up-dlg .gal-up__btns { margin-top: 6px; }
+.up-dlg .gal-up__msg { min-height: 1.3em; font-weight: 700; color: var(--amber-700); }
+.gal-up__headr { display: flex; align-items: center; gap: 8px; }
+.gal-up__done { margin-top: 10px; padding: 10px 14px; border-radius: 12px; background: #ECFDF5; color: #065F46; font-weight: 700; }
+@media (max-width: 520px) { .up-dlg__who, .up-dlg__opt { grid-template-columns: 1fr; } }
+.up-dlg[open] { position: fixed; inset: 0; margin: auto; height: fit-content; overflow: auto; }
+.up-dlg, .up-dlg * { box-sizing: border-box; }
+.up-dlg[open] { max-width: calc(100vw - 24px); }
+.up-dlg .input { width: 100%; min-width: 0; }
+@media (max-width: 520px) { .up-dlg__box { padding: 18px 16px; } }
