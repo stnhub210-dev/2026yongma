@@ -1913,3 +1913,27 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 .share-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 10px 24px rgba(0,0,0,.18); }
 .share-msg { font-size: .8125rem; font-weight: 700; color: var(--amber-700); }
 @media (max-width: 640px) { .share-row { justify-content: center; max-width: 300px; margin-inline: auto; } .share-btn { font-size: .8125rem; padding: 8px 14px; } }
+
+/* 인사 캐릭터 — 양옆 이름표(용지·마루) + 통통 튀며 흔들기 · 반짝이 */
+.greet__stage { position: relative; }
+.greet .greet__stage img { animation: greet-hop 2.6s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes greet-hop {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+  15%      { transform: translateY(0) rotate(0deg) scale(1.04, .96); }
+  35%      { transform: translateY(-14px) rotate(-2.5deg) scale(.98, 1.03); }
+  55%      { transform: translateY(0) rotate(2deg) scale(1.03, .97); }
+  70%      { transform: translateY(-6px) rotate(-1deg) scale(1, 1); }
+  85%      { transform: translateY(0) rotate(0deg) scale(1.01, .99); }
+}
+.greet__name { position: absolute; top: 46%; z-index: 1; padding: 6px 16px; border-radius: 999px; background: #fff; border: 2px solid var(--amber-500);
+  color: var(--amber-700); font-size: 1.25rem; font-weight: 900; letter-spacing: .02em; box-shadow: 0 6px 16px rgba(120,60,10,.18); animation: greet-tag 2.6s ease-in-out infinite; }
+.greet__name--l { left: -4%; border-color: #F5883A; color: #C2410C; }
+.greet__name--r { right: -4%; border-color: #F59E0B; color: #B45309; animation-delay: -1.3s; }
+@keyframes greet-tag { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+.greet__spark { position: absolute; color: #FFC94D; font-style: normal; font-size: 1.25rem; text-shadow: 0 0 8px rgba(255,201,77,.9); animation: greet-spark 2s ease-in-out infinite; pointer-events: none; }
+.greet__spark--1 { left: 18%; top: 4%; }
+.greet__spark--2 { right: 16%; top: 10%; animation-delay: -.7s; font-size: 1rem; }
+.greet__spark--3 { left: 50%; top: -4%; animation-delay: -1.3s; font-size: .875rem; }
+@keyframes greet-spark { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(90deg); } }
+@media (max-width: 640px) { .greet__name { font-size: .9375rem; padding: 4px 11px; } .greet__name--l { left: -10%; } .greet__name--r { right: -10%; } }
+@media (prefers-reduced-motion: reduce) { .greet .greet__stage img, .greet__name, .greet__spark { animation: none; } .greet__spark { opacity: 0; } }
