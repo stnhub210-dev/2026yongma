@@ -2137,3 +2137,10 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   .join-card__list small { font-size: .5625rem; }
   .join-card__mascot { width: 64px; right: -10px; bottom: -8px; }
 }
+
+/* 현장/방문객 탭 — 안 고른 탭도 잘 보이게: 현장=청록, 방문객=주황. 고른 탭은 진하게·그림자, 안 고른 탭은 연한 색 */
+.sec-bar__tabs .sec-bar__tab[data-hg="field"]   { --tc: #2F9E8F; }
+.sec-bar__tabs .sec-bar__tab[data-hg="visitor"] { --tc: #F5883A; }
+.sec-bar__tabs .sec-bar__tab { background: color-mix(in srgb, var(--tc) 22%, #fff); color: color-mix(in srgb, var(--tc) 80%, #000); border: 2px solid var(--tc); box-shadow: none; transition: background .2s, color .2s, transform .2s; }
+.sec-bar__tabs .sec-bar__tab:not(.is-on):hover { background: color-mix(in srgb, var(--tc) 38%, #fff); transform: translateY(-1px); }
+.sec-bar__tabs .sec-bar__tab.is-on { background: var(--tc); color: #fff; box-shadow: 0 6px 14px color-mix(in srgb, var(--tc) 40%, transparent); }
