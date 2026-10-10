@@ -208,11 +208,16 @@ create table if not exists public.contest_submitters (
 create index if not exists contest_submitters_who_idx on public.contest_submitters (submitter, created_at);
 alter table public.contest_submitters enable row level security;
 
+-- 동영상 부문: 영상 게시물 링크(선택). sns_url 에는 계정 주소가 들어간다.
+alter table public.contest_entries add column if not exists sns_post text not null default '';
+-- 영상 링크 칸이 생기며 함수 모양이 바뀌어 예전 것을 지운다
+drop function if exists public.contest_submit(text, text, text, text, text, text, text, text, int, int, text);
+
 -- 5-1. 응모하기 함수 — 방문객은 승인 전 응모작을 읽을 수 없어서(RLS) 직접 넣으면 번호를 돌려받지 못한다.
 --      그래서 이 함수가 검사 → 등록 → 지우기 열쇠 저장까지 한 번에 하고 번호만 돌려준다.
 create or replace function public.contest_submit(
   p_category text, p_title text, p_nickname text, p_sns_url text, p_story text,
-  p_photo text, p_thumb text, p_proof text, p_w int, p_h int, p_key text)
+  p_photo text, p_thumb text, p_proof text, p_w int, p_h int, p_key text, p_post text default '')
 returns bigint
 language plpgsql security definer set search_path = public as $$
 declare
@@ -233,16 +238,17 @@ begin
   if length(coalesce(p_story, '')) > 300 then raise exception 'BAD_STORY'; end if;
   if p_photo not like 'entries/%' or p_thumb not like 'entries/%' or p_proof not like 'entries/%' then raise exception 'BAD_PATH'; end if;
   if p_key is null or length(p_key) not between 10 and 100 then raise exception 'BAD_KEY'; end if;
+  if coalesce(p_post, '') <> '' and (length(p_post) > 300 or p_post !~* '^https?://') then raise exception 'BAD_POST'; end if;
 
   -- 응모 즉시 공개(approved). 유해 작품은 신고 5건이면 자동으로 숨김(pending) → 관리자 확인
-  insert into contest_entries (category, title, nickname, sns_url, story, photo_path, photo_thumb, proof_path, w, h, status)
-  values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h, 'approved')
+  insert into contest_entries (category, title, nickname, sns_url, story, photo_path, photo_thumb, proof_path, w, h, status, sns_post)
+  values (p_category, btrim(p_title), btrim(p_nickname), p_sns_url, coalesce(p_story, ''), p_photo, p_thumb, p_proof, p_w, p_h, 'approved', coalesce(p_post, ''))
   returning id into new_id;
   insert into contest_entry_keys (entry_id, delete_key) values (new_id, p_key);
   insert into contest_submitters (entry_id, submitter) values (new_id, who);
   return new_id;
 end $$;
-grant execute on function public.contest_submit(text, text, text, text, text, text, text, text, int, int, text) to anon, authenticated;
+grant execute on function public.contest_submit(text, text, text, text, text, text, text, text, int, int, text, text) to anon, authenticated;
 
 
 -- 5-2. 신고 — 같은 작품을 서로 다른 5명(접속 주소 기준)이 신고하면 자동으로 숨김(pending) → 관리자 확인

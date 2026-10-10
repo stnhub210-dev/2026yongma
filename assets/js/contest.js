@@ -83,9 +83,10 @@
   async function loadEntries() {
     const c = sb();
     if (!c) { grid.innerHTML = '<p class="ct-empty">사진전 게시판을 준비하고 있습니다.</p>'; failed = true; return; }
-    const { data, error } = await c.from("contest_entries")
-      .select("id,category,title,nickname,sns_url,story,photo_path,photo_thumb,proof_path,w,h,vote_count,created_at")
-      .eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
+    const cols = "id,category,title,nickname,sns_url,story,photo_path,photo_thumb,proof_path,w,h,vote_count,created_at";
+    const q = (s) => c.from("contest_entries").select(s).eq("status", "approved").order("created_at", { ascending: false }).limit(1000);
+    let { data, error } = await q(cols + ",sns_post");
+    if (error && /sns_post/.test(error.message)) ({ data, error } = await q(cols));      // SQL 실행 전 호환
     if (error) {
       failed = true;
       grid.innerHTML = /relation|does not exist|schema cache|column/i.test(error.message)
@@ -139,7 +140,8 @@
         <span class="ct-row__main">
           <b>${isNew(e.created_at) ? '<i class="ct-new">N</i>' : ""}${esc(e.title)}</b>
           <small>by ${esc(e.nickname)} · ${ymd(e.created_at)}
-            · <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">${short ? "영상 원문" : "SNS 원문"} ↗</a>
+            · <a href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">${short && e.sns_post ? "계정" : short ? "영상·계정" : "SNS 원문"} ↗</a>
+            ${short && e.sns_post ? `· <a href="${esc(e.sns_post)}" target="_blank" rel="noopener nofollow">영상 원문 ↗</a>` : ""}
             · <button type="button" data-view="proof">인증샷</button>
             · <button type="button" class="ct-report" data-report ${reported().has(e.id) ? "disabled" : ""}>${reported().has(e.id) ? "신고함" : "신고"}</button></small>
           ${e.story ? `<em>${esc(e.story)}</em>` : ""}
@@ -225,14 +227,15 @@
   /* ---------- 크게 보기 / 영상 재생 ---------- */
   const lb = $("#ct-lb"), lbImg = $("#ct-lb-img"), lbVid = $("#ct-lb-video");
   function view(e, which) {
-    const yt = which === "photo" && e.category === "short" && embedOf(e.sns_url);
+    const vurl = e.sns_post || e.sns_url;                                // 영상 링크(없으면 계정 주소)
+    const yt = which === "photo" && e.category === "short" && embedOf(vurl);
     if (which === "photo" && e.category === "short" && !yt) {     // 재생 주소를 못 만든 경우(단축 링크 등)는 원문에서
-      window.open(e.sns_url, "_blank", "noopener");
+      window.open(vurl, "_blank", "noopener");
       return;
     }
     lbVid.innerHTML = yt
       ? `<iframe src="${yt.src}" title="${esc(e.title)}" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen loading="lazy"></iframe>
-         <a class="ct-video__orig" href="${esc(e.sns_url)}" target="_blank" rel="noopener nofollow">원문에서 보기 ↗</a>`
+         <a class="ct-video__orig" href="${esc(vurl)}" target="_blank" rel="noopener nofollow">원문에서 보기 ↗</a>`
       : "";
     lbVid.dataset.kind = yt ? yt.kind : "";
     lbVid.hidden = !yt; lbImg.hidden = !!yt;
@@ -305,8 +308,34 @@
     if (!$("#drop-photo").classList.contains("has")) $("#drop-photo span").textContent = t.pick;
     $("#drop-photo small").textContent = t.note;
     $("#f-short-note").hidden = formCat() !== "short";
+    $("#f-url-box").hidden = formCat() === "short";
+    $("#f-acct-box").hidden = formCat() !== "short";
+    paintPlat();
   }
-  form.addEventListener("change", (ev) => { if (ev.target.name === "f-cat") paintFormCat(); });
+
+  /* 동영상 — 플랫폼별 기본 주소. 아이디만 넣으면 계정 주소가 만들어진다 */
+  const PLAT = {
+    youtube:   { pre: "youtube.com/@",   base: "https://www.youtube.com/@",   post: "https://youtube.com/shorts/..." },
+    instagram: { pre: "instagram.com/",  base: "https://www.instagram.com/",  post: "https://www.instagram.com/reel/..." },
+    tiktok:    { pre: "tiktok.com/@",    base: "https://www.tiktok.com/@",    post: "https://www.tiktok.com/@아이디/video/..." },
+    etc:       { pre: "https://",        base: "https://",                    post: "https://..." },
+  };
+  const plat = () => (form.querySelector("input[name=f-plat]:checked") || {}).value || "youtube";
+  function paintPlat() {
+    const k = plat();
+    $("#f-acct-pre").textContent = PLAT[k].pre;
+    $("#f-acct").placeholder = k === "etc" ? "계정 주소 (예: blog.naver.com/아이디)" : "내 아이디";
+    $("#f-post").placeholder = PLAT[k].post;
+  }
+  /* 아이디 정리 — 앞의 @, 통째로 붙여 넣은 주소에서 아이디만 꺼낸다 */
+  function cleanId(v, k) {
+    v = String(v || "").trim();
+    if (k === "etc") return v.replace(/^https?:\/\//i, "");
+    const m = v.match(/(?:youtube\.com\/@?|instagram\.com\/|tiktok\.com\/@?)([\w.\-가-힣]+)/i);
+    if (m) v = m[1];
+    return v.replace(/^@+/, "").replace(/[/?#].*$/, "");
+  }
+  form.addEventListener("change", (ev) => { if (ev.target.name === "f-cat") paintFormCat(); if (ev.target.name === "f-plat") paintPlat(); });
   if (/#enter-short/.test(location.hash)) { form.querySelector("input[value=short]").checked = true; }
   paintFormCat();
 
@@ -332,12 +361,21 @@
     if ($("#f-website").value) return;                                  // 자동 등록기
 
     const title = $("#f-title").value.trim(), nick = $("#f-nick").value.trim();
-    const url = $("#f-url").value.trim(), story = $("#f-story").value.trim();
+    const story = $("#f-story").value.trim();
+    let url = $("#f-url").value.trim(), post = "";
     const photo = $("#f-photo").files[0], proof = $("#f-proof").files[0];
     if (!open) return msg(formMsg, "err", "응모 기간(2026. 10. 9. ~ 12. 30.)이 아닙니다.");
     if (!title || !nick) return msg(formMsg, "err", "작품 제목과 닉네임을 적어 주세요.");
-    if (!/^https?:\/\/\S+\.\S+/i.test(url)) return msg(formMsg, "err", "SNS 게시물 주소를 https:// 로 시작하는 링크로 붙여 넣어 주세요.");
     const category = formCat();
+    if (category === "short") {
+      const k = plat(), id = cleanId($("#f-acct").value, k);
+      if (!id) return msg(formMsg, "err", "영상을 올린 SNS 아이디를 적어 주세요.");
+      url = PLAT[k].base + id;
+      post = $("#f-post").value.trim();
+      if (post && !/^https?:\/\/\S+\.\S+/i.test(post)) return msg(formMsg, "err", "영상 링크는 https:// 로 시작하는 주소로 붙여 넣어 주세요. (비워 두어도 됩니다)");
+    } else if (!/^https?:\/\/\S+\.\S+/i.test(url)) {
+      return msg(formMsg, "err", "SNS 게시물 주소를 https:// 로 시작하는 링크로 붙여 넣어 주세요.");
+    }
     if (!photo || !proof) return msg(formMsg, "err", `${FORM_TEXT[category].pic}과 SNS 인증샷을 모두 골라 주세요.`);
     if (![photo, proof].every((f) => /^image\//.test(f.type) && f.size <= MAX_SRC)) return msg(formMsg, "err", "사진 파일(30MB 이하)만 올릴 수 있어요.");
     if (!$("#f-a1").checked || !$("#f-a2").checked) return msg(formMsg, "err", "필수 동의 두 가지에 체크해 주세요.");
@@ -355,10 +393,12 @@
 
       // 등록은 서버 함수 contest_submit 이 한다 (검사 + 등록 + 지우기 열쇠 저장 → 번호)
       const key = newKey();
-      const { data: newId, error } = await c.rpc("contest_submit", {
-        p_category: category, p_title: title, p_nickname: nick, p_sns_url: url, p_story: story,
-        p_photo: paths.photo_path, p_thumb: paths.photo_thumb, p_proof: paths.proof_path, p_w: big.w, p_h: big.h, p_key: key,
-      });
+      const args = { p_category: category, p_title: title, p_nickname: nick, p_sns_url: url, p_story: story,
+        p_photo: paths.photo_path, p_thumb: paths.photo_thumb, p_proof: paths.proof_path, p_w: big.w, p_h: big.h, p_key: key };
+      let { data: newId, error } = await c.rpc("contest_submit", { ...args, p_post: post });
+      if (error && /PGRST202|Could not find the function/.test(error.code + error.message)) {   // SQL 실행 전 호환 — 영상 링크를 주소로
+        ({ data: newId, error } = await c.rpc("contest_submit", { ...args, p_sns_url: post || url }));
+      }
       if (error) {
         await c.storage.from(BUCKET).remove(Object.values(paths));         // 등록 실패 → 올린 파일 치우기
         throw new Error(/CLOSED/.test(error.message) ? "응모가 마감되었습니다." : /DAILY_LIMIT/.test(error.message) ? "오늘은 30점까지 응모할 수 있어요. 내일 다시 응모해 주세요!" : error.message);

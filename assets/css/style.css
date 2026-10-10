@@ -1468,3 +1468,16 @@ img, video, iframe, table { max-width: 100%; }
 .contest__each { margin-left: 8px; padding: 3px 10px; border-radius: 999px; background: #FFD166; color: #2A1500; font-size: .8125rem; font-weight: 900; vertical-align: 2px; }
 .ct-row__main small .ct-report { color: var(--ink-500); font-weight: 600; }
 .ct-row__main small .ct-report[disabled] { opacity: .6; cursor: default; }
+
+/* 사진전 응모 — 동영상: 플랫폼 고르기 + 기본 주소 붙은 아이디 칸 */
+.ct-plat { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.field .ct-plat label { display: block; margin: 0; cursor: pointer; }
+.ct-plat input { position: absolute; opacity: 0; pointer-events: none; }
+.ct-plat span { display: inline-block; padding: 9px 16px; border-radius: 999px; border: 2px solid var(--line); background: #fff; font-size: .9375rem; font-weight: 700; color: var(--ink-700); }
+.ct-plat input:checked + span { border-color: var(--amber-500); background: var(--amber-50); color: var(--amber-700); }
+.ct-plat input:focus-visible + span { outline: 3px solid var(--amber-200); }
+.ct-acct { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+.ct-acct:focus-within { border-color: var(--amber-400); box-shadow: 0 0 0 3px var(--amber-100, #FDEBD8); }
+.ct-acct__pre { display: flex; align-items: center; padding: 0 12px; background: var(--bg-soft); color: var(--ink-500); font-size: .9375rem; font-weight: 600; white-space: nowrap; border-right: 1px solid var(--line); }
+.ct-acct .input { border: 0; border-radius: 0; box-shadow: none; min-width: 0; flex: 1; }
+.ct-acct .input:focus { box-shadow: none; }
