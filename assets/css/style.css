@@ -1880,3 +1880,28 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   100% { box-shadow: 0 0 18px 3px rgba(255,209,102,.65), 0 12px 30px rgba(0,0,0,.35); }
 }
 @media (prefers-reduced-motion: reduce) { .hero-go a:hover { animation: none; box-shadow: 0 0 18px 3px rgba(255,209,102,.65); } }
+
+/* 휴대폰 히어로 — PC 화면처럼 한눈에: 로고·문구·버튼·카운터·운영 안내 모두 작게 */
+@media (max-width: 640px) {
+  .hero { min-height: auto; }
+  .hero__inner { padding: 22px 0 18px; }
+  .hero__badge { font-size: .6875rem; padding: 4px 10px 4px 5px; gap: 6px; }
+  .hero__badge b { font-size: .625rem; padding: 2px 7px; }
+  .hero__logo { width: min(62%, 240px); margin-top: 10px; }
+  .hero__sub { margin-top: 6px; font-size: 1.0625rem; }
+  .hero .lead { margin-top: 6px; font-size: .75rem; line-height: 1.55; }
+  .hero-go { margin-top: 12px; gap: 5px; }
+  .hero-go a { min-height: 34px; padding: 6px 4px; font-size: .6875rem; border-radius: 10px; }
+  .hero-stats { margin-top: 14px; padding-top: 10px; }
+  .hero-stats dt { font-size: .5625rem; }
+  .hero-stats dd { font-size: 1.125rem; margin-top: 2px; }
+  .hero-stats dd span { font-size: .625rem; }
+  .hero-orgs__list { padding-top: 8px; padding-bottom: 8px; }
+  .hero-orgs__list li { padding: 0 8px; }
+  .hero-orgs__list img { height: calc(var(--h, 26px) * .55); }
+  .hero-orgs__txt { font-size: .625rem; }
+  .info-bar { padding: 10px 0 !important; }
+  .info-bar .wrap { gap: 4px 10px !important; }
+  .info-bar .wrap > * { font-size: .6875rem !important; }
+  .info-bar .chip { padding: 2px 8px; }
+}
