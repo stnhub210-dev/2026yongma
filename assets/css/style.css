@@ -2008,3 +2008,11 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
   /* 지도·배치도·포스터처럼 글자가 든 그림은 자르지 않고 전체 보이기 */
   .split .figure img[src*="map-"], .split .figure img[src*="poster"], .figure img[src*="map-"] { aspect-ratio: auto !important; height: auto; object-fit: contain !important; }
 }
+
+/* 구분 띠 안 탭 2개(현장 사진 / 방문객 사진) — 고른 탭은 색, 다른 탭은 흐린 회색 */
+.sec-bar__tabs { display: flex; align-items: stretch; margin-left: -18px; }
+.sec-bar__tabs .sec-bar__tab { margin-left: 0; border: 0; font: inherit; font-size: 1rem; font-weight: 900; cursor: pointer; background: #C9CDD3; color: #fff; }
+.sec-bar__tabs .sec-bar__tab.is-on { background: var(--bar); }
+.sec-bar__tabs .sec-bar__tab--2 { margin-left: -20px; padding-left: 34px; }
+.sec-bar__tabs .sec-bar__tab:not(.is-on):hover { background: #AEB4BC; }
+@media (max-width: 640px) { .sec-bar__tabs { margin-left: -16px; } .sec-bar__tabs .sec-bar__tab { font-size: .8125rem; } .sec-bar__tabs .sec-bar__tab--2 { padding-left: 28px; } }

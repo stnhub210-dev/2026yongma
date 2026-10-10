@@ -31,7 +31,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261010zg">
+<link rel="stylesheet" href="assets/css/style.css?v=20261010zh">
 </head>
 <body>
 
@@ -541,6 +541,28 @@
   </div>
 </section>
 
+<div class="sec-bar" style="--bar:#2F9E8F"><div class="wrap sec-bar__in"><div class="sec-bar__tabs" role="tablist" aria-label="사진 종류"><button type="button" class="sec-bar__tab is-on" data-hg="field" role="tab" aria-selected="true">현장 사진</button><button type="button" class="sec-bar__tab sec-bar__tab--2" data-hg="visitor" role="tab" aria-selected="false">방문객 사진</button></div><span class="sec-bar__en">GALLERY</span></div></div>
+<!-- ================= 현장 사진 — 갤러리 전체 (맨 아래, 페이지 번호) =================
+     기록사진 + 홈페이지에서 올린 사진을 최신순으로. assets/js/home-gallery.js -->
+<section class="section section--soft" id="home-gallery">
+  <div class="wrap">
+    <div class="ct-board-head">
+      <div>
+        <span class="eyebrow">Gallery</span>
+        <h2 id="hg-title">용마미식거리 현장 사진 <small class="fs-count" id="hg-count"></small></h2>
+      </div>
+      <div class="btn-row"><a class="btn btn--primary btn--sm" href="gallery.html#upload">사진 올리기</a><a class="btn btn--ghost btn--sm" href="gallery.html">날짜별로 보기</a></div>
+    </div>
+    <div class="hg-grid" id="hg-grid"></div>
+    <nav class="hg-pager" id="hg-pager" aria-label="사진 페이지"></nav>
+  </div>
+</section>
+<dialog class="lightbox" id="hg-lb" aria-label="사진 크게 보기">
+  <figure class="lightbox__fig"><img id="hg-lb-img" alt=""><figcaption><span class="lightbox__meta" id="hg-lb-meta"></span></figcaption></figure>
+  <button class="lightbox__btn lightbox__close" id="hg-lb-close" aria-label="닫기">×</button>
+  <button class="lightbox__btn lightbox__prev" id="hg-lb-prev" aria-label="이전 사진">‹</button>
+  <button class="lightbox__btn lightbox__next" id="hg-lb-next" aria-label="다음 사진">›</button>
+</dialog>
 <div class="sec-bar" style="--bar:#1F3B8C"><div class="wrap sec-bar__in"><b class="sec-bar__tab">오시는 길</b><span class="sec-bar__en">VISIT</span></div></div>
 <!-- ================= VISIT ================= -->
 <section class="section">
@@ -595,28 +617,6 @@
   </div>
 </section>
 
-<div class="sec-bar" style="--bar:#2F9E8F"><div class="wrap sec-bar__in"><b class="sec-bar__tab">현장 사진</b><span class="sec-bar__en">GALLERY</span></div></div>
-<!-- ================= 현장 사진 — 갤러리 전체 (맨 아래, 페이지 번호) =================
-     기록사진 + 홈페이지에서 올린 사진을 최신순으로. assets/js/home-gallery.js -->
-<section class="section section--soft" id="home-gallery">
-  <div class="wrap">
-    <div class="ct-board-head">
-      <div>
-        <span class="eyebrow">Gallery</span>
-        <h2>용마미식거리 현장 사진 <small class="fs-count" id="hg-count"></small></h2>
-      </div>
-      <div class="btn-row"><a class="btn btn--primary btn--sm" href="gallery.html#upload">사진 올리기</a><a class="btn btn--ghost btn--sm" href="gallery.html">날짜별로 보기</a></div>
-    </div>
-    <div class="hg-grid" id="hg-grid"></div>
-    <nav class="hg-pager" id="hg-pager" aria-label="사진 페이지"></nav>
-  </div>
-</section>
-<dialog class="lightbox" id="hg-lb" aria-label="사진 크게 보기">
-  <figure class="lightbox__fig"><img id="hg-lb-img" alt=""><figcaption><span class="lightbox__meta" id="hg-lb-meta"></span></figcaption></figure>
-  <button class="lightbox__btn lightbox__close" id="hg-lb-close" aria-label="닫기">×</button>
-  <button class="lightbox__btn lightbox__prev" id="hg-lb-prev" aria-label="이전 사진">‹</button>
-  <button class="lightbox__btn lightbox__next" id="hg-lb-next" aria-label="다음 사진">›</button>
-</dialog>
 
 </main>
 
@@ -633,7 +633,7 @@
 <script src="assets/js/calendar.js?v=20261009b"></script>
 <script src="assets/js/contest-samples.js?v=20261009"></script>
 <script src="assets/js/gallery-data.js?v=20261006f"></script>
-<script src="assets/js/home-gallery.js?v=20261010"></script>
+<script src="assets/js/home-gallery.js?v=20261010b"></script>
 <script src="assets/js/share.js?v=20261010b"></script>
 <script src="assets/js/food-main.js?v=20261010"></script>
 <script src="assets/js/contest-live.js?v=20261010b"></script>

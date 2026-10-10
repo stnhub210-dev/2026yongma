@@ -9,21 +9,24 @@
   const G = window.GALLERY || { photos: [] };
   let all = G.photos.map((p) => ({ date: p.date, time: p.time || "", cap: p.caption || "",
     thumb: `assets/img/gallery/${p.id}_t.webp`, big: `assets/img/gallery/${p.id}.webp`, tag: "" }));
-  let page = 1;
+  let page = 1, mode = "field";            // field = 현장(기록·수행사) / visitor = 방문객이 올린 사진
+  const shown = () => all.filter((p) => (mode === "visitor") === !!p.visitor);
 
   function sort() { all.sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time)); }
 
   function draw() {
-    const per = PER(), pages = Math.max(1, Math.ceil(all.length / per));
+    const items = shown(), per = PER(), pages = Math.max(1, Math.ceil(items.length / per));
     page = Math.min(Math.max(1, page), pages);
-    const list = all.slice((page - 1) * per, page * per);
+    const list = items.slice((page - 1) * per, page * per);
     const md = (d) => { const [, m, dd] = d.split("-").map(Number); return `${m}. ${dd}.`; };
     grid.innerHTML = list.map((p, i) => `
       <button type="button" class="hg-item" data-i="${(page - 1) * per + i}" aria-label="${esc(p.cap || "현장 사진")} 크게 보기">
         <img src="${p.thumb}" alt="${esc(p.cap)}" loading="lazy">
-        <span class="hg-cap"><b>${md(p.date)}</b>${p.tag ? `<em>${p.tag}</em>` : ""}${esc(p.cap)}</span>
+        <span class="hg-cap"><b>${md(p.date)}</b>${esc(p.cap)}</span>
       </button>`).join("");
-    document.getElementById("hg-count").textContent = `전체 ${all.length.toLocaleString("ko-KR")}장`;
+    document.getElementById("hg-count").textContent = `${items.length.toLocaleString("ko-KR")}장`;
+    document.getElementById("hg-title").firstChild.textContent = mode === "visitor" ? "방문객이 올린 사진 " : "용마미식거리 현장 사진 ";
+    if (!items.length) grid.innerHTML = `<p class="muted" style="grid-column:1/-1">아직 올라온 사진이 없어요. 「사진 올리기」로 첫 사진을 올려 주세요.</p>`;
     // 페이지 번호 — 많으면 앞뒤 2개씩만
     const btn = (n, label, cur, dis) => `<button type="button" data-p="${n}"${cur ? ' aria-current="page" class="is-on"' : ""}${dis ? " disabled" : ""}>${label}</button>`;
     let h = btn(page - 1, "‹ 이전", false, page === 1);
@@ -43,14 +46,21 @@
   // 크게 보기
   const lb = document.getElementById("hg-lb"), img = document.getElementById("hg-lb-img"), meta = document.getElementById("hg-lb-meta");
   let cur = 0;
-  const show = (i) => { cur = (i + all.length) % all.length; const p = all[cur];
-    img.src = p.big; img.alt = p.cap; meta.textContent = `${p.date.replace(/-/g, ". ")} ${p.time} · ${p.cap || "현장 사진"} · ${cur + 1} / ${all.length}`; };
+  const show = (i) => { const L = shown(); cur = (i + L.length) % L.length; const p = L[cur];
+    img.src = p.big; img.alt = p.cap; meta.textContent = `${p.date.replace(/-/g, ". ")} ${p.time} · ${p.cap || "현장 사진"} · ${cur + 1} / ${L.length}`; };
   grid.addEventListener("click", (e) => { const it = e.target.closest(".hg-item"); if (!it) return; show(+it.dataset.i); lb.showModal(); });
   document.getElementById("hg-lb-close").onclick = () => lb.close();
   document.getElementById("hg-lb-prev").onclick = () => show(cur - 1);
   document.getElementById("hg-lb-next").onclick = () => show(cur + 1);
   lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });
   lb.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") show(cur - 1); if (e.key === "ArrowRight") show(cur + 1); });
+
+  // 띠의 탭 — 현장 사진 / 방문객 사진
+  document.querySelectorAll("[data-hg]").forEach((b) => b.addEventListener("click", () => {
+    mode = b.dataset.hg; page = 1;
+    document.querySelectorAll("[data-hg]").forEach((x) => { x.classList.toggle("is-on", x === b); x.setAttribute("aria-selected", x === b); });
+    draw();
+  }));
 
   sort(); draw();
 
@@ -62,7 +72,7 @@
       const pub = (p) => c.storage.from("gallery").getPublicUrl(p).data.publicUrl;
       all = all.concat(data.filter((r) => r.taken_on).map((r) => ({ date: r.taken_on, time: r.taken_at || "",
         cap: r.caption || (r.uploader ? r.uploader + "님 사진" : ""), thumb: pub(r.thumb_path), big: pub(r.path),
-        tag: r.kind === "staff" ? "" : "방문객" })));
+        visitor: r.kind !== "staff" })));
       sort(); draw();
     });
   }
