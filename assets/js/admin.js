@@ -19,6 +19,16 @@ const ADMIN_NAV = [
     ["budget.html", "정산 관리",   "💰"],
     ["docs.html",   "지침·서식 자료실", "📚"],
   ]],
+  /* 성과·결과보고 — 바깥 사이트라 새 탭으로 연다(4번째 값 true).
+     애널리틱스: STN미디어 › 용마미식거리 홈페이지(속성 558341880) — 구글 계정으로 로그인해야 보인다.
+     결과보고: 사내 포털(stn6000.com) — 포털 직원 로그인이 필요하다. 방문자수 보고서는 매주 월요일 자동 저장. */
+  ["성과·결과보고", [
+    ["https://analytics.google.com/analytics/web/#/a411401195p558341880/reports/intelligenthome", "방문자 분석(애널리틱스)", "📊", true],
+    ["https://analytics.google.com/analytics/web/#/a411401195p558341880/realtime/overview", "실시간 방문자", "🟢", true],
+    ["https://stn6000.com/yongma/result#visitors", "방문자수 보고서", "📈", true],
+    ["https://stn6000.com/yongma/result#kpis", "성과지표 실적", "🎯", true],
+    ["https://stn6000.com/yongma/result", "결과보고 관리", "🏁", true],
+  ]],
 ];
 
 const Admin = {
@@ -60,8 +70,8 @@ const Admin = {
   ${ADMIN_NAV.map(([group, items]) => `
     <div class="admin-nav-group">
       <p>${group}</p>
-      ${items.map(([href, label, icon]) =>
-        `<a href="${href}"${href === active ? ' aria-current="page"' : ""}><span aria-hidden="true">${icon}</span>${label}</a>`
+      ${items.map(([href, label, icon, ext]) =>
+        `<a href="${href}"${href === active ? ' aria-current="page"' : ""}${ext ? ' target="_blank" rel="noopener"' : ""}><span aria-hidden="true">${icon}</span>${label}${ext ? ' <small style="opacity:.55">↗</small>' : ""}</a>`
       ).join("")}
     </div>`).join("")}
   <div class="admin-nav-group" style="margin-top:auto">
