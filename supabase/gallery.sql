@@ -62,8 +62,8 @@ create policy "방문객사진 목록 누구나 등록" on public.gallery_upload
   for insert with check (
     length(coalesce(caption, '')) <= 200 and
     length(coalesce(uploader, '')) <= 40 and
-    -- 수행사 사진은 직원·관리자 계정으로 로그인했을 때만
-    (kind = 'visitor' or (kind = 'staff' and public.is_staff()))
+    -- 방문객·수행사 모두 누구나 올릴 수 있다(수행사를 고르면 위쪽 날짜별 갤러리로)
+    kind in ('visitor', 'staff')
   );
 
 drop policy if exists "방문객사진 목록 관리자만 삭제" on public.gallery_uploads;

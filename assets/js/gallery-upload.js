@@ -179,7 +179,7 @@
     if (!confirm("이 수행사 사진을 지울까요? 되돌릴 수 없습니다.")) return;
     btn.disabled = true;
     btn.textContent = "지우는 중…";
-    const ok = await removeStaff(id);
+    const ok = isStaff ? await removeStaff(id) : await removeOne(id);   // 직원이 아니면 올린 사람 열쇠로
     if (!ok) {
       btn.disabled = false;
       btn.textContent = "지우기";
@@ -230,7 +230,7 @@
           w: r.w, h: r.h,
           src: r.url,
           thumb: r.thumbUrl,
-          canDelete: isStaff,
+          canDelete: isStaff || !!mine()[r.id],   // 직원이거나, 이 브라우저에서 올린 사진
         })));
       }
     }
@@ -360,9 +360,7 @@
     const base = document.documentElement.dataset.base || "";
     const paintKind = () => {
       if (kind() !== "staff") { kindNote.innerHTML = ""; return; }
-      kindNote.innerHTML = isStaff
-        ? "위쪽 날짜별 갤러리에 올라갑니다."
-        : `수행사 사진은 직원 계정으로 <a href="${base}login.html">로그인</a>한 뒤 올릴 수 있습니다.`;
+      kindNote.innerHTML = "고른 날짜의 위쪽 날짜별 갤러리에 올라갑니다.";
     };
     dlg.querySelectorAll('input[name="up-kind"]').forEach((r) => r.addEventListener("change", paintKind));
 
@@ -392,10 +390,6 @@
         day: /^\d{4}-\d{2}-\d{2}$/.test(dateIn.value) ? dateIn.value : "",
         kind: kind(),
       };
-      if (meta.kind === "staff" && !isStaff) {
-        msg.innerHTML = `수행사 사진은 직원 계정으로 <a href="${base}login.html">로그인</a>해야 올릴 수 있습니다.`;
-        return;
-      }
 
       btnF.disabled = btnD.disabled = true;
       msg.textContent = `0 / ${files.length} 올리는 중…`;
