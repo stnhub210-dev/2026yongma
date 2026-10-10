@@ -2091,3 +2091,8 @@ h1, h2, h3, h4, .lead, .ct-slogan, .contest__slogan { word-break: keep-all; over
 @media (max-width: 899px) { .vol__in { grid-template-columns: 1fr; } .vol__mascot { width: 300px; } }
 .ev-tabs { grid-template-columns: repeat(3, 1fr); max-width: 720px; }
 @media (max-width: 640px) { .ev-tabs { grid-template-columns: repeat(3, 1fr); } .ev-tabs a b { font-size: .875rem; } .ev-tabs a small { font-size: .625rem; } }
+
+/* 노란 첫 번째 탭 — 테두리를 도는 빛을 또렷하게(흰빛 + 진한 주황, 두께 3px, 바깥 은은한 빛) */
+.ev-tabs a.is-on::before { padding: 3px;
+  background: conic-gradient(from var(--ev-a), #E0701F 0deg, #F5A04A 200deg, #fff 290deg, #FFF6D0 315deg, #E0701F 345deg, #E0701F 360deg); }
+.ev-tabs a.is-on { box-shadow: 0 0 18px rgba(255,209,102,.55); }
