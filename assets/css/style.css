@@ -628,6 +628,17 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
   font-size: .75rem; font-weight: 800; letter-spacing: .04em;
   color: #6D28D9; background: #F1EBFF;
 }
+/* 역할 칩과 확정 배지를 한 줄에 */
+.cast-card__tags { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+/* 출연이 확정됐음을 알리는 배지 — 역할 칩(보라)과 색·밝기가 달라 구분된다 */
+.cast-card__fix {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px 3px 7px; border-radius: 999px;
+  font-size: .75rem; font-weight: 800; letter-spacing: .01em;
+  color: #15803D; background: #DCFCE7; border: 1px solid #A7F3C4;
+}
+.cast-card__fix svg { width: 12px; height: 12px; flex: none; }
+
 .cast-card__name {
   display: block; margin-top: 8px; font-size: 1.125rem; font-weight: 800;
   letter-spacing: -.01em; color: var(--ink-900);
