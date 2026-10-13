@@ -21,22 +21,27 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261013c">
+<link rel="stylesheet" href="assets/css/style.css?v=20261014c">
 </head>
 <body class="page-culture">
 <div id="site-header"></div>
 
 <main>
 
-<section class="page-hero" style="background-image:linear-gradient(180deg,rgba(26,12,56,.74),rgba(14,8,34,.9)),url('assets/img/prog-stage.webp')">
+<section class="page-hero" style="background-image:linear-gradient(180deg,rgba(26,12,56,.74),rgba(14,8,34,.9)),url('assets/img/prog-market-night.webp')">
   <div class="wrap">
     <span class="eyebrow">Culture · 동행축제 연계</span>
     <h1>1년에 한 번, <em class="em-dot">골목이 전국으로</em> 나갑니다</h1>
     <p class="lead mt-2" style="max-width:62ch">
-      중소벤처기업부 <b>동행축제</b> 기간에 맞춰 여는 시즌 최대 규모 무대입니다.
-      공원 특설무대에서 열리고, 그대로 전국에 중계됩니다.
+      중소벤처기업부 <b>동행축제</b> 기간에 맞춰 이틀간 여는 기획공연입니다.
+      <b>포남동 근린공원 특설무대</b>에서 열리고, 그대로 전국에 중계됩니다.
     </p>
-    <nav class="chip-row mt-4" aria-label="공연 정보">
+    <div class="chip-row mt-3">
+      <span class="chip chip--amber">2026. 10. 30.(금) ~ 31.(토)</span>
+      <span class="chip">포남동 근린공원 특설무대</span>
+      <span class="chip">관람 무료</span>
+    </div>
+    <nav class="chip-row mt-3" aria-label="공연 정보">
       <a class="chip chip--amber" href="#cast">출연진</a>
       <a class="chip chip--amber" href="#together">전 점포 프로그램</a>
       <a class="chip chip--amber" href="#info">관람 안내</a>
@@ -95,28 +100,48 @@
 <!-- ================= 출연진 ================= -->
 <section class="section section--soft" id="cast">
   <div class="wrap">
-    <div class="split split--wide">
-      <div class="reveal">
-        <span class="zone-tag" style="--z:#6D28D9">Line-up · 출연진</span>
-        <h2>무대에 서는 사람들</h2>
-        <p class="lead mt-2">방송에서 보던 얼굴이 골목 무대에 섭니다.</p>
-
-        <div class="cast">
-          <b class="cast__head">출연진</b>
-          <ul class="cast__list">
-            <li><span class="cast__role">사회</span><b>노우진</b><small>개그콘서트 「달인」 출연</small></li>
-            <li><span class="cast__role">가수</span><b>신인선</b><small>미스트롯</small></li>
-            <li><span class="cast__role">가수</span><b>업스타</b><small>외 다수</small></li>
-          </ul>
-        </div>
-
-        <p class="tiny muted mt-3">※ 추가 출연진과 공연 시간표는 확정 즉시 이 페이지와 「다가오는 일정」에 공개됩니다.</p>
-      </div>
-      <figure class="figure reveal">
-        <img src="assets/img/prog-stage.webp" alt="거리 특설무대에서 연주하는 공연 팀" loading="lazy">
-        <figcaption>골목 한가운데 세워지는 특설무대</figcaption>
-      </figure>
+    <div class="sec-head reveal">
+      <span class="eyebrow">Line-up · 출연진</span>
+      <h2>무대에 서는 사람들</h2>
+      <p>방송에서 보던 얼굴이 골목 무대에 섭니다.</p>
     </div>
+
+    <ul class="cast-grid reveal">
+      <li class="cast-card">
+        <img src="assets/img/cast/cast-nowoojin.webp" alt="사회자 노우진" width="576" height="865" loading="lazy">
+        <div class="cast-card__b">
+          <span class="cast-card__role">메인 MC</span>
+          <b class="cast-card__name">노우진</b>
+          <small class="cast-card__note">개그콘서트 「달인」 출연</small>
+        </div>
+      </li>
+      <li class="cast-card">
+        <img src="assets/img/cast/cast-shininseon.webp" alt="가수 신인선" width="540" height="810" loading="lazy">
+        <div class="cast-card__b">
+          <span class="cast-card__role">가수</span>
+          <b class="cast-card__name">신인선</b>
+          <small class="cast-card__note">미스트롯</small>
+        </div>
+      </li>
+      <li class="cast-card">
+        <img src="assets/img/cast/cast-hayoon.webp" alt="가수 하윤" width="900" height="1260" loading="lazy">
+        <div class="cast-card__b">
+          <span class="cast-card__role">가수</span>
+          <b class="cast-card__name">하윤</b>
+          <small class="cast-card__note">보컬</small>
+        </div>
+      </li>
+      <li class="cast-card cast-card--wide">
+        <img src="assets/img/cast/cast-upstar.webp" alt="밴드 업스타" width="720" height="480" loading="lazy">
+        <div class="cast-card__b">
+          <span class="cast-card__role">가수</span>
+          <b class="cast-card__name">업스타</b>
+          <small class="cast-card__note">외 다수</small>
+        </div>
+      </li>
+    </ul>
+
+    <p class="tiny muted mt-3">※ 추가 출연진과 공연 시간표는 확정 즉시 이 페이지와 「다가오는 일정」에 공개됩니다.</p>
   </div>
 </section>
 
@@ -164,7 +189,7 @@
           <li>· 용마미식거리는 <b>2026년 동행축제 연계 상권</b>으로 참여합니다</li>
           <li>· 기획공연·할인전·스탬프투어를 축제 기간에 맞춰 집중 운영합니다</li>
           <li>· 공연 실황은 전국으로 중계되어 강릉 야간 상권을 알립니다</li>
-        </ul>
+    </ul>
       </div>
     </div>
   </div>
@@ -200,10 +225,10 @@
 <div id="site-footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/js/config.js?v=20261013c"></script>
-<script src="assets/js/layout.js?v=20261013d"></script>
-<script src="assets/js/i18n.js?v=20261013d"></script>
-<script src="assets/js/auth.js?v=20261013c"></script>
-<script src="assets/js/main.js?v=20261013c"></script>
+<script src="assets/js/config.js?v=20261014c"></script>
+<script src="assets/js/layout.js?v=20261014c"></script>
+<script src="assets/js/i18n.js?v=20261014c"></script>
+<script src="assets/js/auth.js?v=20261014c"></script>
+<script src="assets/js/main.js?v=20261014c"></script>
 </body>
 </html>
