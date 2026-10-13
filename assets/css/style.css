@@ -603,6 +603,21 @@ a.tile:hover { transform: translateY(-3px); border-color: var(--amber-200); box-
 .cast__list b { font-size: 1.0625rem; font-weight: 800; color: var(--ink-900); letter-spacing: -.01em; }
 .cast__list small { font-size: .875rem; color: var(--ink-500); word-break: keep-all; }
 
+/* 공연장 사진 — 첫 장을 크게 두고 나머지를 아래에 늘어놓는다 */
+.venue-shots {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px; margin-top: clamp(18px, 2.4vw, 26px);
+}
+.venue-shots__main { grid-column: span 4; }
+.venue-shots .figure { margin: 0; }
+.venue-shots__main img { aspect-ratio: 16 / 7; object-fit: cover; }
+.venue-shots .figure:not(.venue-shots__main) img { aspect-ratio: 4 / 3; object-fit: cover; }
+@media (max-width: 860px) {
+  .venue-shots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .venue-shots__main { grid-column: span 2; }
+  .venue-shots__main img { aspect-ratio: 16 / 9; }
+}
+
 /* 출연진 사진 카드 — 세로 사진 두 장 + 단체 사진 한 장(가로) */
 .cast-grid {
   list-style: none; margin: clamp(16px, 2vw, 22px) 0 0; padding: 0;
