@@ -12,8 +12,8 @@
 <link rel="stylesheet" href="../assets/css/style.css?v=20261014h">
 <style>
   /* 관리자 전용 로그인 — 비밀번호 한 칸. 2026-10-19 사용자 요청
-     관리자 이메일은 이 공개 저장소에 적지 않는다. 이 브라우저에서 처음 한 번만 이메일을 받고,
-     그 뒤로는 브라우저에 기억해 둔 이메일로 비밀번호만 받아 로그인한다. */
+     개인 이메일은 공개 저장소에 적지 않는다. 대신 관리자 전용 계정(admin@2026yongma.com,
+     Supabase 에서 '자동 확인'으로 만든 공용 계정 — 실제 메일함 없음)을 고정해 비밀번호만 받는다. */
   .adm-login{max-width:400px;margin:12vh auto;padding:0 16px}
   .adm-login h1{font-size:1.5rem;text-align:center;margin:10px 0 4px}
   .adm-login .muted{text-align:center}
@@ -30,11 +30,7 @@
   <div class="auth-card" style="margin-top:22px">
     <div id="msg" class="alert"></div>
     <form id="form" novalidate>
-      <div class="field" id="email-row" hidden>
-        <label for="email">관리자 이메일 <span class="muted" style="font-weight:500">(이 기기에서 처음 한 번만)</span></label>
-        <input class="input" id="email" type="email" autocomplete="username">
-      </div>
-      <p class="who" id="who" hidden></p>
+      <input type="hidden" id="email" autocomplete="username" value="admin@2026yongma.com">
       <div class="field">
         <label for="pw">비밀번호</label>
         <input class="input" id="pw" type="password" autocomplete="current-password" required autofocus>
@@ -51,23 +47,8 @@
 <script src="../assets/js/auth.js?v=20261014h"></script>
 <script>
 (() => {
-  const KEY = "yongma_admin_email";            // 이 브라우저에 기억해 둔 관리자 이메일
-  const msg = document.getElementById("msg");
-  const emailRow = document.getElementById("email-row"), emailIn = document.getElementById("email");
-  const who = document.getElementById("who"), pw = document.getElementById("pw");
-  const get = () => { try { return localStorage.getItem(KEY) || ""; } catch (e) { return ""; } };
-  const set = (v) => { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch (e) { /* 저장 못 해도 로그인은 된다 */ } };
-  const mask = (e) => e.replace(/^(.{2}).*(@.*)$/, "$1***$2");
-
-  function paint() {
-    const saved = get();
-    emailRow.hidden = !!saved;
-    who.hidden = !saved;
-    if (saved) who.innerHTML = mask(saved).replace(/[<>&]/g, "") + ' 관리자 <a href="#" id="other">다른 계정</a>';
-    const other = document.getElementById("other");
-    if (other) other.onclick = (e) => { e.preventDefault(); set(""); emailIn.value = ""; paint(); emailIn.focus(); };
-  }
-  paint();
+  const EMAIL = document.getElementById("email").value;   // 관리자 전용 공용 계정
+  const msg = document.getElementById("msg"), pw = document.getElementById("pw");
 
   // 이미 관리자 권한으로 로그인돼 있으면 바로 대시보드로
   (async () => {
@@ -77,21 +58,16 @@
   document.getElementById("form").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (window.UI) UI.clearAlert(msg);
-    const email = get() || emailIn.value.trim();
     const say = (t) => (window.UI ? UI.alert(msg, "err", t) : alert(t));
-    if (!email) return say("처음 한 번은 관리자 이메일을 넣어 주십시오.");
     if (!pw.value) return say("비밀번호를 넣어 주십시오.");
     const btn = e.target.querySelector("button[type=submit]");
     btn.disabled = true;
     try {
-      await Auth.signIn({ email, password: pw.value });
-      if (!(await Auth.isAdmin())) {                 // 일반 회원 계정이면 들여보내지 않는다
+      await Auth.signIn({ email: EMAIL, password: pw.value });
+      if (!(await Auth.isAdmin())) {                 // 계정에 관리자 권한이 아직 없으면 들여보내지 않는다
         await Auth.signOut();
-        set("");
-        paint();
-        return say("관리자 권한이 없는 계정입니다.");
+        return say("관리자 권한이 아직 설정되지 않았습니다(Supabase profiles 의 role 을 admin 으로).");
       }
-      set(email);
       location.replace("index.html");
     } catch (err) {
       say(err.message === "NOT_CONFIGURED" ? "회원 시스템이 아직 연결되지 않았습니다."
