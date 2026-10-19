@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>관리자 로그인 — 용마미식거리</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0E1F4D">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261014h">
+<style>
+  /* 관리자 전용 로그인 — 비밀번호 한 칸. 2026-10-19 사용자 요청
+     관리자 이메일은 이 공개 저장소에 적지 않는다. 이 브라우저에서 처음 한 번만 이메일을 받고,
+     그 뒤로는 브라우저에 기억해 둔 이메일로 비밀번호만 받아 로그인한다. */
+  .adm-login{max-width:400px;margin:12vh auto;padding:0 16px}
+  .adm-login h1{font-size:1.5rem;text-align:center;margin:10px 0 4px}
+  .adm-login .muted{text-align:center}
+  .adm-login .who{font-size:.85rem;text-align:center;margin:-4px 0 14px;color:var(--ink-500,#78716C)}
+  .adm-login .who a{color:var(--amber-700,#B45309);font-weight:600;margin-left:6px}
+</style>
+</head>
+<body>
+<main class="adm-login">
+  <img src="../assets/img/mascot-yong.webp" alt="" style="width:110px;margin:0 auto;display:block">
+  <h1>관리자 로그인</h1>
+  <p class="muted tiny mt-1">용마미식거리 홈페이지 관리자 전용입니다.</p>
+
+  <div class="auth-card" style="margin-top:22px">
+    <div id="msg" class="alert"></div>
+    <form id="form" novalidate>
+      <div class="field" id="email-row" hidden>
+        <label for="email">관리자 이메일 <span class="muted" style="font-weight:500">(이 기기에서 처음 한 번만)</span></label>
+        <input class="input" id="email" type="email" autocomplete="username">
+      </div>
+      <p class="who" id="who" hidden></p>
+      <div class="field">
+        <label for="pw">비밀번호</label>
+        <input class="input" id="pw" type="password" autocomplete="current-password" required autofocus>
+      </div>
+      <button class="btn btn--primary btn--block" type="submit">들어가기</button>
+    </form>
+  </div>
+  <p class="center mt-3 tiny"><a href="../index.html" style="color:var(--amber-700);font-weight:600">홈페이지로</a></p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js?v=20261014h"></script>
+<script src="../assets/js/main.js?v=20261014h"></script>
+<script src="../assets/js/auth.js?v=20261014h"></script>
+<script>
+(() => {
+  const KEY = "yongma_admin_email";            // 이 브라우저에 기억해 둔 관리자 이메일
+  const msg = document.getElementById("msg");
+  const emailRow = document.getElementById("email-row"), emailIn = document.getElementById("email");
+  const who = document.getElementById("who"), pw = document.getElementById("pw");
+  const get = () => { try { return localStorage.getItem(KEY) || ""; } catch (e) { return ""; } };
+  const set = (v) => { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch (e) { /* 저장 못 해도 로그인은 된다 */ } };
+  const mask = (e) => e.replace(/^(.{2}).*(@.*)$/, "$1***$2");
+
+  function paint() {
+    const saved = get();
+    emailRow.hidden = !!saved;
+    who.hidden = !saved;
+    if (saved) who.innerHTML = mask(saved).replace(/[<>&]/g, "") + ' 관리자 <a href="#" id="other">다른 계정</a>';
+    const other = document.getElementById("other");
+    if (other) other.onclick = (e) => { e.preventDefault(); set(""); emailIn.value = ""; paint(); emailIn.focus(); };
+  }
+  paint();
+
+  // 이미 관리자 권한으로 로그인돼 있으면 바로 대시보드로
+  (async () => {
+    if (Auth.ready() && (await Auth.user()) && (await Auth.isAdmin())) location.replace("index.html");
+  })();
+
+  document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (window.UI) UI.clearAlert(msg);
+    const email = get() || emailIn.value.trim();
+    const say = (t) => (window.UI ? UI.alert(msg, "err", t) : alert(t));
+    if (!email) return say("처음 한 번은 관리자 이메일을 넣어 주십시오.");
+    if (!pw.value) return say("비밀번호를 넣어 주십시오.");
+    const btn = e.target.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await Auth.signIn({ email, password: pw.value });
+      if (!(await Auth.isAdmin())) {                 // 일반 회원 계정이면 들여보내지 않는다
+        await Auth.signOut();
+        set("");
+        paint();
+        return say("관리자 권한이 없는 계정입니다.");
+      }
+      set(email);
+      location.replace("index.html");
+    } catch (err) {
+      say(err.message === "NOT_CONFIGURED" ? "회원 시스템이 아직 연결되지 않았습니다."
+        : /Invalid login/i.test(err.message) ? "비밀번호가 올바르지 않습니다."
+        : err.message);
+    } finally {
+      btn.disabled = false;
+      pw.value = "";
+    }
+  });
+})();
+</script>
+</body>
+</html>

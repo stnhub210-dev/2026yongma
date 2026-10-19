@@ -48,7 +48,8 @@ const Admin = {
         </div>`;
       return false;
     }
-    this.user = await Auth.requireAdmin("../login.html");
+    // 로그인 전이면 관리자 전용 로그인(비밀번호 한 칸, admin/login.html)으로 보낸다 — 2026-10-19
+    this.user = await Auth.requireAdmin("login.html");
     if (!this.user) return false;
     this.profile = await Auth.profile();
     this.c = Auth.client();
