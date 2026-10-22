@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1F4D">
-<link rel="stylesheet" href="assets/css/style.css?v=20261014h">
+<link rel="stylesheet" href="assets/css/style.css?v=20261022a">
 </head>
 <body>
 <div id="site-header"></div>
@@ -33,6 +33,39 @@
       관광지의 맛이 아니라 강릉 사람들이 다니던 노포의 맛입니다.
       농식품부 K-미식벨트와 연계해 향토음식을 한 줄에 모았습니다.
     </p>
+  </div>
+</section>
+
+<!-- 3D 미식지도 — 거리 전체를 촬영한 둘러보기(제작 3D어라운드). 원본 페이지에서 쓰는 주소·설정을 그대로 가져왔다 -->
+<section class="section" id="map3d">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">3D Map</span>
+      <h2>골목을 미리 걸어 보세요</h2>
+      <p>용마미식거리를 실제로 촬영한 3D 지도입니다. 오시기 전에 골목과 점포 위치를 미리 확인하실 수 있습니다.</p>
+    </div>
+
+    <div class="tour3d">
+      <iframe
+        src="https://my.matterport.com/show/?m=o81fY7Gp7rJ&amp;play=1&amp;lang=ko&amp;title=0&amp;help=0&amp;hr=0&amp;mls=0&amp;brand=0"
+        title="용마미식거리 3D 둘러보기"
+        loading="lazy"
+        allow="fullscreen; xr-spatial-tracking"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <div class="grid grid-3 mt-4">
+      <article class="tile reveal"><div class="icon-badge">👆</div><h3>바닥을 누르면</h3><p class="muted mt-1">누른 자리로 이동합니다. 골목을 한 걸음씩 걸어 보세요.</p></article>
+      <article class="tile reveal"><div class="icon-badge">🔄</div><h3>화면을 끌면</h3><p class="muted mt-1">제자리에서 둘러봅니다. 간판과 점포를 확인하실 수 있습니다.</p></article>
+      <article class="tile reveal"><div class="icon-badge">🗺️</div><h3>왼쪽 아래 버튼</h3><p class="muted mt-1">3D 평면도로 거리 전체를 한눈에 볼 수 있습니다.</p></article>
+    </div>
+
+    <div class="btn-row mt-4">
+      <a class="btn btn--primary" href="https://siastones2-hash.github.io/glow-multi/3d-around/%EC%9A%A9%EB%A7%88%EB%AF%B8%EC%8B%9D%EA%B1%B0%EB%A6%AC/" target="_blank" rel="noopener">3D 지도 크게 보기</a>
+      <a class="btn btn--ghost" href="https://map.naver.com/p/search/%EA%B0%95%EC%9B%90%20%EA%B0%95%EB%A6%89%EC%8B%9C%20%EA%B2%BD%EA%B0%95%EB%A1%9C%20%ED%8F%AC%EB%82%A81%EB%8F%99%EC%A3%BC%EB%AF%BC%EC%84%BC%ED%84%B0" target="_blank" rel="noopener">네이버 지도로 길찾기</a>
+    </div>
+    <p class="tiny muted mt-3">강원 강릉시 경강로 포남1동주민센터 일대 · 3D 촬영 3D어라운드</p>
   </div>
 </section>
 
@@ -101,11 +134,11 @@
 <div id="site-footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/js/config.js?v=20261014h"></script>
-<script src="assets/js/layout.js?v=20261014h"></script>
-<script src="assets/js/i18n.js?v=20261014h"></script>
-<script src="assets/js/auth.js?v=20261014h"></script>
-<script src="assets/js/main.js?v=20261014h"></script>
+<script src="assets/js/config.js?v=20261022a"></script>
+<script src="assets/js/layout.js?v=20261022a"></script>
+<script src="assets/js/i18n.js?v=20261022a"></script>
+<script src="assets/js/auth.js?v=20261022a"></script>
+<script src="assets/js/main.js?v=20261022a"></script>
 <script>
 (async () => {
   const list = document.getElementById("shops-list");
