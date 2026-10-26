@@ -80,6 +80,11 @@ details p{margin:8px 0 0;color:var(--ink2)}
 .cta .mas{position:absolute;right:10px;bottom:0;width:170px;opacity:.95}
 .cta .ctxt{max-width:calc(100% - 170px)}
 .bar{display:none}
+.tv{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#0b1636}
+.tv img{width:100%;height:100%;object-fit:cover;filter:brightness(.6)}
+.tv button{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;border-radius:999px;background:var(--orange);color:#fff;font:inherit;font-weight:800;font-size:16px;padding:14px 22px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap}
+.tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tour p{font-size:14px;color:var(--ink2);margin:8px 0 14px}
 .hg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .hc{display:block;border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink);background:#fff;transition:transform .15s}
 .hc:hover{transform:translateY(-2px)}.hc img{width:100%;height:130px;object-fit:cover}
@@ -124,6 +129,7 @@ footer a{color:var(--ink2)}
 <section><h2>맡기는 법</h2><ol><li>신분증으로 본인 확인을 합니다.</li><li>보관대장에 이름과 연락처, 물품을 적습니다.</li><li>보관봉투와 번호표를 받습니다. 번호표는 꼭 챙기세요.</li></ol></section>
 <section><h2>찾는 법과 주의할 점</h2><p>번호표를 보여 주면 보관대장과 대조해 물품을 돌려줍니다. 번호표를 잃어버렸다면 신분증으로 확인합니다. 캐리어, 배낭, 쇼핑백은 맡길 수 있지만 <b>귀중품·현금·전자기기는 맡지 않습니다.</b></p></section>
 
+<section class="tour"><h2>용마거리 3D로 미리 걷기</h2><div class="tv" data-src="https://my.matterport.com/show/?m=o81fY7Gp7rJ&amp;play=1&amp;title=0&amp;help=0&amp;hr=0&amp;mls=0&amp;brand=0&amp;lang=ko"><img src="https://2026yongma.com/assets/img/gallery/20260918_185900.webp" alt="용마거리 3D로 미리 걷기" loading="lazy" width="1600" height="900"><button type="button" onclick="var d=this.parentNode;d.innerHTML='<iframe src=&quot;'+d.dataset.src+'&quot; title=&quot;3D&quot; allow=&quot;fullscreen; xr-spatial-tracking&quot; allowfullscreen></iframe>'">▶ 3D 둘러보기 시작</button></div><p>바닥을 누르면 이동하고, 화면을 끌면 둘러봅니다. 방문 전에 골목과 간판을 미리 확인해 보세요.</p></section>
 <section class="mapbox"><h2>한눈에 보는 구역 안내</h2><img src="https://2026yongma.com/assets/img/map-zones.webp" alt="한눈에 보는 구역 안내 — 용마미식거리" loading="lazy" width="1600" height="1110"><p>어서와존(미식벨트)·놀이존·버스킹존·플리마켓이 용마거리 한 줄에 모여 있습니다. 짐보관소는 거리 안에 있어요.</p></section>
 <section class="cta"><img class="mas" src="https://2026yongma.com/assets/img/mascot-duo.webp" alt="" loading="lazy" width="820" height="551"><div class="ctxt"><h2>용마미식거리 바로가기</h2><p>일정, 부스 메뉴, 공연 정보는 공식 홈페이지에서 가장 먼저 업데이트됩니다.</p></div><div class="btns"><a class="btn" href="/">공식 홈페이지</a><a class="btn alt" href="https://map.naver.com/p/search/%ED%8F%AC%EB%82%A81%EB%8F%99%ED%96%89%EC%A0%95%EB%B3%B5%EC%A7%80%EC%84%BC%ED%84%B0" target="_blank" rel="noopener">네이버 지도</a><a class="btn alt" href="https://map.kakao.com/link/search/%ED%8F%AC%EB%82%A81%EB%8F%99%ED%96%89%EC%A0%95%EB%B3%B5%EC%A7%80%EC%84%BC%ED%84%B0" target="_blank" rel="noopener">카카오맵</a></div></section>
 <section><h2>자주 묻는 질문</h2><details><summary>강릉역 안에 있는 보관소인가요?</summary><p>아니요. 강릉역에서 걸어서 10분 거리인 용마미식거리 안의 보관소입니다.</p></details><details><summary>평일에도 맡길 수 있나요?</summary><p>행사 운영일인 금·토요일 17~22시에만 운영합니다.</p></details><details><summary>밤 10시 넘어서 찾을 수 있나요?</summary><p>운영 종료 전까지 찾아가야 합니다. 기차 시간을 고려해 미리 찾아가세요.</p></details><p class="upd">최종 업데이트: 2026-10-26</p></section>

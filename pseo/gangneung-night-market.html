@@ -80,6 +80,11 @@ details p{margin:8px 0 0;color:var(--ink2)}
 .cta .mas{position:absolute;right:10px;bottom:0;width:170px;opacity:.95}
 .cta .ctxt{max-width:calc(100% - 170px)}
 .bar{display:none}
+.tv{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#0b1636}
+.tv img{width:100%;height:100%;object-fit:cover;filter:brightness(.6)}
+.tv button{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;border-radius:999px;background:var(--orange);color:#fff;font:inherit;font-weight:800;font-size:16px;padding:14px 22px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap}
+.tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tour p{font-size:14px;color:var(--ink2);margin:8px 0 14px}
 .hg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .hc{display:block;border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink);background:#fff;transition:transform .15s}
 .hc:hover{transform:translateY(-2px)}.hc img{width:100%;height:130px;object-fit:cover}
@@ -124,6 +129,7 @@ footer a{color:var(--ink2)}
 <section><h2>강릉 야시장에서 무엇을 먹을까</h2><p>어서와존 K-미식벨트에는 초당두부, 감자옹심이, 강릉짬뽕, 한과, 강릉커피처럼 강릉 사람들이 먹어 온 향토음식이 한 줄로 모여 있습니다. 교차로 무대를 중심으로 먹거리 부스 16곳과 플리마켓 4곳이 네 방향으로 이어지고, 골목 안 노포들도 함께 문을 엽니다. 부스별 메뉴와 가격은 <a href="https://2026yongma.com/booths.html">매대 명단</a>에서 미리 볼 수 있습니다.</p></section>
 <section><h2>먹고 나서 할 것</h2><p>오후 5시부터 7시까지는 인디밴드·어쿠스틱·국악 크로스오버 버스킹이, 7시부터 10시까지는 DJ 음악다방과 거리노래방이 이어집니다. 저녁 7시부터는 한번봐존 플리마켓에서 강릉 로컬 셀러의 수공예품과 디저트를 구경할 수 있습니다. 10월 30일·31일에는 동행축제 연계 K-컬처 기획공연이 8호 어린이공원 특설무대에서 열립니다.</p></section>
 
+<section class="tour"><h2>용마거리 3D로 미리 걷기</h2><div class="tv" data-src="https://my.matterport.com/show/?m=o81fY7Gp7rJ&amp;play=1&amp;title=0&amp;help=0&amp;hr=0&amp;mls=0&amp;brand=0&amp;lang=ko"><img src="https://2026yongma.com/assets/img/gallery/20260918_185900.webp" alt="용마거리 3D로 미리 걷기" loading="lazy" width="1600" height="900"><button type="button" onclick="var d=this.parentNode;d.innerHTML='<iframe src=&quot;'+d.dataset.src+'&quot; title=&quot;3D&quot; allow=&quot;fullscreen; xr-spatial-tracking&quot; allowfullscreen></iframe>'">▶ 3D 둘러보기 시작</button></div><p>바닥을 누르면 이동하고, 화면을 끌면 둘러봅니다. 방문 전에 골목과 간판을 미리 확인해 보세요.</p></section>
 <section class="mapbox"><h2>한눈에 보는 구역 안내</h2><img src="https://2026yongma.com/assets/img/map-zones.webp" alt="한눈에 보는 구역 안내 — 용마미식거리" loading="lazy" width="1600" height="1110"><p>어서와존(미식벨트)·놀이존·버스킹존·플리마켓이 용마거리 한 줄에 모여 있습니다. 짐보관소는 거리 안에 있어요.</p></section>
 <section class="cta"><img class="mas" src="https://2026yongma.com/assets/img/mascot-duo.webp" alt="" loading="lazy" width="820" height="551"><div class="ctxt"><h2>용마미식거리 바로가기</h2><p>일정, 부스 메뉴, 공연 정보는 공식 홈페이지에서 가장 먼저 업데이트됩니다.</p></div><div class="btns"><a class="btn" href="/">공식 홈페이지</a><a class="btn alt" href="https://map.naver.com/p/search/%ED%8F%AC%EB%82%A81%EB%8F%99%ED%96%89%EC%A0%95%EB%B3%B5%EC%A7%80%EC%84%BC%ED%84%B0" target="_blank" rel="noopener">네이버 지도</a><a class="btn alt" href="https://map.kakao.com/link/search/%ED%8F%AC%EB%82%A81%EB%8F%99%ED%96%89%EC%A0%95%EB%B3%B5%EC%A7%80%EC%84%BC%ED%84%B0" target="_blank" rel="noopener">카카오맵</a></div></section>
 <section><h2>자주 묻는 질문</h2><details><summary>강릉 야시장은 매일 열리나요?</summary><p>아니요. 용마미식거리는 2026년 10월 9일부터 11월 14일까지 금요일과 토요일 저녁 5시~10시에만 운영합니다.</p></details><details><summary>입장료가 있나요?</summary><p>없습니다. 누구나 자유롭게 들어올 수 있고, 먹거리는 부스마다 가격이 다릅니다.</p></details><details><summary>비가 오면 열리나요?</summary><p>몽골텐트와 파라솔로 일부 프로그램은 비가 와도 운영합니다. 버스킹은 다음 주로 옮겨질 수 있고, 변경 사항은 홈페이지 소식과 SNS로 안내합니다.</p></details><p class="upd">최종 업데이트: 2026-10-26</p></section>
