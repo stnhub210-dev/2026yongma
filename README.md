@@ -28,6 +28,7 @@
 │   ├── posts.html          공지·소식
 │   ├── events.html         일정 관리
 │   ├── shops.html          점포 관리
+│   ├── prize.html          경품 지급 · 수령 서명 (supabase/prize.sql 실행 필요)
 │   ├── budget.html         정산 관리  ★
 │   └── docs.html           지침·서식 자료실  ★
 │

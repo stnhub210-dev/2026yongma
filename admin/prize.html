@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ko" data-base="../">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>경품 수령 서명 — 용마미식거리 관리자</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0E1F4D">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261022a">
+<style>
+  /* 이 화면 전용 — 지급 입력, 서명 판, 수령증 인쇄 */
+  .pz-grid { display: grid; gap: 0 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .pz-agree { padding: 12px 14px; border-radius: 12px; background: var(--bg-soft); font-size: .8125rem; color: var(--ink-500); margin-bottom: 14px; }
+  .pz-sum { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-bottom: 14px; font-size: .9375rem; }
+  .pz-sum b { font-size: 1.0625rem; }
+  .pz-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .pz-filter .input, .pz-filter .select { width: auto; padding: 7px 12px; }
+  .pz-sig { width: 120px; height: 48px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 6px; cursor: zoom-in; }
+
+  /* 서명 판 — 받는 분에게 화면을 건네므로 꽉 차게 */
+  .pz-dlg { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: #fff; }
+  .pz-dlg::backdrop { background: rgba(12,10,9,.6); }
+  .pz-dlg__box { height: 100%; display: flex; flex-direction: column; gap: 12px; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); max-width: 900px; margin: 0 auto; }
+  .pz-dlg__title { font-size: 1.375rem; font-weight: 800; text-align: center; }
+  .pz-dlg__info { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; padding: 12px 16px; border-radius: 12px; background: var(--bg-soft); font-size: 1rem; }
+  .pz-dlg__info dt { color: var(--ink-500); }
+  .pz-dlg__info dd { margin: 0; font-weight: 700; }
+  .pz-dlg__stmt { text-align: center; font-size: 1rem; font-weight: 700; }
+  .pz-pad { position: relative; flex: 1; min-height: 200px; border: 2px dashed #D6D3D1; border-radius: 14px; background: #fff; touch-action: none; }
+  .pz-pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+  .pz-pad__hint { position: absolute; inset: 0; display: grid; place-items: center; color: #C8C4C0; font-size: 1.25rem; font-weight: 700; pointer-events: none; }
+  .pz-pad__line { position: absolute; left: 8%; right: 8%; bottom: 26%; border-bottom: 1px solid #E7E5E4; pointer-events: none; }
+  .pz-dlg__btns { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 8px; }
+  .pz-dlg__btns .btn { justify-content: center; padding-top: 14px; padding-bottom: 14px; }
+
+  /* 인쇄 — 화면은 숨기고 수령증/수령대장만 */
+  #print-area { display: none; }
+  @media print {
+    @page { size: A4; margin: 14mm; }
+    body.pz-printing .admin-shell, body.pz-printing dialog { display: none !important; }
+    body.pz-printing { background: #fff; }
+    body.pz-printing #print-area { display: block; color: #000; font-size: 11pt; }
+  }
+  .pr-doc { page-break-after: always; }
+  .pr-doc:last-child { page-break-after: auto; }
+  .pr-doc h2 { text-align: center; font-size: 20pt; letter-spacing: .4em; margin: 6mm 0 8mm; }
+  .pr-doc table { width: 100%; border-collapse: collapse; }
+  .pr-doc th, .pr-doc td { border: 1px solid #000; padding: 6px 8px; text-align: left; vertical-align: middle; }
+  .pr-doc th { background: #F2F2F2; width: 22%; font-weight: 700; }
+  .pr-doc .pr-stmt { text-align: center; margin: 10mm 0 6mm; font-size: 12pt; }
+  .pr-doc .pr-date { text-align: center; margin-bottom: 8mm; font-size: 12pt; }
+  .pr-doc .pr-sign span { white-space: nowrap; }
+  .pr-doc .pr-sign { display: flex; justify-content: flex-end; align-items: center; gap: 10px; font-size: 12pt; }
+  .pr-doc .pr-sign img { width: 60mm; height: 24mm; object-fit: contain; border-bottom: 1px solid #000; }
+  .pr-doc .pr-foot { margin-top: 14mm; text-align: center; font-size: 12pt; font-weight: 700; }
+  .pr-doc .pr-note { margin-top: 6mm; font-size: 9pt; color: #444; }
+  .pr-ledger th, .pr-ledger td { font-size: 9pt; padding: 4px 5px; text-align: center; }
+  .pr-ledger th { width: auto; }
+  .pr-ledger img { width: 34mm; height: 12mm; object-fit: contain; }
+  .pr-ledger tfoot td { font-weight: 700; }
+</style>
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div id="admin-side"></div>
+  <main class="admin-main" id="admin-main">
+    <div class="admin-head">
+      <div><h1>경품 지급 · 수령 서명</h1><p class="muted tiny" id="admin-who"></p></div>
+      <div class="btn-row">
+        <button class="btn btn--ghost btn--sm" id="btn-ledger">수령대장 인쇄</button>
+        <button class="btn btn--ghost btn--sm" id="btn-csv">CSV 받기</button>
+      </div>
+    </div>
+    <div id="admin-msg" class="alert"></div>
+
+    <!-- 1. 지급 입력 → 서명 받기 -->
+    <div class="panel">
+      <h3 style="margin-bottom:6px">경품 지급 등록</h3>
+      <p class="panel-sub">
+        경품을 건넨 뒤 아래를 채우고 <b>서명 받기</b>를 누르면 화면 전체가 서명 판으로 바뀝니다. 휴대폰·태블릿을 받는 분께 건네 손가락으로 서명을 받으세요.
+        저장하면 행사·경품·단가는 그대로 남아 다음 분을 바로 이어서 받을 수 있습니다. <b>서명된 기록은 고칠 수 없습니다</b>(정산 증빙) — 잘못 받았으면 관리자가 삭제 후 다시 받습니다.
+      </p>
+      <form id="pz-form" autocomplete="off">
+        <div class="pz-grid">
+          <div class="field"><label>행사 · 이벤트 *</label>
+            <input class="input" name="event_name" list="pz-events" maxlength="60" required placeholder="예: 사진전 시상">
+            <datalist id="pz-events"></datalist></div>
+          <div class="field"><label>경품 *</label>
+            <input class="input" name="prize_name" list="pz-prizes" maxlength="60" required placeholder="예: 온누리상품권 3만원권">
+            <datalist id="pz-prizes"></datalist></div>
+          <div class="field"><label>수량 *</label><input class="input" name="qty" type="number" min="1" max="999" value="1" required></div>
+          <div class="field"><label>단가(원)</label><input class="input" name="unit_price" type="number" min="0" step="10" placeholder="정산용 — 모르면 비움"></div>
+        </div>
+        <div class="pz-grid">
+          <div class="field"><label>받는 분 성명 *</label><input class="input" name="recipient_name" maxlength="20" required></div>
+          <div class="field"><label>연락처</label><input class="input" name="phone" type="tel" inputmode="tel" maxlength="15" pattern="[0-9\-\s]{9,15}" placeholder="010-0000-0000"></div>
+          <div class="field"><label>비고</label><input class="input" name="memo" maxlength="200" placeholder="예: 1등 / 대리 수령(관계)"></div>
+        </div>
+        <div class="pz-agree">
+          <label class="checkbox"><input type="checkbox" name="privacy_agreed" required>
+            <span><b style="color:var(--ink-900)">[필수] 개인정보 수집·이용 동의</b> — <span id="pz-privacy"></span></span></label>
+        </div>
+        <div class="btn-row"><button type="submit" class="btn btn--primary">서명 받기 →</button></div>
+      </form>
+    </div>
+
+    <!-- 2. 지급 내역 -->
+    <div class="panel">
+      <h3 style="margin-bottom:14px">지급 내역</h3>
+      <div class="pz-filter">
+        <select class="select" id="f-event"><option value="">행사 전체</option></select>
+        <input class="input" id="f-q" type="search" placeholder="이름·연락처·경품 검색">
+      </div>
+      <div class="pz-sum" id="pz-sum"></div>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>번호</th><th>수령 일시</th><th>행사</th><th style="min-width:160px">경품</th><th>받는 분</th><th>서명</th><th>담당</th><th></th></tr></thead>
+          <tbody id="rows"><tr><td colspan="8" class="center muted">불러오는 중…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 서명 판 (화면 전체) -->
+<dialog class="pz-dlg" id="pz-dlg" aria-label="경품 수령 서명">
+  <div class="pz-dlg__box">
+    <p class="pz-dlg__title">경품 수령 확인</p>
+    <dl class="pz-dlg__info" id="pz-info"></dl>
+    <p class="pz-dlg__stmt">위 경품을 정히 수령하였음을 확인합니다.</p>
+    <div class="pz-pad" id="pz-pad">
+      <div class="pz-pad__line"></div>
+      <div class="pz-pad__hint" id="pz-hint">여기에 서명해 주세요</div>
+      <canvas id="pz-canvas"></canvas>
+    </div>
+    <div class="pz-dlg__btns">
+      <button type="button" class="btn btn--ghost" id="pz-cancel">취소</button>
+      <button type="button" class="btn btn--ghost" id="pz-clear">다시 쓰기</button>
+      <button type="button" class="btn btn--primary" id="pz-done">서명 완료</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="lightbox" id="lb" aria-label="서명 크게 보기">
+  <figure class="lightbox__fig"><img id="lb-img" alt="" style="background:#fff"><figcaption><span id="lb-cap"></span></figcaption></figure>
+  <button class="lightbox__btn lightbox__close" id="lb-close" aria-label="닫기">×</button>
+</dialog>
+
+<div id="print-area"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js?v=20261022a"></script>
+<script src="../assets/js/auth.js?v=20261022a"></script>
+<script src="../assets/js/main.js?v=20261022a"></script>
+<script src="../assets/js/admin.js?v=20261030a"></script>
+<script>
+(async () => {
+  if (!(await Admin.boot("prize.html"))) return;
+  const c = Admin.c, esc = Admin.esc;
+  const isAdmin = Admin.profile?.role === "admin";
+  const ORG = "용마미식거리 상인회 · (주)에스티엔미디어";
+  // 동의 문구 — 보유기간 등은 사업 지침에 맞게 여기서 고친다
+  const PRIVACY = "수집 항목: 성명, 연락처, 서명 / 목적: 경품 지급 확인 및 사업비 정산 증빙 / 보유기간: 사업 정산 완료 후 관련 법령·지침에 따른 증빙 보존기간까지. 동의를 거부할 수 있으나 거부 시 경품 지급이 제한될 수 있습니다.";
+  document.getElementById("pz-privacy").textContent = PRIVACY;
+
+  const won = (n) => (n == null ? "-" : UI.money(n) + "원");
+  const amount = (r) => (r.unit_price == null ? null : r.unit_price * r.qty);
+  const dt = (s) => { const d = new Date(s); return `${UI.date(s)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+  const no = (r) => `P-${String(r.id).padStart(4, "0")}`;
+  let rows = [];
+
+  /* ---------- 지급 내역 ---------- */
+  const filtered = () => {
+    const ev = document.getElementById("f-event").value;
+    const q = document.getElementById("f-q").value.trim().toLowerCase();
+    return rows.filter((r) => (!ev || r.event_name === ev) &&
+      (!q || [r.recipient_name, r.phone, r.prize_name, r.memo].join(" ").toLowerCase().includes(q)));
+  };
+
+  const render = () => {
+    const list = filtered();
+    const tot = list.reduce((s, r) => s + (amount(r) || 0), 0);
+    const qty = list.reduce((s, r) => s + r.qty, 0);
+    document.getElementById("pz-sum").innerHTML =
+      `<span>지급 <b>${list.length}</b>건</span><span>수량 <b>${qty}</b>개</span><span>금액 합계 <b>${UI.money(tot)}</b>원</span>` +
+      (list.some((r) => r.unit_price == null) ? '<span class="tiny muted">(단가를 비운 건은 금액 합계에서 빠집니다)</span>' : "");
+    document.getElementById("rows").innerHTML = list.map((r) => `
+      <tr data-id="${r.id}">
+        <td class="tiny">${no(r)}</td>
+        <td class="tiny" style="white-space:nowrap">${dt(r.signed_at)}</td>
+        <td>${esc(r.event_name)}</td>
+        <td><b>${esc(r.prize_name)}</b> × ${r.qty}<br><span class="tiny muted">${won(amount(r))}${r.memo ? " · " + esc(r.memo) : ""}</span></td>
+        <td><b>${esc(r.recipient_name)}</b><br><a class="tiny" href="tel:${esc(r.phone)}">${esc(r.phone || "-")}</a></td>
+        <td><img class="pz-sig" src="${r.signature}" data-sig alt="${esc(r.recipient_name)} 서명"></td>
+        <td class="tiny">${esc(r.given_by_name || "-")}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn--ghost btn--sm" data-print>수령증</button>
+          ${isAdmin ? '<button class="btn btn--ghost btn--sm" data-del>삭제</button>' : ""}</td>
+      </tr>`).join("") || '<tr><td colspan="8" class="center muted">지급 내역이 없습니다.</td></tr>';
+  };
+
+  const reload = async () => {
+    rows = await Admin.load("prize_receipts", { order: ["signed_at", false] });
+    const uniq = (k) => [...new Set(rows.map((r) => r[k]))];
+    const evs = uniq("event_name");
+    const fe = document.getElementById("f-event"), cur = fe.value;
+    fe.innerHTML = '<option value="">행사 전체</option>' + evs.map((v) => `<option${v === cur ? " selected" : ""}>${esc(v)}</option>`).join("");
+    document.getElementById("pz-events").innerHTML = [...new Set([...evs, "사진전 시상", "음식 자랑 추첨", "현장 이벤트"])].map((v) => `<option value="${esc(v)}">`).join("");
+    document.getElementById("pz-prizes").innerHTML = uniq("prize_name").map((v) => `<option value="${esc(v)}">`).join("");
+    render();
+  };
+
+  document.getElementById("f-event").addEventListener("change", render);
+  document.getElementById("f-q").addEventListener("input", render);
+
+  /* ---------- 서명 판 ---------- */
+  const dlg = document.getElementById("pz-dlg");
+  const cv = document.getElementById("pz-canvas");
+  const ctx = cv.getContext("2d");
+  let strokes = [], cur = null, pending = null;
+
+  const fit = () => {
+    const r = cv.getBoundingClientRect(), k = window.devicePixelRatio || 1;
+    cv.width = Math.round(r.width * k); cv.height = Math.round(r.height * k);
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    redraw();
+  };
+  // 획은 판 크기 대비 비율(0~1)로 저장 — 화면을 돌려도 그대로 다시 그린다
+  const paint = (g, s, w, h, lw) => {
+    g.lineWidth = lw; g.lineCap = "round"; g.lineJoin = "round"; g.strokeStyle = "#111";
+    g.beginPath();
+    s.forEach(([x, y], i) => (i ? g.lineTo(x * w, y * h) : g.moveTo(x * w, y * h)));
+    if (s.length === 1) g.lineTo(s[0][0] * w + .1, s[0][1] * h);
+    g.stroke();
+  };
+  const redraw = () => {
+    const r = cv.getBoundingClientRect();
+    ctx.clearRect(0, 0, r.width, r.height);
+    strokes.forEach((s) => paint(ctx, s, r.width, r.height, 3));
+    document.getElementById("pz-hint").style.display = strokes.length ? "none" : "";
+  };
+  const pt = (e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
+  cv.addEventListener("pointerdown", (e) => { e.preventDefault(); cv.setPointerCapture(e.pointerId); cur = [pt(e)]; strokes.push(cur); redraw(); });
+  cv.addEventListener("pointermove", (e) => {
+    if (!cur) return;
+    (e.getCoalescedEvents ? e.getCoalescedEvents() : [e]).forEach((x) => cur.push(pt(x)));
+    redraw();
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach((t) => cv.addEventListener(t, () => (cur = null)));
+  window.addEventListener("resize", () => dlg.open && fit());
+
+  // 흰 바탕 PNG — 폭 600px로 줄여 저장(수십 KB)
+  const exportPng = () => {
+    const r = cv.getBoundingClientRect(), W = 600, H = Math.round(600 * r.height / r.width);
+    const o = document.createElement("canvas"); o.width = W; o.height = H;
+    const g = o.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, W, H);
+    strokes.forEach((s) => paint(g, s, W, H, Math.max(2.5, 3 * W / r.width)));
+    return o.toDataURL("image/png");
+  };
+  // 점 몇 개·짧은 낙서는 서명으로 받지 않는다
+  const inked = () => {
+    const r = cv.getBoundingClientRect();
+    let len = 0;
+    strokes.forEach((s) => s.forEach((p, i) => { if (i) len += Math.hypot((p[0] - s[i - 1][0]) * r.width, (p[1] - s[i - 1][1]) * r.height); }));
+    return len > 60;
+  };
+
+  const openPad = (v) => {
+    pending = v;
+    document.getElementById("pz-info").innerHTML = `
+      <dt>행사</dt><dd>${esc(v.event_name)}</dd>
+      <dt>경품</dt><dd>${esc(v.prize_name)} × ${v.qty}</dd>
+      <dt>받는 분</dt><dd>${esc(v.recipient_name)}${v.phone ? ` (${esc(v.phone)})` : ""}</dd>
+      <dt>일시</dt><dd>${dt(new Date())}</dd>`;
+    strokes = [];
+    dlg.showModal();
+    requestAnimationFrame(fit);
+  };
+
+  document.getElementById("pz-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const s = (k) => (fd.get(k) ?? "").toString().trim();
+    openPad({
+      event_name: s("event_name"), prize_name: s("prize_name"),
+      qty: Math.max(1, +s("qty") || 1), unit_price: s("unit_price") === "" ? null : Math.max(0, +s("unit_price")),
+      recipient_name: s("recipient_name"), phone: s("phone"), memo: s("memo"),
+      privacy_agreed: fd.get("privacy_agreed") === "on",
+    });
+  });
+  document.getElementById("pz-clear").onclick = () => { strokes = []; redraw(); };
+  document.getElementById("pz-cancel").onclick = () => dlg.close();
+  dlg.addEventListener("cancel", (e) => { if (strokes.length && !confirm("서명을 저장하지 않고 닫을까요?")) e.preventDefault(); });
+
+  document.getElementById("pz-done").onclick = async (e) => {
+    if (!inked()) return alert("서명이 너무 짧습니다. 서명란에 이름을 써 주세요.");
+    const btn = e.currentTarget; btn.disabled = true; btn.textContent = "저장 중…";
+    try {
+      const { error } = await c.from("prize_receipts").insert({
+        ...pending, signature: exportPng(), given_by: Admin.user.id,
+        given_by_name: Admin.profile?.name || Admin.user.email || "",
+      });
+      if (error) throw error;
+      dlg.close();
+      // 다음 분을 이어 받도록 행사·경품·단가는 남기고 받는 분 정보만 비운다
+      const f = document.getElementById("pz-form");
+      ["recipient_name", "phone", "memo"].forEach((k) => (f.elements[k].value = ""));
+      f.elements.qty.value = 1; f.elements.privacy_agreed.checked = false;
+      Admin.toast("ok", `${pending.recipient_name} 님 수령 서명을 저장했습니다.`);
+      await reload();
+      f.elements.recipient_name.focus();
+    } catch (err) {
+      alert("저장 실패: " + (/relation|does not exist|schema cache/i.test(err.message)
+        ? "경품 수령 표가 아직 없습니다. supabase/prize.sql 을 SQL Editor 에서 실행해 주세요." : err.message));
+    } finally { btn.disabled = false; btn.textContent = "서명 완료"; }
+  };
+
+  /* ---------- 인쇄 ---------- */
+  const print = (html) => {
+    document.getElementById("print-area").innerHTML = html;
+    document.body.classList.add("pz-printing");
+    const imgs = [...document.querySelectorAll("#print-area img")];
+    Promise.all(imgs.map((i) => i.complete ? 0 : new Promise((ok) => (i.onload = i.onerror = ok)))).then(() => {
+      window.print();
+      document.body.classList.remove("pz-printing");
+    });
+  };
+  const receipt = (r) => `
+    <section class="pr-doc">
+      <h2>경품 수령증</h2>
+      <table>
+        <tr><th>수령증 번호</th><td>${no(r)}</td></tr>
+        <tr><th>행사</th><td>${esc(r.event_name)}</td></tr>
+        <tr><th>경품</th><td>${esc(r.prize_name)}</td></tr>
+        <tr><th>수량</th><td>${r.qty}</td></tr>
+        <tr><th>금액</th><td>${r.unit_price == null ? "" : `${won(amount(r))} (단가 ${won(r.unit_price)})`}</td></tr>
+        <tr><th>받는 분</th><td>${esc(r.recipient_name)}</td></tr>
+        <tr><th>연락처</th><td>${esc(r.phone)}</td></tr>
+        <tr><th>비고</th><td>${esc(r.memo)}</td></tr>
+        <tr><th>지급 담당자</th><td>${esc(r.given_by_name)}</td></tr>
+      </table>
+      <p class="pr-stmt">위 경품을 정히 수령하였음을 확인합니다.</p>
+      <p class="pr-date">${dt(r.signed_at)}</p>
+      <div class="pr-sign"><span>수령자 &nbsp;${esc(r.recipient_name)}</span><img src="${r.signature}" alt=""><span>(서명)</span></div>
+      <p class="pr-foot">${ORG}</p>
+      <p class="pr-note">※ 개인정보 수집·이용 동의 완료 — ${esc(PRIVACY)}</p>
+    </section>`;
+
+  document.getElementById("btn-ledger").onclick = () => {
+    const list = filtered().slice().reverse();          // 대장은 오래된 순
+    if (!list.length) return Admin.toast("err", "인쇄할 지급 내역이 없습니다.");
+    const ev = document.getElementById("f-event").value;
+    const tot = list.reduce((s, r) => s + (amount(r) || 0), 0);
+    print(`<section class="pr-doc">
+      <h2 style="letter-spacing:.2em">경품 수령 대장</h2>
+      <p style="margin-bottom:4mm">행사: ${esc(ev || "전체")} &nbsp;·&nbsp; 출력일: ${dt(new Date())} &nbsp;·&nbsp; ${list.length}건</p>
+      <table class="pr-ledger">
+        <thead><tr><th>연번</th><th>번호</th><th>수령 일시</th><th>행사</th><th>경품</th><th>수량</th><th>금액(원)</th><th>성명</th><th>연락처</th><th>서명</th></tr></thead>
+        <tbody>${list.map((r, i) => `<tr><td>${i + 1}</td><td>${no(r)}</td><td>${dt(r.signed_at)}</td><td>${esc(r.event_name)}</td><td>${esc(r.prize_name)}</td>
+          <td>${r.qty}</td><td>${amount(r) == null ? "" : UI.money(amount(r))}</td><td>${esc(r.recipient_name)}</td><td>${esc(r.phone)}</td><td><img src="${r.signature}" alt=""></td></tr>`).join("")}</tbody>
+        <tfoot><tr><td colspan="5">합계</td><td>${list.reduce((s, r) => s + r.qty, 0)}</td><td>${UI.money(tot)}</td><td colspan="3"></td></tr></tfoot>
+      </table>
+      <p class="pr-foot">${ORG}</p>
+    </section>`);
+  };
+
+  /* ---------- 표 버튼 ---------- */
+  document.getElementById("rows").addEventListener("click", async (e) => {
+    const tr = e.target.closest("tr[data-id]"); if (!tr) return;
+    const r = rows.find((x) => x.id === +tr.dataset.id);
+    if (e.target.closest("[data-sig]")) {
+      document.getElementById("lb-img").src = r.signature;
+      document.getElementById("lb-cap").textContent = `${r.recipient_name} — ${r.prize_name} × ${r.qty} · ${dt(r.signed_at)}`;
+      return document.getElementById("lb").showModal();
+    }
+    if (e.target.closest("[data-print]")) return print(receipt(r));
+    if (e.target.closest("[data-del]") && confirm(`${r.recipient_name} 님의 수령 기록(${r.prize_name})과 서명을 삭제합니다. 되돌릴 수 없습니다. 계속할까요?`)) {
+      const { error } = await c.from("prize_receipts").delete().eq("id", r.id);
+      if (error) return Admin.toast("err", error.message);
+      Admin.toast("ok", "삭제했습니다."); reload();
+    }
+  });
+  document.getElementById("lb-close").onclick = () => document.getElementById("lb").close();
+
+  // CSV (엑셀에서 열림) — 서명 이미지는 빠진다. 서명이 필요하면 수령대장 인쇄(PDF 저장)
+  document.getElementById("btn-csv").onclick = () => {
+    const head = ["번호", "수령일시", "행사", "경품", "수량", "단가", "금액", "성명", "연락처", "비고", "지급담당"];
+    const lines = filtered().slice().reverse().map((r) => [no(r), dt(r.signed_at), r.event_name, r.prize_name, r.qty, r.unit_price ?? "", amount(r) ?? "", r.recipient_name, r.phone, r.memo, r.given_by_name]);
+    const csv = "﻿" + [head, ...lines].map((l) => l.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = `경품수령_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+  };
+
+  try { await reload(); }
+  catch (e) {
+    Admin.toast("err", /relation|does not exist|schema cache/i.test(e.message)
+      ? "경품 수령 표가 아직 없습니다. supabase/prize.sql 을 SQL Editor 에서 실행해 주세요." : e.message);
+  }
+})();
+</script>
+</body>
+</html>
