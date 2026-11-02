@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://2026yongma.com/3d/">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=14">
+<link rel="stylesheet" href="css/style.css?v=15">
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 </head>
 <body class="mode-garden">
@@ -273,7 +273,8 @@
       <input id="lg-id" autocomplete="username" maxlength="16" placeholder="아이디 (영문 소문자·숫자 4~16자)" aria-label="아이디">
       <input id="lg-pw" type="password" autocomplete="current-password" maxlength="64" placeholder="비밀번호 (8자 이상)" aria-label="비밀번호">
       <input id="lg-pw2" type="password" autocomplete="new-password" maxlength="64" placeholder="비밀번호 확인" aria-label="비밀번호 확인" hidden>
-      <input id="lg-store" maxlength="30" placeholder="점포명 (예: 용마떡볶이)" aria-label="점포명" hidden>
+      <select id="lg-store-sel" aria-label="내 점포 선택" hidden><option value="">내 점포를 골라 주세요</option></select>
+      <input id="lg-store" maxlength="30" placeholder="점포명 직접 입력" aria-label="점포명 직접 입력" hidden>
       <input id="lg-name" maxlength="12" placeholder="이름 (강의실·수료증에 표시)" aria-label="이름·대표자명" hidden>
       <p class="small err" id="lg-err" role="alert"></p>
       <button class="btn primary" id="lg-go">로그인</button>
@@ -295,6 +296,6 @@
 <div id="fatal" class="overlay" hidden><div class="load-card"><p id="fatal-text"></p><div class="load-actions"><button class="btn primary" onclick="location.reload()">다시 시도</button></div></div></div>
 
 <script>window.MDL_BRAND = {"ko": "용마미식거리", "en": "YONGMA FOOD STREET", "short": "용마", "ns": "yongmaland/v1", "title": "먹거리·놀이·쉼 3D 마을", "extra": ["foodstreet"], "only": ["foodstreet", "playground", "cafe", "restaurant"], "cinema": true, "videos": {"drivein": "23LPcp_5Zmg", "stage": "hn7LUXKaQ3o"}, "logo": "https://2026yongma.com/3d/logo.png"};</script>
-<script type="module" src="js/main.js?v=14"></script>
+<script type="module" src="js/main.js?v=15"></script>
 </body>
 </html>
