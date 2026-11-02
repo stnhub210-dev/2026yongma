@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<base href="https://whaleguard.github.io/maxday-life/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>용마 점주 아카데미 · 용마거리 점주 온라인 강의실</title>
+<meta name="description" content="용마 점주 아카데미 용마거리 점주 온라인 강의실 — 용마 점주 아카데미 강의실">
+<meta name="theme-color" content="#15272B">
+<link rel="icon" href="/academy/favicon.png">
+<meta property="og:title" content="용마 점주 아카데미 · 용마거리 점주 온라인 강의실">
+<meta property="og:description" content="용마 점주 아카데미 강의실 — 캐릭터로 입장해 함께 강의를 듣는 3D 강의실">
+<meta property="og:image" content="https://whaleguard.github.io/academy/logo.png">
+<meta property="og:url" content="https://2026yongma.com/academy/">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=11">
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+</head>
+<body class="mode-garden">
+<canvas id="gl" aria-label="3D 공간"></canvas>
+<div id="labels" aria-hidden="true"></div>
+<div id="fade"></div>
+
+<!-- ===== 정원(갈림길) ===== -->
+<section id="garden-ui" aria-label="공간 선택">
+  <header class="g-head">
+    <div class="logo-card"><img id="brand-logo" src="/academy/logo.png" alt="YONGMA OWNER ACADEMY"></div>
+    <div class="brand-ko" id="brand-ko">용마 점주 아카데미</div>
+    <p class="g-guide">머물고 싶은 공간을 골라주세요.</p>
+  </header>
+  <nav class="g-menu" aria-label="공통 메뉴">
+    <button class="pill" data-open="sound" aria-label="소리 설정"><span class="ico" id="snd-ico-g">🔇</span><span class="lbl">소리</span></button>
+    <button class="pill" data-open="help" aria-label="이용 안내"><span class="ico">ⓘ</span><span class="lbl">안내</span></button>
+    <button class="pill" data-open="settings" aria-label="설정"><span class="ico">⚙</span><span class="lbl">설정</span></button>
+    <button class="pill acct-pill" id="acct-pill" aria-label="로그인"><span class="ico">👤</span><span class="lbl" id="acct-lbl">로그인</span></button>
+  </nav>
+  <div class="enter-grid" id="enter-grid"></div>
+  <div class="spot-card" id="spot-card" hidden>
+    <button class="sc-back" id="sc-back" aria-label="지도로 돌아가기">← 지도</button>
+    <h2 id="sc-name"></h2>
+    <p id="sc-desc" class="small"></p>
+    <div class="sc-rooms" id="sc-rooms"></div>
+    <div class="sc-btns"><button class="btn sc-resv" id="sc-resv" hidden>바로 예약</button><button class="btn primary sc-enter" id="sc-enter">입장하기</button></div>
+  </div>
+</section>
+
+<!-- ===== 내부 공간 ===== -->
+<section id="room-ui" aria-label="공간 내부" hidden>
+  <div class="topbar">
+    <div class="tb-left"><img id="room-logo" alt="" hidden><strong id="room-name">용마 점주 아카데미 강의실</strong><span id="room-no" class="muted">1번 방</span></div>
+    <div class="tb-right">
+      <span class="people" id="people" title="실제 접속 인원 (체험용 방문객 제외)">👤 <b id="people-n">1</b>명</span>
+      <span class="pts" id="pts" title="공덕 포인트">🪷 <b id="pts-n">0</b></span>
+      <button class="tb-btn" data-open="sound" aria-label="소리 설정"><span id="snd-ico-r">🔇</span></button>
+      <button class="tb-btn acc-btn" data-open="acc" aria-label="내 소품">🎁</button>
+      <button class="tb-btn" data-open="settings" aria-label="설정">⚙</button>
+      <button class="tb-exit" id="exit-btn">입구로 나가기</button>
+    </div>
+  </div>
+  <div class="conn-band" id="conn-band" hidden><span id="conn-text"></span><span class="conn-actions" id="conn-actions" hidden><button id="conn-retry">다시 연결</button><button id="conn-home">정원으로</button></span></div>
+  <div class="actionbar" id="actionbar"><div class="ab-hint" id="ab-hint"></div><div class="ab-btns" id="ab-btns"></div></div>
+</section>
+
+<!-- ===== 로딩/실패 ===== -->
+<div id="loading" class="overlay" hidden>
+  <div class="load-card"><div class="spinner" id="load-spin"></div><p id="load-text">조용한 공간을 준비하고 있어요.</p>
+    <div class="load-actions" id="load-actions" hidden><button class="btn primary" id="load-retry">다시 시도</button><button class="btn" id="load-home">정원으로 돌아가기</button></div></div>
+</div>
+
+<!-- ===== 모달들 ===== -->
+<div id="modal-name" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="name-title">
+  <div class="sheet">
+    <h2 id="name-title">어떤 이름으로 머무를까요?</h2>
+    <p class="muted small" id="name-space"></p>
+    <input id="name-input" maxlength="12" autocomplete="off" spellcheck="false" aria-label="표시 이름">
+    <p class="err" id="name-err" aria-live="polite"></p>
+    <div class="row"><button class="btn" id="name-reroll">다른 이름</button><button class="btn primary" id="name-ok">입장하기</button></div>
+    <p class="muted tiny">로그인 없이 손님으로 입장해요. 이름은 이 탭에서만 기억합니다.</p>
+  </div>
+</div>
+
+<div id="modal-sound" class="modal" hidden role="dialog" aria-modal="true" aria-label="소리 설정">
+  <div class="sheet">
+    <h2>소리</h2>
+    <label class="switch"><input type="checkbox" id="snd-on"><span>소리 켜기</span></label>
+    <label class="slider">환경음 <input type="range" id="snd-amb" min="0" max="1" step="0.05"></label>
+    <label class="slider">공간 음악 <input type="range" id="snd-mus" min="0" max="1" step="0.05"></label>
+    <p class="muted tiny">처음엔 무음이에요. 음량은 공간을 옮겨도 유지됩니다. 음원은 직접 합성했고, 선율은 저작권이 만료된 곡(고요한 밤, 참 반가운 신도여, 첫 노엘, 나 같은 죄인 살리신, 기뻐하며 경배하세)입니다.</p>
+    <div class="row"><button class="btn primary" data-close>닫기</button></div>
+  </div>
+</div>
+
+<div id="modal-settings" class="modal" hidden role="dialog" aria-modal="true" aria-label="설정">
+  <div class="sheet">
+    <h2>설정</h2>
+    <label class="switch"><input type="checkbox" id="set-names" checked><span>다른 사람 이름 표시</span></label>
+    <label class="switch"><input type="checkbox" id="set-reduce"><span>동작 줄이기</span></label>
+    <label class="switch"><input type="checkbox" id="set-low"><span>저사양 모드 (그림자·효과 줄임)</span></label>
+    <label class="switch"><input type="checkbox" id="set-npc" checked><span>체험용 방문객 표시 (실제 접속자 아님 · 인원 미포함)</span></label>
+    <button class="btn" data-open="acc" style="width:100%;margin-top:6px">🎁 내 소품 (랜덤박스)</button>
+    <p class="muted tiny" id="conn-mode"></p>
+    <div class="row"><button class="btn primary" data-close>닫기</button></div>
+  </div>
+</div>
+
+<div id="modal-help" class="modal" hidden role="dialog" aria-modal="true" aria-label="이용 안내">
+  <div class="sheet scroll">
+    <h2>이용 안내</h2>
+    <ul class="help">
+      <li>입구에서 <b id="help-spaces">용마 점주 아카데미 강의실</b> 중 한 곳을 고르세요.</li>
+      <li>바닥이나 빈자리를 누르면 캐릭터가 걸어가 앉아요. PC에서는 방향키로도 움직일 수 있어요.</li>
+      <li>앉은 뒤 아래 버튼으로 합장·절하기(절), 기도하기(교회·성당), 차·커피 마시기(다도실·카페)를 할 수 있어요.</li>
+      <li>성당 봉헌초 구역에서 빈 초를 누르면 촛불이 켜지고 10분 동안 모두에게 보여요(무료 가상 체험).</li>
+      <li>놀이터의 운세·게임·어린이 기계를 누르면 키오스크 프로그램이 열려요. 랜덤박스는 무료 가상 뽑기예요.</li>
+      <li>대화·채팅 기능은 없어요. 같은 공간에 있는 다른 분들의 모습만 조용히 보입니다.</li>
+    </ul>
+    <h3>데이터 보관</h3>
+    <p class="small muted">손님 이름과 위치·자세는 접속 중에만 실시간으로 주고받고 따로 저장하지 않아요. 접속이 끊기면 최대 30초 뒤 정리됩니다. 촛불은 10분 뒤 꺼져요. 뽑은 소품과 소리 설정은 이 기기의 브라우저에만 저장됩니다. 종교 선택 이력은 기록하지 않아요.</p>
+    <div class="row"><button class="btn primary" data-close>닫기</button></div>
+  </div>
+</div>
+
+<div id="modal-program" class="modal program" hidden role="dialog" aria-modal="true" aria-labelledby="prog-title">
+  <div class="sheet prog-sheet">
+    <div class="prog-bar"><strong id="prog-title">프로그램</strong><a id="prog-newtab" target="_blank" rel="noopener">새 창으로 열기</a><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="prog-body"><div class="prog-loading" id="prog-loading">불러오는 중…</div><iframe id="prog-frame" title="키오스크 프로그램" allow="camera; microphone; autoplay; fullscreen; clipboard-write"></iframe></div>
+  </div>
+</div>
+
+<div id="modal-gacha" class="modal" hidden role="dialog" aria-modal="true" aria-label="랜덤박스">
+  <div class="sheet gacha-sheet">
+    <h2>랜덤박스 <span class="muted small">무료 가상 뽑기</span></h2>
+    <div class="gacha-stage" id="gacha-stage"><div class="capsule" id="capsule"></div><div class="gacha-result" id="gacha-result" hidden></div></div>
+    <p class="tiny muted" id="gacha-odds"></p>
+    <div class="row" id="gacha-btns"><button class="btn primary" id="gacha-draw">뽑기</button><button class="btn" data-close>닫기</button></div>
+  </div>
+</div>
+
+<div id="modal-acc" class="modal" hidden role="dialog" aria-modal="true" aria-label="내 소품">
+  <div class="sheet scroll">
+    <h2>내 소품</h2>
+    <p class="muted small">놀이터 랜덤박스에서 뽑은 머리 소품이에요. 한 번에 1개 착용할 수 있어요.</p>
+    <div class="acc-grid" id="acc-grid"></div>
+    <div class="row"><button class="btn primary" data-close>닫기</button></div>
+  </div>
+</div>
+
+
+<div id="modal-bible" class="modal" hidden role="dialog" aria-modal="true" aria-label="성경 말씀">
+  <div class="sheet bible-sheet">
+    <div class="bb-head"><h2>성경 말씀</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="bb-verse" id="bb-verse"></div>
+    <form class="bb-search" id="bb-search"><input id="bb-q" placeholder="예) 요 3:16 · 시편 23 · 사랑 · 평안" aria-label="말씀 검색"><button class="btn primary">찾기</button></form>
+    <div class="bb-nav"><select id="bb-book" aria-label="권"></select><select id="bb-ch" aria-label="장"></select><button class="btn" id="bb-prev" aria-label="이전 장">‹</button><button class="btn" id="bb-next" aria-label="다음 장">›</button><button class="btn" id="bb-today">오늘의 말씀</button></div>
+    <h3 id="bb-title"></h3>
+    <div class="bb-out" id="bb-out"></div>
+    <p class="tiny muted">성경전서 개역한글판 © 대한성서공회 (1961). 저작재산권 보호기간이 만료된 본문을 원문 그대로 싣습니다.</p>
+  </div>
+</div>
+<div id="modal-hymn" class="modal" hidden role="dialog" aria-modal="true" aria-label="찬송 듣기">
+  <div class="sheet scroll">
+    <div class="bb-head"><h2>찬송 듣기</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <p class="muted small">저작권이 만료된 곡을 오르간·오르골 소리로 직접 연주해요. 듣는 동안 공간 음악은 잠시 멈춰요.</p>
+    <div class="hymn-list" id="hymn-list"></div>
+    <div class="row"><span id="hymn-now" class="small"></span><button class="btn" id="hymn-stop">멈추기</button></div>
+  </div>
+</div>
+<div id="modal-shop" class="modal" hidden role="dialog" aria-modal="true" aria-label="샵">
+  <div class="sheet scroll shop-sheet">
+    <div class="bb-head"><h2 id="shop-title">샵</h2><span class="pts-big">🪷 공덕 <b id="shop-pts">0</b></span><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="shop-grid" id="shop-grid"></div>
+    <p class="tiny muted" id="shop-note"></p>
+  </div>
+</div>
+<div id="modal-zodiac" class="modal" hidden role="dialog" aria-modal="true" aria-label="12지신">
+  <div class="sheet zd-sheet">
+    <div class="bb-head"><h2 id="zd-name">12지신</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="zd-body"><img id="zd-img" alt="" width="160" height="260"><div><p class="tiny muted" id="zd-years"></p><p id="zd-trait"></p><p id="zd-word" class="zd-word"></p></div></div>
+    <div class="zd-find"><input id="zd-year" inputmode="numeric" maxlength="4" placeholder="태어난 해 (예: 1985)" aria-label="태어난 해"><button class="btn" id="zd-find">내 띠 찾기</button></div>
+    <div class="row"><button class="btn primary" id="zd-more">운세향에서 자세히 보기</button></div>
+  </div>
+</div>
+<div id="beads" hidden>
+  <div class="bd-top"><div class="bd-count"></div><button class="btn" id="bd-close">염주 내려놓기</button></div>
+  <canvas aria-label="염주 — 위아래로 끌거나 눌러서 한 알씩 넘기세요"></canvas>
+  <p class="bd-help">염주를 아래로 끌거나 누르면 한 알씩 넘어가요</p>
+</div>
+
+<div id="modal-resv" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="rv-title">
+  <div class="sheet resv-sheet">
+    <div class="bb-head"><h2 id="rv-title">자리 예약</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="rv-tabs"><button class="rv-tab on" data-tab="book">자리 예약·미리 주문</button><button class="rv-tab" data-tab="mine">내 예약</button></div>
+    <div id="rv-book">
+      <p class="tiny muted" id="rv-hours"></p>
+      <div class="rv-bar"><select id="rv-date" aria-label="날짜"></select><select id="rv-time" aria-label="시간"></select>
+        <div class="rv-size"><button id="rv-minus" aria-label="인원 줄이기">−</button><b id="rv-size">2명</b><button id="rv-plus" aria-label="인원 늘리기">＋</button></div></div>
+      <p class="small" id="rv-free"></p>
+      <div class="rv-plan" id="rv-plan"></div>
+      <div class="rv-legend"><span><i style="background:#8fc49a"></i>예약 가능</span><span><i style="background:#c7c2ba"></i>예약됨</span><span><i style="background:#efe9de"></i>인원 초과</span><span><i style="background:#C9AE73"></i>선택</span></div>
+      <div id="rv-step2">
+        <p class="rv-pick" id="rv-pick"></p>
+        <h3>메뉴 미리 주문 <span class="muted small">(선택)</span></h3>
+        <div class="rv-menu" id="rv-menu"></div>
+        <div class="rv-form"><input id="rv-name" maxlength="12" placeholder="예약자 이름" aria-label="예약자 이름"><input id="rv-phone" inputmode="tel" maxlength="14" placeholder="연락처 (선택)" aria-label="연락처"><input id="rv-memo" maxlength="40" placeholder="요청사항 (선택) 예: 유아 의자" aria-label="요청사항"></div>
+        <p class="small" id="rv-cart"></p>
+        <button class="btn primary rv-submit" id="rv-submit" disabled>자리를 먼저 골라 주세요</button>
+        <p class="tiny muted">결제는 매장에서 합니다(시연판). 연락처는 이 기기와 매장 포스 전송용으로만 쓰고 공개 목록에는 이름 첫 글자와 인원만 보입니다.</p>
+      </div>
+    </div>
+    <div id="rv-mine" hidden></div>
+  </div>
+</div>
+
+<div id="modal-video" class="modal program" hidden role="dialog" aria-modal="true" aria-labelledby="vd-title">
+  <div class="sheet prog-sheet video-sheet">
+    <div class="prog-bar"><strong id="vd-title">영상</strong><span class="vd-prog" id="vd-prog" hidden></span><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="prog-body">
+      <iframe id="vd-frame" title="영상" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen hidden></iframe>
+      <div class="vd-empty" id="vd-empty">
+        <h3>이 스크린에 영상을 연결해 주세요</h3>
+        <p class="small muted">교회·성당·매장의 유튜브 영상 링크를 붙여넣으면 이 스크린에서 바로 재생돼요. (운영 시에는 거래처별로 미리 넣어 둡니다)</p>
+      </div>
+    </div>
+    <div class="vd-foot"><input id="vd-url" placeholder="다른 영상: 유튜브 주소 붙여넣기" aria-label="유튜브 링크"><button class="btn primary" id="vd-save">바꾸기</button><button class="btn" id="vd-reset" hidden>기본 영상</button><a id="vd-search" target="_blank" rel="noopener">유튜브에서 찾기 ↗</a></div>
+  </div>
+</div>
+
+<div id="modal-booth" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="bt-name">
+  <div class="sheet booth-sheet">
+    <div class="bb-head"><div class="bt-head"><span class="bt-no" id="bt-no">1</span><div><h2 id="bt-name">부스</h2><p class="small muted" id="bt-area"></p></div></div><button class="x" data-close aria-label="닫기">✕</button></div>
+    <ul class="bt-menu" id="bt-menu"></ul>
+    <p class="tiny muted" id="bt-note"></p>
+    <div class="bt-btns"><button class="btn primary" id="bt-taste">파라솔에 앉아 맛보기</button><a class="btn" id="bt-route" target="_blank" rel="noopener">현장 길찾기 ↗</a><a class="btn" id="bt-site" target="_blank" rel="noopener">공식 매대 명단 ↗</a></div>
+  </div>
+</div>
+<div id="modal-booths" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="bl-title">
+  <div class="sheet booths-sheet">
+    <div class="bb-head"><h2 id="bl-title">매대 명단</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <img class="bl-map" src="assets/tex/yongma_booth-layout.webp" alt="부스 배치도" loading="lazy">
+    <h3>먹거리부스 16곳</h3><div class="bl-grid" id="bl-food"></div>
+    <h3>플리마켓 4곳</h3><div class="bl-grid" id="bl-market"></div>
+    <h3>어서와존 · K-미식벨트 강릉 향토음식</h3><div class="bl-grid" id="bl-kbelt"></div>
+    <p class="tiny muted">누르면 그 부스로 걸어가요. 운영자 개인정보는 싣지 않습니다.</p>
+  </div>
+</div>
+<div id="modal-photo" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="ph-title">
+  <div class="sheet">
+    <div class="bb-head"><h2 id="ph-title">위드메모리 미러포토</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <p>거울 앞에 서서 찰칵! 전신 거울 포토부스 <b>위드메모리 미러포토</b>입니다. 행사·매장에 설치·대여할 수 있어요.</p>
+    <div class="bt-btns"><a class="btn primary" id="ph-go" target="_blank" rel="noopener">mirrorphoto.kr 보기 ↗</a></div>
+  </div>
+</div>
+
+<div id="modal-lectures" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="lc-title">
+  <div class="sheet lectures-sheet">
+    <div class="bb-head"><h2 id="lc-title">강의 목록</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <div class="lc-now" id="lc-now" hidden><span id="lc-now-t"></span><button class="btn primary" id="lc-join">함께 듣기</button></div>
+    <div class="lc-tabs" id="lc-tabs"></div>
+    <div id="lc-list"></div>
+    <div id="lc-detail" hidden></div>
+    <p class="tiny muted">강의는 각 채널이 유튜브에 공개한 영상을 유튜브 플레이어로 재생합니다. 강의를 틀면 같은 방 사람들에게 '함께 듣기' 안내가 갑니다.</p>
+  </div>
+</div>
+<div id="lec-banner" class="lec-banner" hidden role="status"><span id="lec-banner-t"></span><button class="btn primary" id="lec-banner-go">함께 듣기</button><button class="x" id="lec-banner-x" aria-label="닫기">✕</button></div>
+
+<div id="modal-login" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="lg-title">
+  <div class="sheet login-sheet">
+    <div class="bb-head"><h2 id="lg-title">로그인</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <p class="small muted" id="lg-why">강의실은 로그인한 회원만 들어갈 수 있어요. 수강신청·진도·수료가 계정에 저장됩니다.</p>
+    <div class="rv-tabs"><button class="rv-tab on" data-lg="login">로그인</button><button class="rv-tab" data-lg="signup">회원가입</button></div>
+    <div class="lg-form" id="lg-form">
+      <input id="lg-id" autocomplete="username" maxlength="16" placeholder="아이디 (영문 소문자·숫자 4~16자)" aria-label="아이디">
+      <input id="lg-pw" type="password" autocomplete="current-password" maxlength="64" placeholder="비밀번호 (8자 이상)" aria-label="비밀번호">
+      <input id="lg-pw2" type="password" autocomplete="new-password" maxlength="64" placeholder="비밀번호 확인" aria-label="비밀번호 확인" hidden>
+      <input id="lg-name" maxlength="12" placeholder="이름 (강의실·수료증에 표시)" aria-label="이름" hidden>
+      <p class="small err" id="lg-err" role="alert"></p>
+      <button class="btn primary" id="lg-go">로그인</button>
+    </div>
+    <div id="lg-me" hidden><p><b id="lg-me-name"></b>님으로 로그인되어 있어요.</p><div class="bt-btns"><button class="btn primary" id="lg-mylec">내 강의 보기</button><button class="btn" id="lg-out">로그아웃</button></div></div>
+    <p class="tiny muted" id="lg-note"></p>
+  </div>
+</div>
+<div id="modal-cert" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="ct-title">
+  <div class="sheet cert-sheet">
+    <div class="bb-head"><h2 id="ct-title">수료증</h2><button class="x" data-close aria-label="닫기">✕</button></div>
+    <img id="ct-img" alt="수료증">
+    <div class="bt-btns"><a class="btn primary" id="ct-dl" download="수료증.png">수료증 내려받기</a></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="hint" hidden><div class="hint-card"><b>이렇게 이용해요</b><p id="hint-text"></p><button class="btn primary" id="hint-ok">알겠어요</button></div></div>
+<div id="fatal" class="overlay" hidden><div class="load-card"><p id="fatal-text"></p><div class="load-actions"><button class="btn primary" onclick="location.reload()">다시 시도</button></div></div></div>
+
+<script>window.MDL_BRAND = {"ko": "용마 점주 아카데미", "en": "YONGMA OWNER ACADEMY", "short": "용마", "ns": "yongmaacademy/v1", "title": "용마거리 점주 온라인 강의실", "extra": ["lecture"], "only": ["lecture"], "drivein": false, "lectureName": "용마 점주 아카데미 강의실", "sister": {"label": "용마미식거리 3D 마을", "url": "https://2026yongma.com/3d/"}, "logo": "/academy/logo.png"};</script>
+<script type="module" src="js/main.js?v=11"></script>
+</body>
+</html>
