@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://2026yongma.com/academy/">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=14">
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 </head>
 <body class="mode-garden">
@@ -259,7 +259,7 @@
     <div class="lc-tabs" id="lc-tabs"></div>
     <div id="lc-list"></div>
     <div id="lc-detail" hidden></div>
-    <p class="tiny muted">강의는 각 채널이 유튜브에 공개한 영상을 유튜브 플레이어로 재생합니다. 강의를 틀면 같은 방 사람들에게 '함께 듣기' 안내가 갑니다.</p>
+    <p class="tiny muted" id="lc-src-note">강의는 유튜브 플레이어로 재생합니다. 강의를 틀면 같은 방 사람들에게 '함께 듣기' 안내가 갑니다.</p>
   </div>
 </div>
 <div id="lec-banner" class="lec-banner" hidden role="status"><span id="lec-banner-t"></span><button class="btn primary" id="lec-banner-go">함께 듣기</button><button class="x" id="lec-banner-x" aria-label="닫기">✕</button></div>
@@ -273,9 +273,11 @@
       <input id="lg-id" autocomplete="username" maxlength="16" placeholder="아이디 (영문 소문자·숫자 4~16자)" aria-label="아이디">
       <input id="lg-pw" type="password" autocomplete="current-password" maxlength="64" placeholder="비밀번호 (8자 이상)" aria-label="비밀번호">
       <input id="lg-pw2" type="password" autocomplete="new-password" maxlength="64" placeholder="비밀번호 확인" aria-label="비밀번호 확인" hidden>
-      <input id="lg-name" maxlength="12" placeholder="이름 (강의실·수료증에 표시)" aria-label="이름" hidden>
+      <input id="lg-store" maxlength="30" placeholder="점포명 (예: 용마떡볶이)" aria-label="점포명" hidden>
+      <input id="lg-name" maxlength="12" placeholder="이름 (강의실·수료증에 표시)" aria-label="이름·대표자명" hidden>
       <p class="small err" id="lg-err" role="alert"></p>
       <button class="btn primary" id="lg-go">로그인</button>
+      <p class="tiny muted" id="lg-forgot" hidden>아이디·비밀번호를 잊으셨나요? 운영 사무국(용마미식거리 운영팀)에 점포명·대표자명을 알려 주시면 확인 후 다시 정해 드려요.</p>
     </div>
     <div id="lg-me" hidden><p><b id="lg-me-name"></b>님으로 로그인되어 있어요.</p><div class="bt-btns"><button class="btn primary" id="lg-mylec">내 강의 보기</button><button class="btn" id="lg-out">로그아웃</button></div></div>
     <p class="tiny muted" id="lg-note"></p>
@@ -292,7 +294,7 @@
 <div id="hint" hidden><div class="hint-card"><b>이렇게 이용해요</b><p id="hint-text"></p><button class="btn primary" id="hint-ok">알겠어요</button></div></div>
 <div id="fatal" class="overlay" hidden><div class="load-card"><p id="fatal-text"></p><div class="load-actions"><button class="btn primary" onclick="location.reload()">다시 시도</button></div></div></div>
 
-<script>window.MDL_BRAND = {"ko": "용마 점주 아카데미", "en": "YONGMA OWNER ACADEMY", "short": "용마", "ns": "yongmaacademy/v1", "title": "용마거리 점주 온라인 강의실", "extra": ["lecture"], "only": ["lecture"], "drivein": false, "lectureName": "용마 점주 아카데미 강의실", "sister": {"label": "용마미식거리 3D 마을", "url": "https://2026yongma.com/3d/"}, "logo": "https://2026yongma.com/academy/logo.png"};</script>
-<script type="module" src="js/main.js?v=11"></script>
+<script>window.MDL_BRAND = {"ko": "용마 점주 아카데미", "en": "YONGMA OWNER ACADEMY", "short": "용마", "ns": "yongmaacademy/v1", "title": "용마거리 점주 온라인 강의실", "extra": ["lecture"], "only": ["lecture"], "drivein": false, "lectureName": "용마 점주 아카데미 강의실", "lectureSet": "sales30", "org": {"name": "주식회사 에스티엔미디어", "ceo": "이원재", "bizno": "114-87-25596", "addr": "인천광역시 부평구 새벌로 29, 8층 7호(청천동, 부평테크노타워)", "email": "lmj@stnsports.co.kr"}, "adminHash": "968e05fcea6cec4cbb8833c60a8c118d1ddf9fe164780ce01fe852df2ddbd08b", "sister": {"label": "용마미식거리 3D 마을", "url": "https://2026yongma.com/3d/"}, "logo": "https://2026yongma.com/academy/logo.png"};</script>
+<script type="module" src="js/main.js?v=14"></script>
 </body>
 </html>
