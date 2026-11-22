@@ -172,7 +172,7 @@ const Auth = {
     const base = document.documentElement.dataset.base || "";
 
     // 점주아카데미 버튼 — 로그인 여부와 관계없이 항상 보인다(강의실 자체가 점주 확인을 한다) — 2026-11-22
-    const academy = `<a class="btn btn--ghost btn--sm btn-academy" href="${base}academy/">점주아카데미</a>`;
+    const academy = `<a class="btn btn--primary btn--sm btn-academy" href="${base}academy/">점주아카데미</a>`;
 
     if (!this.ready()) {
       box.innerHTML = academy + `<a class="btn btn--ghost btn--sm" href="${base}login.html">로그인</a>`;
