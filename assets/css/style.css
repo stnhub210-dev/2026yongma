@@ -1136,7 +1136,9 @@ img, video, iframe, table { max-width: 100%; }
   .header-actions { gap: 6px; }
   [data-auth-box] .btn--sm { padding: 7px 12px; font-size: .8125rem; }
   [data-auth-box] .btn--primary { display: none; }       /* 회원가입은 로그인 화면에서 */
-  [data-auth-box] .btn-academy { display: none; }        /* 좁은 화면은 ☰ 메뉴 안의 점주아카데미로 */
+  [data-auth-box] .btn--primary.btn-academy { display: inline-flex; }  /* 점주아카데미는 모바일 헤더에도 보인다 */
+  [data-auth-box] .btn-admin,
+  [data-auth-box] .btn-mypage { display: none; }         /* 관리자·마이페이지는 ☰ 메뉴 안으로(자리 확보) */
   .lang-bar__label { display: none; }
   .lang-bar .wrap { justify-content: center; gap: 10px; }
 
@@ -1161,6 +1163,8 @@ img, video, iframe, table { max-width: 100%; }
 }
 @media (max-width: 380px) {
   .brand small { display: none; }                         /* 아주 좁은 화면은 영문 줄 숨김 */
+  [data-auth-box] .btn--sm { padding: 7px 10px; }         /* 점주아카데미·로그아웃·☰ 가 한 줄에 들어가게 */
+  .site-header .wrap, .header-actions { gap: 6px; }
 }
 @media (max-width: 640px) {
   /* 머리글 줄이 없는 두 칸짜리 표(항목·내용)는 옆으로 밀지 않고 한 화면에 */

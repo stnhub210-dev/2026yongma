@@ -183,7 +183,7 @@ const Auth = {
       // 관리자 버튼은 로그인 전에도 보여 준다. 운영자가 바로 들어갈 수 있어야 하고,
       // 관리자 화면 자체가 로그인과 권한을 다시 확인하므로 노출돼도 위험하지 않다.
       box.innerHTML = academy +
-        `<a class="btn btn--ghost btn--sm" href="${base}admin/index.html">관리자</a>` +
+        `<a class="btn btn--ghost btn--sm btn-admin" href="${base}admin/index.html">관리자</a>` +
         `<a class="btn btn--ghost btn--sm" href="${base}login.html">로그인</a>` +
         `<a class="btn btn--primary btn--sm" href="${base}login.html#signup">회원가입</a>`;
       return;
@@ -191,9 +191,14 @@ const Auth = {
     const p = await this.profile();
     const admin = p && (p.role === "admin" || p.role === "staff");
     box.innerHTML = academy +
-      (admin ? `<a class="btn btn--ghost btn--sm" href="${base}admin/index.html">관리자</a>` : "") +
-      `<a class="btn btn--ghost btn--sm" href="${base}mypage.html">마이페이지</a>` +
+      (admin ? `<a class="btn btn--ghost btn--sm btn-admin" href="${base}admin/index.html">관리자</a>` : "") +
+      `<a class="btn btn--ghost btn--sm btn-mypage" href="${base}mypage.html">마이페이지</a>` +
       `<button class="btn btn--dark btn--sm" data-signout>로그아웃</button>`;
+    // 모바일 헤더에서는 마이페이지 버튼을 숨기므로 ☰ 메뉴 맨 위에 넣어 둔다(한 번만)
+    const mnav = document.querySelector("#mnav ul");
+    if (mnav && !mnav.querySelector("[data-mypage]")) {
+      mnav.insertAdjacentHTML("afterbegin", `<li data-mypage><a href="${base}mypage.html">마이페이지</a></li>`);
+    }
     box.querySelector("[data-signout]")?.addEventListener("click", async () => {
       await this.signOut();
       location.href = base + "index.html";

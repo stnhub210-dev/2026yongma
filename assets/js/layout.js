@@ -90,7 +90,7 @@ window.googleTranslateElementInit = function () {
     </div>
   </div>
 </header>
-<div class="mobile-nav" id="mnav"><div class="wrap"><ul>${links()}<li><a href="${B}academy/">점주아카데미</a></li></ul></div></div>`;
+<div class="mobile-nav" id="mnav"><div class="wrap"><ul>${links()}<li><a href="${B}academy/">점주아카데미</a></li><li><a href="${B}admin/index.html" rel="nofollow">관리자</a></li></ul></div></div>`;
 
     // 국기 버튼 — 지금 언어 표시 + 누르면 전환
     const now = currentLang();
