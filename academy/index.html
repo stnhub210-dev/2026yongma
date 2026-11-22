@@ -301,5 +301,36 @@
 
 <script>window.MDL_BRAND = {"ko": "용마 점주 아카데미", "en": "YONGMA OWNER ACADEMY", "short": "용마", "ns": "yongmaacademy/v1", "title": "용마거리 점주 온라인 강의실", "extra": ["lecture"], "only": ["lecture"], "drivein": false, "lectureName": "용마 점주 아카데미 강의실", "lectureSet": "sales30", "org": {"name": "주식회사 에스티엔미디어", "ceo": "이원재", "bizno": "114-87-25596", "addr": "인천광역시 부평구 새벌로 29, 8층 7호(청천동, 부평테크노타워)", "email": "lmj@stnsports.co.kr"}, "sister": {"label": "용마미식거리 3D 마을", "url": "https://2026yongma.com/3d/"}, "logo": "https://2026yongma.com/academy/logo.png"};</script>
 <script type="module" src="js/main.js?v=15"></script>
+
+<!-- 상인 역량강화 교육 포스터 팝업 (2026. 11. 23.) — 「오늘 하루 보지 않기」는 이 브라우저에만 저장 -->
+<div id="edu-pop" style="position:fixed;inset:0;z-index:99999;background:rgba(10,14,28,.72);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="position:relative;max-width:min(560px,92vw);width:100%;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;max-height:94vh">
+    <div style="overflow:auto;-webkit-overflow-scrolling:touch">
+      <img src="popup_edu.jpg?v=20261122" alt="2026 상인 역량강화 교육 — 11월 23일(월) 오후 2시~5시, 포남1동 주민센터 대회의실. 1부 스마트폰 하나로 시작하는 우리 가게 홍보 마케팅(김소정), 2부 손님을 반갑게, 내 인생을 행복하게(김광수)" style="display:block;width:100%;height:auto">
+    </div>
+    <div style="display:flex;border-top:1px solid #eee;font-family:'Noto Sans KR',sans-serif;font-size:15px">
+      <button type="button" id="edu-pop-today" style="flex:1;padding:14px 8px;border:0;background:#f6f3ee;color:#555;cursor:pointer;font:inherit">오늘 하루 보지 않기</button>
+      <button type="button" id="edu-pop-close" style="flex:1;padding:14px 8px;border:0;background:#E26B13;color:#fff;font-weight:700;cursor:pointer;font:inherit">닫기</button>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var KEY = 'yongma_edu_pop_hide_until', pop = document.getElementById('edu-pop');
+  var hideUntil = 0;
+  try { hideUntil = +localStorage.getItem(KEY) || 0; } catch (e) {}
+  if (Date.now() < hideUntil) return;                                   // 오늘 하루 보지 않기 선택한 경우
+  function close() { pop.style.display = 'none'; }
+  pop.style.display = 'flex';
+  document.getElementById('edu-pop-close').onclick = close;
+  document.getElementById('edu-pop-today').onclick = function () {
+    var t = new Date(); t.setHours(24, 0, 0, 0);                          // 오늘 자정까지 숨김
+    try { localStorage.setItem(KEY, String(t.getTime())); } catch (e) {}
+    close();
+  };
+  pop.addEventListener('click', function (e) { if (e.target === pop) close(); });   // 바깥 어두운 곳 누르면 닫기
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pop.style.display !== 'none') close(); });
+})();
+</script>
 </body>
 </html>
