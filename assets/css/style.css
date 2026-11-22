@@ -1136,6 +1136,7 @@ img, video, iframe, table { max-width: 100%; }
   .header-actions { gap: 6px; }
   [data-auth-box] .btn--sm { padding: 7px 12px; font-size: .8125rem; }
   [data-auth-box] .btn--primary { display: none; }       /* 회원가입은 로그인 화면에서 */
+  [data-auth-box] .btn-academy { display: none; }        /* 좁은 화면은 ☰ 메뉴 안의 점주아카데미로 */
   .lang-bar__label { display: none; }
   .lang-bar .wrap { justify-content: center; gap: 10px; }
 

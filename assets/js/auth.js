@@ -171,15 +171,18 @@ const Auth = {
     if (!box) return;
     const base = document.documentElement.dataset.base || "";
 
+    // 점주아카데미 버튼 — 로그인 여부와 관계없이 항상 보인다(강의실 자체가 점주 확인을 한다) — 2026-11-22
+    const academy = `<a class="btn btn--ghost btn--sm btn-academy" href="${base}academy/">점주아카데미</a>`;
+
     if (!this.ready()) {
-      box.innerHTML = `<a class="btn btn--ghost btn--sm" href="${base}login.html">로그인</a>`;
+      box.innerHTML = academy + `<a class="btn btn--ghost btn--sm" href="${base}login.html">로그인</a>`;
       return;
     }
     const u = await this.user();
     if (!u) {
       // 관리자 버튼은 로그인 전에도 보여 준다. 운영자가 바로 들어갈 수 있어야 하고,
       // 관리자 화면 자체가 로그인과 권한을 다시 확인하므로 노출돼도 위험하지 않다.
-      box.innerHTML =
+      box.innerHTML = academy +
         `<a class="btn btn--ghost btn--sm" href="${base}admin/index.html">관리자</a>` +
         `<a class="btn btn--ghost btn--sm" href="${base}login.html">로그인</a>` +
         `<a class="btn btn--primary btn--sm" href="${base}login.html#signup">회원가입</a>`;
@@ -187,7 +190,7 @@ const Auth = {
     }
     const p = await this.profile();
     const admin = p && (p.role === "admin" || p.role === "staff");
-    box.innerHTML =
+    box.innerHTML = academy +
       (admin ? `<a class="btn btn--ghost btn--sm" href="${base}admin/index.html">관리자</a>` : "") +
       `<a class="btn btn--ghost btn--sm" href="${base}mypage.html">마이페이지</a>` +
       `<button class="btn btn--dark btn--sm" data-signout>로그아웃</button>`;

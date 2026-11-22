@@ -7,10 +7,8 @@ const NAV = [
   ["index.html",    "홈",        "nav.home"],
   ["story.html",    "용마거리 소개", "nav.story"],
   ["about.html",    "상권 소개", "nav.about"],
-  ["zones.html",    "공간 안내",    "nav.zones"],
   ["programs.html", "프로그램",  "nav.programs"],
   ["food.html",     "미식 지도", "nav.food"],
-  ["booths.html",   "매대 명단", "nav.booths"],
   ["gallery.html",  "갤러리",    "nav.gallery"],
   ["news.html",     "소식",      "nav.news"],
   ["join.html",     "참여 신청", "nav.join"],
@@ -55,9 +53,9 @@ window.googleTranslateElementInit = function () {
   const B = document.documentElement.dataset.base || "";
   // 상단 메뉴는 기계 번역 대신 직접 옮긴 이름을 쓴다(짧고 정확하게, 메뉴가 한 줄에 들어가도록)
   const NAV_T = {
-    en:      ["Home", "Yongma Story", "District", "Spaces", "Programs", "Food Map", "Booths", "Gallery", "News", "Join"],
-    "zh-CN": ["首页", "龙马街介绍", "商圈介绍", "空间介绍", "活动项目", "美食地图", "摊位名单", "相册", "新闻", "参与申请"],
-    ja:      ["ホーム", "龍馬の由来", "商店街", "スペース", "プログラム", "グルメ地図", "屋台一覧", "ギャラリー", "ニュース", "参加申込"],
+    en:      ["Home", "Yongma Story", "District", "Programs", "Food Map", "Gallery", "News", "Join"],
+    "zh-CN": ["首页", "龙马街介绍", "商圈介绍", "活动项目", "美食地图", "相册", "新闻", "参与申请"],
+    ja:      ["ホーム", "龍馬の由来", "商店街", "プログラム", "グルメ地図", "ギャラリー", "ニュース", "参加申込"],
   };
   const lang = currentLang();
   const links = (cls) =>
@@ -92,7 +90,7 @@ window.googleTranslateElementInit = function () {
     </div>
   </div>
 </header>
-<div class="mobile-nav" id="mnav"><div class="wrap"><ul>${links()}</ul></div></div>`;
+<div class="mobile-nav" id="mnav"><div class="wrap"><ul>${links()}<li><a href="${B}academy/">점주아카데미</a></li></ul></div></div>`;
 
     // 국기 버튼 — 지금 언어 표시 + 누르면 전환
     const now = currentLang();
@@ -103,9 +101,9 @@ window.googleTranslateElementInit = function () {
     });
     // 로그인 영역 버튼도 기계 번역 대신 짧은 이름으로 (영어 'join the membership' 처럼 길어져 메뉴가 밀리지 않게)
     const AUTH_T = {
-      en:      { "로그인": "Log in", "회원가입": "Sign up", "로그아웃": "Log out", "마이페이지": "My page", "관리자": "Admin" },
-      "zh-CN": { "로그인": "登录", "회원가입": "注册", "로그아웃": "退出", "마이페이지": "我的", "관리자": "管理" },
-      ja:      { "로그인": "ログイン", "회원가입": "会員登録", "로그아웃": "ログアウト", "마이페이지": "マイページ", "관리자": "管理" },
+      en:      { "로그인": "Log in", "회원가입": "Sign up", "로그아웃": "Log out", "마이페이지": "My page", "관리자": "Admin", "점주아카데미": "Academy" },
+      "zh-CN": { "로그인": "登录", "회원가입": "注册", "로그아웃": "退出", "마이페이지": "我的", "관리자": "管理", "점주아카데미": "店主学院" },
+      ja:      { "로그인": "ログイン", "회원가입": "会員登録", "로그아웃": "ログアウト", "마이페이지": "マイページ", "관리자": "管理", "점주아카데미": "アカデミー" },
     };
     const authBox = document.querySelector("[data-auth-box]");
     if (authBox && AUTH_T[lang]) {
